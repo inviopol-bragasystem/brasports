@@ -1,0 +1,195 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - MEU PERFIL
+   Visual: v4 (.account-form/.account-field/.account-label/.account-input/
+   .account-submit) em cartoes .bet24-card.
+
+   LOGICA DO TEMPLATE BASE (website9/page/perfil.twig) COM A CORRECAO
+   DO BUG CONHECIDO:
+     - POST /perfil/salvar  (o site9 enviava /perfil/atualizar, que nao
+       existe e "parecia" salvar por causa do notfoundAction em AJAX)
+     - setValues({{ '{{' }} json(user) {{ '}}' }}) preenche os campos
+     - limpa os campos de senha (o json(user) traz o hash da senha)
+     - o perfilController do tema valida a senha atual e a nova senha
+   ===================================================================== #}
+
+{% block main %}
+
+    <div class="bet24-page contas-perfil">
+
+        <div class="bet24-page-head">
+            <div>
+                <h1 class="bet24-page-title">Meu perfil</h1>
+                <p class="bet24-page-sub">Atualize seus dados de contato e a sua senha de acesso.</p>
+            </div>
+            <a class="bet24-voltar" href="{{ url('apostar') }}">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 5l-7 7 7 7"/>
+                </svg>
+                Voltar aos jogos
+            </a>
+        </div>
+
+        <div class="bet24-card contas-perfil-resumo">
+            <span class="contas-perfil-avatar" aria-hidden="true">
+                <i class="fas fa-user"></i>
+            </span>
+            <div class="contas-perfil-ident">
+                <strong>{{ user.getNome() }}</strong>
+                <span>@{{ user.getLogin() }} · {{ user.getEmail() }}</span>
+            </div>
+            <span class="contas-perfil-saldo">Saldo R$ {{ user.getCredito(true) }}</span>
+            <div class="contas-perfil-atalhos">
+                <a href="{{ url('financeiro/deposito') }}"><i class="fas fa-plus-circle"></i> Depósito</a>
+                <a href="{{ url('financeiro/extrato') }}"><i class="fas fa-list-ul"></i> Extrato</a>
+                <a href="{{ url('apostas') }}"><i class="fas fa-history"></i> Minhas apostas</a>
+            </div>
+        </div>
+
+        <form class="admpage-form contas-form" autocomplete="off">
+
+            {# ------------------------------------------------------------
+               DADOS CADASTRAIS
+               ------------------------------------------------------------ #}
+            <section class="bet24-card contas-secao">
+                <h2 class="contas-secao-titulo">
+                    <i class="fas fa-user-edit" aria-hidden="true"></i> Dados cadastrais
+                </h2>
+
+                <div class="contas-grade">
+                    <label class="account-field contas-largo">
+                        <span class="account-label">Nome completo *</span>
+                        <input type="text" name="nome" class="account-input" required
+                               autocomplete="name"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Usuário / login</span>
+                        <input type="text" name="login" class="account-input" disabled/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">E-mail *</span>
+                        <input type="email" name="email" class="account-input" required
+                               autocomplete="email"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Telefone</span>
+                        <input type="text" name="telefone" class="mask-telefone account-input"
+                               inputmode="tel" autocomplete="tel"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Celular</span>
+                        <input type="text" name="celular" class="mask-telefone account-input"
+                               inputmode="tel" autocomplete="tel-national"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">WhatsApp</span>
+                        <input type="text" name="whatsapp" class="mask-telefone account-input"
+                               inputmode="tel"/>
+                    </label>
+                </div>
+
+                <p class="account-hint contas-dica">
+                    O login não pode ser alterado. Em caso de dúvida fale com o suporte.
+                </p>
+            </section>
+
+            {# ------------------------------------------------------------
+               ALTERAR SENHA
+               ------------------------------------------------------------ #}
+            <section class="bet24-card contas-secao">
+                <h2 class="contas-secao-titulo">
+                    <i class="fas fa-key" aria-hidden="true"></i> Alterar senha
+                </h2>
+
+                <div class="contas-grade">
+                    <label class="account-field">
+                        <span class="account-label">Nova senha</span>
+                        <input type="password" name="nsenha" class="account-input"
+                               minlength="5" maxlength="20" autocomplete="new-password"
+                               placeholder="Deixe em branco para manter"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Confirmar nova senha</span>
+                        <input type="password" name="nsenhar" class="account-input"
+                               minlength="5" maxlength="20" autocomplete="new-password"
+                               placeholder="Repita a nova senha"/>
+                    </label>
+                </div>
+
+                <p class="account-hint contas-dica">
+                    Preencha somente se desejar trocar a senha. Use de 5 a 20 letras ou números.
+                </p>
+            </section>
+
+            {# ------------------------------------------------------------
+               CONFIRMAÇÃO
+               ------------------------------------------------------------ #}
+            <section class="bet24-card contas-secao">
+                <h2 class="contas-secao-titulo">
+                    <i class="fas fa-shield-alt" aria-hidden="true"></i> Confirmação
+                </h2>
+
+                <div class="contas-grade">
+                    <label class="account-field">
+                        <span class="account-label">Senha atual *</span>
+                        <input type="password" name="senha" class="account-input" required
+                               autocomplete="current-password"/>
+                    </label>
+                </div>
+
+                <p class="account-hint contas-dica">
+                    Por segurança, informe a sua senha atual para salvar as alterações.
+                </p>
+            </section>
+
+            {# ------------------------------------------------------------
+               SALVAR
+               ------------------------------------------------------------ #}
+            <div class="bet24-card contas-form-rodape">
+                <button type="submit" class="account-submit contas-btn">
+                    <i class="fas fa-save" aria-hidden="true"></i> Salvar alterações
+                </button>
+                <p class="contas-rodape-link">
+                    <a href="{{ url('logout') }}">Sair da conta</a>
+                </p>
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        var $formPerfil = $('.admpage-form');
+
+        $formPerfil
+            .setValues({{ json(user) }})
+            .adminPage({
+                autoSearch: false,
+                insertAction: 'salvar',
+                controller: 'perfil',
+                alertSuccess: true,
+                autoReset: false,
+            })
+            .on('success', function (event, e) {
+                if (e.result == 1) {
+                    $formPerfil.find('[type=password]').val('');
+                }
+            });
+
+        /* O json(user) traz o hash da senha: nunca deixa esse valor no campo */
+        $formPerfil.find('[type=password]').val('');
+    </script>
+
+{% endblock %}

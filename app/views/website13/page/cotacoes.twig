@@ -1,0 +1,35 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div style="background:var(--theme-card-2);border:1px solid var(--theme-card-border);border-radius:16px;padding:24px;margin-bottom:24px;">
+        <h4 class="font-weight-bold text-white mb-2">
+            <i class="fa fa-line-chart mr-2" style="color:var(--theme-primary);"></i> Tabela de Cotações & Mercados
+        </h4>
+        <p style="color:var(--theme-text-muted);font-size:13px;" class="mb-4">
+            Relação de tipos de apostas, siglas e descrições dos mercados esportivos.
+        </p>
+
+        <div class="row">
+            {% for gId, gTitle in grupos %}
+                <div class="col-md-6 mb-4">
+                    <div style="background:var(--theme-card-1);border:1px solid var(--theme-card-border);border-radius:12px;padding:16px;">
+                        <h6 style="color:var(--theme-primary);font-weight:700;margin-bottom:12px;">{{ gTitle }}</h6>
+                        <ul class="list-unstyled mb-0" style="font-size:13px;color:var(--theme-text-muted);">
+                            {% for c in cotacoes %}
+                                {% if c.getGrupo() == gId %}
+                                    <li class="d-flex justify-content-between py-1 border-bottom" style="border-color:var(--theme-card-border)!important;">
+                                        <span>{{ c.getSigla()|default(c.getTitulo()) }}</span>
+                                        <strong class="text-white">{{ c.getTitulo() }}</strong>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
+

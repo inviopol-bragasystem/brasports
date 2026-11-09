@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ game.name }} - Bet24 Cassino</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/bet24/fonts.css">
+    <style>
+        :root {
+            --primary-color: #263e0f;
+            --text-primary-color: #d4ec00;
+            --secondary-color: #068a00;
+            --secondary-text: #ffffff;
+            --bg-dark: #0f140c;
+            --header-dark: #162010;
+            --border-dark: #223318;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: #000;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #fff;
+        }
+        .player-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            background: #000;
+        }
+        .player-header {
+            height: 52px;
+            background: var(--header-dark);
+            border-bottom: 1px solid var(--border-dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 20;
+            flex-shrink: 0;
+        }
+        .player-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .btn-back {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-dark);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .btn-back:hover {
+            background: var(--primary-color);
+            color: var(--text-primary-color);
+        }
+        .player-game-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .live-tag {
+            background: var(--secondary-color);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+        .demo-tag {
+            background: #ff9800;
+            color: #000;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .player-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .player-balance {
+            font-size: 13px;
+            color: #b0c4a0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .player-balance b {
+            color: var(--text-primary-color);
+            font-size: 14px;
+        }
+        .player-action-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-dark);
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .player-action-btn:hover {
+            background: var(--primary-color);
+            color: var(--text-primary-color);
+        }
+        .player-viewport {
+            flex: 1;
+            width: 100%;
+            height: calc(100vh - 52px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            position: relative;
+        }
+        .player-iframe {
+            width: 100% !important;
+            height: 100% !important;
+            border: none;
+            background: #000;
+            display: block;
+        }
+        @media (max-width: 576px) {
+            .player-header {
+                padding: 0 10px;
+                height: 48px;
+            }
+            .player-game-title span.title-txt {
+                display: none;
+            }
+            .player-balance {
+                display: none;
+            }
+            .player-iframe {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="player-wrapper">
+        <header class="player-header">
+            <div class="player-left">
+                <a href="{{ url('cassino') }}" class="btn-back" title="Sair do Jogo">
+                    <i class="fa fa-arrow-left"></i> Sair
+                </a>
+                <div class="player-game-title">
+                    <i class="fa fa-gamepad" style="color: var(--text-primary-color);"></i>
+                    <span class="title-txt">{{ game.name }}</span>
+                    {% if isDemo %}
+                        <span class="demo-tag">DEMO</span>
+                    {% else %}
+                        <span class="live-tag">AO VIVO</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="player-right">
+                <div class="player-balance">
+                    <i class="fa fa-wallet" style="color: var(--text-primary-color);"></i>
+                    <span>Saldo: <b>R$ {{ user ? user.getCredito(true) : '1.000,00' }}</b></span>
+                </div>
+                <button type="button" class="btn-back" title="Atualizar Jogo" onclick="recarregarJogo();" id="btnAtualizar">
+                    <i class="fa fa-refresh" id="iconAtualizar"></i> <span>Atualizar</span>
+                </button>
+                <button type="button" class="player-action-btn" title="Tela Cheia" onclick="toggleFullscreen();">
+                    <i class="fa fa-expand"></i>
+                </button>
+            </div>
+        </header>
+        <main class="player-viewport">
+            {% if errorMessage %}
+                <div style="position: absolute; inset: 0; background: #0b0b0b; display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 60; padding: 24px; text-align: center;">
+                    <i class="fa fa-exclamation-triangle fa-3x" style="color: #ff9800; margin-bottom: 16px;"></i>
+                    <h3 style="color: #fff; margin-bottom: 10px; font-weight: 700;">Não foi possível carregar o jogo</h3>
+                    <p style="color: #aaa; max-width: 480px; margin-bottom: 24px; font-size: 14px;">{{ errorMessage }}</p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                        <a href="{{ url('cassino') }}" class="btn-back" style="background: var(--secondary-color); color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 4px; font-weight: 700;">
+                            <i class="fa fa-arrow-left"></i> Voltar ao Cassino
+                        </a>
+                        <button type="button" class="btn-back" onclick="window.location.reload();" style="background: #222; color: #fff; padding: 10px 20px; border-radius: 4px; font-weight: 700; border: 1px solid #444; cursor: pointer;">
+                            <i class="fa fa-refresh"></i> Tentar Novamente
+                        </button>
+                    </div>
+                </div>
+            {% else %}
+                <div id="playerLoader" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 50;">
+                    <i class="fa fa-spinner fa-spin fa-3x" style="color: var(--text-primary-color); margin-bottom: 12px;"></i>
+                    <div style="font-weight: 700; color: #fff; font-size: 15px;">Atualizando jogo...</div>
+                </div>
+                <iframe src="{{ launchUrl }}" id="gameIframe" class="player-iframe" allow="fullscreen; autoplay; screen-wake-lock"></iframe>
+            {% endif %}
+        </main>
+    </div>
+
+    <script>
+        var originalLaunchUrl = {{ launchUrl|json_encode|raw }};
+
+        function recarregarJogo() {
+            var frame = document.getElementById('gameIframe');
+            var icon = document.getElementById('iconAtualizar');
+            var loader = document.getElementById('playerLoader');
+            
+            if (icon) icon.classList.add('fa-spin');
+            if (loader) loader.style.display = 'flex';
+            
+            if (frame) {
+                var targetUrl = originalLaunchUrl || frame.src;
+                frame.src = 'about:blank';
+                setTimeout(function() {
+                    frame.src = targetUrl;
+                    setTimeout(function() {
+                        if (icon) icon.classList.remove('fa-spin');
+                        if (loader) loader.style.display = 'none';
+                    }, 1000);
+                }, 100);
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(function(err) {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,19 @@
+# Proteção rigorosa do diretório de uploads de imagens
+# Bloqueia execução de scripts PHP, CGI, executáveis e arquivos de script
+
+<FilesMatch "(?i)\.(php|phtml|php3|php4|php5|php7|php8|phar|inc|cgi|pl|py|sh|bash|exe)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<IfModule mod_php5.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+Options -ExecCGI -Indexes

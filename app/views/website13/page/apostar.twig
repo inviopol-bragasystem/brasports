@@ -1,0 +1,400 @@
+{% extends layout %}
+
+{% set hoje = 'now'|date('Y-m-d') %}
+{% set amanha = '+1day'|date('Y-m-d') %}
+{% set selector = '#website' %}
+{% set activeNav = 'apostar' %}
+{% set activeTab = 'esportes' %}
+
+{% block main %}
+
+    <style>
+        .play-mobile-betslip-bar {
+            display: none !important;
+            position: fixed;
+            left: 14px;
+            right: 14px;
+            bottom: calc(76px + env(safe-area-inset-bottom));
+            z-index: 1045;
+            padding: 12px 16px;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            background: linear-gradient(135deg, #1b75e2 0%, #0d5bbd 100%);
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+        }
+        @media (max-width: 1100px) {
+            .play-mobile-betslip-bar {
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+    </style>
+
+    <div class="play-sports-container" v-cloak>
+
+        <!-- ========================================================
+             COLUNA PRINCIPAL: FILTROS + CONFRONTOS
+             ======================================================== -->
+        <div class="play-sports-main">
+
+            <!-- Filtros Rápidos de Data (Hoje, Amanhã, etc.) -->
+            <div class="play-filters-bar mb-3">
+                <button type="button" class="play-filter-pill"
+                        :class="{ active: (!findData || findData == 'todos') && (!findCampeonato || findCampeonato == '*') && (!findPais || findPais == '*') }"
+                        v-on:click="setCampeonato(); setData('todos');">
+                    <i class="fa fa-globe"></i> Todos os Jogos
+                </button>
+                <button type="button" class="play-filter-pill"
+                        :class="{ active: findData == '{{ hoje }}' }"
+                        v-on:click="setData('{{ hoje }}')">
+                    <i class="fa fa-calendar-check-o"></i> Hoje ({{ hoje|split('-')|reverse|join('/') }})
+                </button>
+                <button type="button" class="play-filter-pill"
+                        :class="{ active: findData == '{{ amanha }}' }"
+                        v-on:click="setData('{{ amanha }}')">
+                    <i class="fa fa-calendar"></i> Amanhã ({{ amanha|split('-')|reverse|join('/') }})
+                </button>
+                <button type="button" v-for="d in datas" :key="d.data"
+                        v-if="d.data != '{{ hoje }}' && d.data != '{{ amanha }}'"
+                        class="play-filter-pill"
+                        :class="{ active: findData == d.data }"
+                        v-on:click="setData(d.data)">
+                    ${d.title || d.data.split('-').reverse().join('/')}
+                </button>
+            </div>
+
+            <!-- Busca Rápida de Partidas -->
+            <div class="mb-3" style="position:relative;">
+                <input type="text" v-model="search" class="form-control" placeholder="Buscar por time ou campeonato..." style="background:var(--theme-card-2);border:1px solid rgba(255,255,255,0.08);color:#fff;border-radius:12px;padding:10px 16px 10px 40px;height:44px;"/>
+                <i class="fa fa-search" style="position:absolute;left:15px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,0.4);"></i>
+            </div>
+
+            <!-- Lista de Campeonatos e Confrontos -->
+            <template v-for="pais in paises" v-if="filterPais(pais)">
+                <div v-for="campeonato in getCampeonatos(pais, true)" :key="campeonato.id" class="play-league-card">
+                    <!-- Cabeçalho do Campeonato -->
+                    <div class="play-league-header">
+                        <div class="play-league-title">
+                            <img v-if="pais.img" :src="pais.img" class="w-5 h-5 rounded-full object-cover mr-1" alt=""/>
+                            <i v-else class="fa fa-trophy mr-1" style="color:var(--theme-section-icon);"></i>
+                            <span>${pais.title} - ${campeonato.title}</span>
+                        </div>
+                        <span class="badge" style="background:var(--theme-card-1);color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.08);font-size:11px;font-weight:700;">
+                            ${getJogos(campeonato).length} jogos
+                        </span>
+                    </div>
+
+                    <!-- Partidas do Campeonato -->
+                    <div class="play-matches-list">
+                        <div v-for="(jogo, jIdx) in getJogos(campeonato)" :key="jogo.id" class="play-match-row">
+                            <!-- Metadados e Times -->
+                            <div class="play-match-info" v-on:click="maisCotacoes(jogo)" style="cursor:pointer;" title="Clique para ver todas as cotações">
+                                <div class="play-match-meta">
+                                    <span><i class="fa fa-clock-o mr-1"></i> ${jogo.data.split('-').reverse().slice(0, 2).join('/')} às ${jogo.hora.replace(/:00$/, '')}</span>
+                                    <span v-if="jogo.status == 'AO_VIVO'" class="play-live-indicator">
+                                        <span class="play-live-dot"></span> AO VIVO
+                                    </span>
+                                </div>
+                                <div class="play-team-row">
+                                    <img v-if="jogo.imgCasa" :src="jogo.imgCasa" class="shield" :alt="jogo.casa" onerror="this.style.display='none'"/>
+                                    <i v-else class="fa fa-shield text-muted" style="font-size:14px;width:18px;"></i>
+                                    <span class="font-bold text-white">${jogo.casa}</span>
+                                </div>
+                                <div class="play-team-row">
+                                    <img v-if="jogo.imgFora" :src="jogo.imgFora" class="shield" :alt="jogo.fora" onerror="this.style.display='none'"/>
+                                    <i v-else class="fa fa-shield text-muted" style="font-size:14px;width:18px;"></i>
+                                    <span class="font-bold text-white">${jogo.fora}</span>
+                                </div>
+                            </div>
+
+                            <!-- Cotações 1X2 e Mais Mercados -->
+                            <div class="play-odds-group">
+                                <button type="button" 
+                                        v-for="c in getCotacoesPrincipais()" 
+                                        :key="'c-' + c.campo"
+                                        class="play-odd-btn"
+                                        :class="{ active: jogo.apostaEm == '90' + c.campo }"
+                                        :title="c.title + ': ' + maskReal(jogo.cotacoes && jogo.cotacoes['90'] ? jogo.cotacoes['90'][c.campo] : '')"
+                                        v-on:click="apostar(jogo, '90', c)">
+                                    <div class="odd-label">${c.sigla || c.title}</div>
+                                    <div class="odd-val">${(jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo]) ? maskReal(jogo.cotacoes['90'][c.campo]) : '-'}</div>
+                                </button>
+
+                                <button type="button" class="play-more-markets-btn" v-on:click="maisCotacoes(jogo)" title="Ver todas as opções de apostas">
+                                    + ${Math.max(0, totalCotacoes(jogo.cotacoes) - getCotacoesPrincipais().length)}
+                                </button>
+
+                                <button type="button" class="btn btn-sm text-white/50 hover:text-white p-2" v-on:click="abrirBannerJogo(jogo, campeonato)" title="Compartilhar banner desta partida" style="background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.08);width:38px;height:42px;display:flex;align-items:center;justify-content:center;">
+                                    <i class="fa fa-picture-o"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Mensagem quando nenhum jogo está aberto para o filtro -->
+            <div v-if="!paises || getCampeonatos(null, true).length === 0" class="text-center py-5" style="background:var(--theme-card-2);border:1px solid rgba(255,255,255,0.08);border-radius:16px;">
+                <i class="fa fa-futbol-o fa-3x mb-3 text-white/30"></i>
+                <h4 class="text-white font-bold">Nenhum evento esportivo para a seleção atual</h4>
+                <p class="text-white/60">Tente selecionar outra data nos filtros acima ou veja todos os jogos disponíveis.</p>
+                <button type="button" class="btn btn-primary px-4 py-2 mt-2 font-bold rounded-xl" v-on:click="setCampeonato(); setData('todos');">
+                    Ver todos os jogos
+                </button>
+            </div>
+
+        </div>
+
+        <!-- ========================================================
+             COLUNA DIREITA: CUPOM DE APOSTAS (DESKTOP)
+             ======================================================== -->
+        <div class="play-sports-betslip-col">
+            <div class="play-betslip-card">
+                <div class="play-betslip-header">
+                    <h4>
+                        <i class="fa fa-ticket" style="color:var(--theme-primary);"></i>
+                        Cupom de Apostas
+                    </h4>
+                    <span class="badge" style="background:var(--theme-primary);color:#fff;font-size:11px;font-weight:800;border-radius:10px;">
+                        ${aposta ? aposta.jogos.length : 0}
+                    </span>
+                </div>
+
+                <div class="play-betslip-body">
+                    <div v-if="!aposta || aposta.jogos.length == 0" class="text-center py-4" style="color:rgba(255,255,255,0.5);">
+                        <i class="fa fa-mouse-pointer fa-2x mb-2 text-white/30"></i>
+                        <div style="font-size:13px;font-weight:600;color:#fff;">Seu cupom está vazio</div>
+                        <small>Selecione uma cotação para apostar.</small>
+                    </div>
+
+                    <div v-else>
+                        <div v-for="(item, index) in aposta.jogos" :key="index" class="play-bet-item">
+                            <button type="button" class="btn-remove-bet" v-on:click="rmAposta(index)" title="Remover seleção">&times;</button>
+                            <div class="bet-match">${item.jogo.casa} x ${item.jogo.fora}</div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="bet-market">${item.cotacao.title || item.cotacao.sigla} (${item.tempo == '90' ? '90m' : (item.tempo == 'pt' ? '1ºT' : '2ºT')})</span>
+                                <span class="bet-odd">${maskReal(item.jogo.cotacoes[item.tempo][item.cotacao.campo])}</span>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-outline-danger w-100 mb-2" v-on:click="limpaAposta" style="border-radius:8px;font-size:11px;font-weight:700;">
+                            <i class="fa fa-trash-o mr-1"></i> Limpar Bilhete
+                        </button>
+                    </div>
+                </div>
+
+                <div class="play-betslip-footer" v-if="aposta && aposta.jogos.length > 0">
+                    <div class="d-flex justify-content-between align-items-center mb-2 text-xs font-bold text-white/70">
+                        <span>COTAÇÃO TOTAL:</span>
+                        <span class="text-warning text-sm">${valorCotacao}</span>
+                    </div>
+
+                    <div class="play-stake-input-group mb-2">
+                        <span>R$</span>
+                        <input type="number" v-model="valorAposta" :min="apostaMinima" :max="apostaMaxima" step="1.00" placeholder="Valor"/>
+                    </div>
+
+                    {% if not user %}
+                    <div class="mb-2">
+                        <input type="text" v-model="cliente" class="form-control" placeholder="Nome do cliente (opcional)" style="height:38px;font-size:12px;background:var(--theme-card-1);border:1px solid rgba(255,255,255,0.08);color:#fff;border-radius:10px;"/>
+                    </div>
+                    {% endif %}
+
+                    <div v-if="aposta.jogos.length < minJogos" class="alert alert-warning py-1 px-2 mb-2 text-center small font-weight-bold" style="background:rgba(242,186,9,0.15);border-color:rgba(242,186,9,0.3);color:#f2ba09;">
+                        Mínimo de jogos: ${minJogos}
+                    </div>
+
+                    <div class="play-return-row">
+                        <span>Retorno Possível:</span>
+                        <strong class="text-emerald-400">R$ ${premio}</strong>
+                    </div>
+
+                    <button type="button" class="btn-play-primary w-100" :disabled="!apostaValida" style="padding:12px;border-radius:12px;font-size:14px;font-weight:800;" v-on:click="finalizarAposta">
+                        <i class="fa fa-check mr-1"></i> {{ user ? 'Confirmar Aposta' : 'Validar Bilhete' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ========================================================
+         BARRA FLUTUANTE DE BILHETE MOBILE (1:1 99PLAY)
+         ======================================================== -->
+    <div v-if="aposta && aposta.jogos.length > 0"
+         class="play-mobile-betslip-bar"
+         onclick="$('#playMobileBetslipModal').modal('show');">
+        <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-full bg-white text-blue-600 font-extrabold flex items-center justify-center text-xs shadow">
+                ${aposta.jogos.length}
+            </span>
+            <span class="font-bold text-white text-sm">Ver Bilhete</span>
+        </div>
+        <div class="text-right">
+            <div class="text-[10px] text-white/80 uppercase font-semibold">Possível Retorno</div>
+            <strong class="text-sm font-extrabold text-white">R$ ${premio}</strong>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         MODAL DE CUPOM MOBILE (1:1 99PLAY DRAWER)
+         ======================================================== -->
+    <div id="playMobileBetslipModal" class="modal fade play-modal" tabindex="-1" role="dialog" v-cloak>
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" v-if="aposta" style="background:var(--theme-card-2);border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;">
+                <div class="modal-header d-flex align-items-center justify-content-between p-3 border-b border-white/[0.08]">
+                    <h5 class="modal-title font-weight-bold text-white m-0">
+                        <i class="fa fa-ticket mr-2" style="color:var(--theme-primary);"></i> Bilhete (${aposta.jogos.length})
+                    </h5>
+                    <button type="button" class="close text-white opacity-80 hover:opacity-100" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body p-3" style="max-height:60vh;overflow-y:auto;">
+                    <div v-if="aposta.jogos.length == 0" class="text-center py-4 text-muted">
+                        <p class="mb-0">Nenhuma aposta selecionada ainda.</p>
+                    </div>
+                    <div v-else>
+                        <div v-for="(item, index) in aposta.jogos" :key="index" class="play-bet-item mb-2 p-2 rounded-xl" style="background:var(--theme-card-1);border:1px solid rgba(255,255,255,0.05);position:relative;">
+                            <button type="button" class="btn-remove-bet" v-on:click="rmAposta(index)" style="position:absolute;top:6px;right:8px;background:none;border:none;color:#ff5555;font-size:18px;">&times;</button>
+                            <div class="bet-match font-bold text-xs text-white pr-4">${item.jogo.casa} x ${item.jogo.fora}</div>
+                            <div class="d-flex align-items-center justify-content-between mt-1 text-xs">
+                                <span class="bet-market text-white/60">${item.cotacao.title || item.cotacao.sigla} (${item.tempo == '90' ? '90m' : (item.tempo == 'pt' ? '1ºT' : '2ºT')})</span>
+                                <span class="bet-odd font-bold text-white">${maskReal(item.jogo.cotacoes[item.tempo][item.cotacao.campo])}</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3 mb-2 text-xs font-bold text-white/70">
+                            <span>COTAÇÃO TOTAL:</span>
+                            <span class="text-warning text-sm">${valorCotacao}</span>
+                        </div>
+
+                        <div class="play-stake-input-group mb-2">
+                            <span>R$</span>
+                            <input type="number" v-model="valorAposta" :min="apostaMinima" :max="apostaMaxima" step="1.00" placeholder="Valor"/>
+                        </div>
+
+                        {% if not user %}
+                        <div class="mb-2">
+                            <input type="text" v-model="cliente" class="form-control" placeholder="Nome do cliente (opcional)" style="height:38px;font-size:12px;background:var(--theme-card-1);border:1px solid rgba(255,255,255,0.08);color:#fff;border-radius:10px;"/>
+                        </div>
+                        {% endif %}
+
+                        <div v-if="aposta.jogos.length < minJogos" class="alert alert-warning py-1 px-2 mb-2 text-center small font-weight-bold" style="background:rgba(242,186,9,0.15);border-color:rgba(242,186,9,0.3);color:#f2ba09;">
+                            Mínimo de jogos: ${minJogos}
+                        </div>
+
+                        <div class="play-return-row mb-3">
+                            <span>Retorno Possível:</span>
+                            <strong class="text-emerald-400">R$ ${premio}</strong>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-secondary font-weight-bold w-1/3" style="border-radius:12px;" v-on:click="limpaAposta">
+                                Limpar
+                            </button>
+                            <button type="button" class="btn-play-primary w-2/3" :disabled="!apostaValida" style="padding:12px;border-radius:12px;font-size:14px;font-weight:800;" v-on:click="finalizarAposta(); $('#playMobileBetslipModal').modal('hide');">
+                                <i class="fa fa-check mr-1"></i> {{ user ? 'Confirmar' : 'Finalizar' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         MODAL DE MAIS COTAÇÕES (DETALHES DO JOGO)
+         ======================================================== -->
+    <div id="modal-cotacoes" class="modal fade play-modal" tabindex="-1" role="dialog" v-cloak>
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content" v-if="mJogo && mJogo.jogo" style="background:var(--theme-card-2);border:1px solid rgba(255,255,255,0.08);border-radius:20px;overflow:hidden;">
+                <div class="modal-header d-flex align-items-center justify-content-between p-3 border-b border-white/[0.08]">
+                    <div>
+                        <div class="small" style="color:rgba(255,255,255,0.6);">${mJogo.jogo.campeonato ? mJogo.jogo.campeonato.title : ''}</div>
+                        <h5 class="modal-title font-weight-bold text-white mt-1 m-0">
+                            ${mJogo.jogo.casa} x ${mJogo.jogo.fora}
+                        </h5>
+                    </div>
+                    <button type="button" class="close text-white opacity-80 hover:opacity-100" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body p-3" style="max-height:70vh;overflow-y:auto;">
+                    <!-- Abas de Tempo (90 min, 1º Tempo, 2º Tempo) -->
+                    <div class="d-flex gap-2 mb-3">
+                        <button type="button" class="play-filter-pill" :class="{ active: mJogo.tempo == '90' }" v-on:click="mJogo.tempo = '90'">Tempo Regulamentar</button>
+                        <button type="button" class="play-filter-pill" :class="{ active: mJogo.tempo == 'pt' }" v-on:click="mJogo.tempo = 'pt'">1º Tempo</button>
+                        <button type="button" class="play-filter-pill" :class="{ active: mJogo.tempo == 'st' }" v-on:click="mJogo.tempo = 'st'">2º Tempo</button>
+                    </div>
+
+                    <!-- Grupos de Mercados -->
+                    <div v-for="(grupo, id) in grupos" :key="id" class="mb-4">
+                        <div style="font-size:12px;font-weight:700;color:var(--theme-primary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">
+                            ${grupo}
+                        </div>
+                        <div class="row no-gutters">
+                            <div class="col-6 col-md-4 p-1" v-for="c in cotacoes" :key="c.id" v-if="c.grupo == id && mJogo.jogo.cotacoes && mJogo.jogo.cotacoes[mJogo.tempo] && mJogo.jogo.cotacoes[mJogo.tempo][c.campo] > 1">
+                                <button type="button" class="play-odd-btn w-100" :class="{ active: mJogo.jogo.apostaEm == mJogo.tempo + c.campo }" v-on:click="apostar(mJogo.jogo, mJogo.tempo, c)">
+                                    <div class="odd-label">${c.sigla || c.title}</div>
+                                    <div class="odd-val">${maskReal(mJogo.jogo.cotacoes[mJogo.tempo][c.campo])}</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ block('modalShare', 'website/page/apostar.twig') }}
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        if (typeof String.prototype.toReal !== 'function') {
+            String.prototype.toReal = function() {
+                var n = parseFloat(this.toString().replace(/[^0-9.-]/g, ''));
+                return isNaN(n) ? '0,00' : n.toFixed(2).replace('.', ',');
+            };
+        }
+        if (typeof Number.prototype.toReal !== 'function') {
+            Number.prototype.toReal = function() {
+                return this.toFixed(2).replace('.', ',');
+            };
+        }
+    </script>
+    {{ block('script', 'website/page/apostar.twig') }}
+    <script>
+        if (window.app) {
+            window.app.filterJogo = function(jogo) {
+                if (!this.jogoAberto(jogo)) return false;
+                if (this.findData && this.findData !== 'todos' && this.findData !== '*' && jogo.data != this.findData) {
+                    return false;
+                }
+                if (this.search) {
+                    var exp = new RegExp(this.search, 'i');
+                    if (jogo.casa.search(exp) === -1 && jogo.fora.search(exp) === -1) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+
+            window.app.setData = function(data) {
+                $('html').removeClass('show-menu show-filtros');
+                this.findCampeonato = '*';
+                this.findPais = '*';
+                this.findData = data ? data : 'todos';
+            };
+
+            window.app.$watch('datas', function(val) {
+                if (val && val.length > 0) {
+                    var hasHoje = val.some(function(d) { return d.data === '{{ hoje }}'; });
+                    if (!hasHoje && this.findData === '{{ hoje }}') {
+                        this.findData = val[0].data;
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}

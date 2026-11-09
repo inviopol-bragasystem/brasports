@@ -1,0 +1,272 @@
+{% extends layout %}
+
+{% block links %}
+
+    <a href="#modal-update-cotacoes" data-toggle="modal" class="btn btn-primary">
+        <i class="fa fa-cogs"></i> Atualizar Cotações
+    </a>
+
+    <a href="admin/jogos/adicionar/novo" class="btn btn-success">
+        <i class="fa fa-plus"></i> Novo
+    </a>
+
+{% endblock %}
+
+{% block formSearch %}
+    <form class="admpage-form-search panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3 col-sm-12 col-xs-12">
+                    <label><b>Data de Cadastro</b></label>
+                    <span class="pointer" data-toggle="popover" data-trigger="hover"
+                          data-content="Digite ou selecione a data de cadastro."
+                          data-original-title="" title="">[<i class="fa fa-question"></i>]</span>
+                    <input type="date" name="datacadastro" class="form-control">
+                </div>
+                <div class="col-md-3 col-sm-12 col-xs-12">
+                    <label><b>Data do Jogo</b></label>
+                    <span class="pointer" data-toggle="popover" data-trigger="hover"
+                          data-content="Digite ou selecione a data do jogo."
+                          data-original-title="" title="">[<i class="fa fa-question"></i>]</span>
+                    <input type="date" name="data" class="form-control">
+                </div>
+                <div class="col-md-3 col-sm-12 col-xs-12">
+                    <label><b>Nome da Equipe</b></label>
+                    <span class="pointer" data-toggle="popover" data-trigger="hover"
+                          data-content="Digite o nome da equipe"
+                          data-original-title="" title="">[<i class="fa fa-question"></i>]</span>
+                    <input type="text" name="search" class="form-control">
+                </div>
+                <div class="col-md-3 col-sm-12 col-xs-12">
+                    <label><b>Campeonato</b></label>
+                    <span class="pointer" data-toggle="popover" data-trigger="hover"
+                          data-content="Selecione um campeonato"
+                          data-original-title="" title="">[<i class="fa fa-question"></i>]</span>
+                    <select name="campeonato" class="form-control" data-options="admin/cadastros/campeonatos/options">
+                        <option value> -- Selecione --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer text-right">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-search"></i> Buscar
+            </button>
+        </div>
+    </form>
+{% endblock %}
+
+{% block main %}
+
+    <form id="modal-update-cotacoes" class="modal fade form-cotacoes geral">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="close" data-dismiss="modal">&times;</div>
+                    <h3 class="modal-title">Atualizar cotações</h3>
+                </div>
+                <div class="modal-body">
+
+                    {#<div class="form-group">#}
+                    {#<label>Alterar de:</label>#}
+                    {#<select name="zebra" class="form-control">#}
+                    {#<option value>Ambos</option>#}
+                    {#<option value="favorito">Favorito</option>#}
+                    {#<option value="zebra">Zebra</option>#}
+                    {#</select>#}
+                    {#</div>#}
+
+                    <div class="input-group">
+                        <div class="input-group-addon">Tipo</div>
+                        <select class="form-control" name="tipo">
+                            <option value="%">%</option>
+                            <option value="$">$</option>
+                        </select>
+                        <div class="input-group-addon">Valor</div>
+                        <input type="number" name="valor" step="1" value="0" min="-500" max="500" class="form-control"/>
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn btn-success btn-aplicar">
+                                <i class="fa fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-body">
+                    <div class="group-cotacoes">
+                        <label>
+                            <b>Tempos do jogo</b>
+                        </label>
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <label>
+                                    <input type="checkbox" name="tempos[]" value="90" checked/> Jogo completo
+                                </label>
+                            </div>
+                            <div class="col-xs-4">
+                                <label>
+                                    <input type="checkbox" name="tempos[]" value="pt" checked/> Primeiro Tempo
+                                </label>
+                            </div>
+                            <div class="col-xs-4">
+                                <label>
+                                    <input type="checkbox" name="tempos[]" value="st" checked/> Segundo Tempo
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    {% for id, title in grupos %}
+                        <hr/>
+                        <div class="group-cotacoes">
+                            <label>
+                                <input type="checkbox"
+                                       onchange="$(this).closest('.group-cotacoes').find('input').prop('checked', $(this).prop('checked')); $('.checker input').uniform();"/>
+                                <b>{{ title }}</b>
+                            </label>
+                            <div class="row">
+                                {% for c in cotacoes %}
+                                    {% if c.getGrupo() == id %}
+                                        <div class="col-xs-4">
+                                            <label>
+                                                <input type="checkbox" name="cotacoes[]" value="{{ c.getCampo() }}"/>
+                                                {{ c.getTitulo() }}
+                                            </label>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-exchange"></i> Atualizar cotações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {{ block('formSearch') }}
+
+    {% include 'admin/helpers/info-jogos.twig' %}
+
+    <div class="admpage-container"></div>
+
+{% endblock %}
+
+{% block list %}
+    {% if busca.getCount() %}
+        <div class="panel">
+            <div class="panel-body p-0">
+                <form class="form-list">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-bordered table-minified list-table m-0">
+                            <thead>
+                            <tr>
+                                <th width="50" class="text-center">
+                                    <input onchange="$('.group').prop('checked', $(this).prop('checked'));"
+                                           type="checkbox"/>
+                                </th>
+                                <th width="50" class="text-center">ID</th>
+                                <th width="130" class="text-center">Data cadastro</th>
+                                <th width="130" class="text-center">Data/Hora</th>
+                                <th>Campeonato/Times</th>
+                                <th width="5">Ações</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for v in busca.getRegistros() %}
+                                <tr>
+                                    <td class="text-center">
+                                        <input type="checkbox" name="ids[]" class="group" value="{{ v.getId() }}"/>
+                                    </td>
+                                    <td class="text-center">
+                                        {{ v.getId() }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ v.getInsert()|date('d/m/Y') }}
+                                    </td>
+                                    <td class="text-center">
+                                        <div>{{ v.getData(true) }}</div>
+                                        <div>{{ v.getHora() }}</div>
+                                    </td>
+                                    <td>
+                                        <div>{{ v.getCampeonatoTitle() }}</div>
+                                        <div>
+                                            {{ v.getTimeCasaTitle() }}
+                                            <img src="{{ v.voTimeCasa().imgCapa().redimensiona(0, 15) }}"/>
+                                            <b> x </b>
+                                            <img src="{{ v.voTimeFora().imgCapa().redimensiona(0, 15) }}"/>
+                                            {{ v.getTimeForaTitle() }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a class="btn btn-default"
+                                               href="{{ url(controller ~ '/editar', [v.getToken()]) }}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <div class="btn btn-danger" data-excluir="{{ v.getToken() }}">
+                                                <i class="fa fa-trash"></i>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+            <div class="panel-footer text-right">{{ busca|raw }}</div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning no-margin">
+            <i class="fa fa-warning"></i> Nenhum jogo encontrado
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        $(function () {
+
+            var page = $
+                .adminPage({
+                    formSearch: '.admpage-form-search',
+                    container: '.admpage-container',
+                    deleteAction: url('jogos/jogo/excluir'),
+                });
+
+            $('.form-cotacoes')
+                .on('submit', function (event) {
+
+                    event.preventDefault();
+
+                    var values = $(this).getValues();
+                    values.ids = $('.form-list').getValues().ids;
+
+                    $('html').addClass("page-loading");
+                    $.post(url(CONTROLLER + '/updateCotacoes'), values, function (e) {
+                        alert(e.message);
+                        if (e.result == 1) {
+                            $('.form-cotacoes').modal("hide");
+                        }
+                    }, 'json')
+                        .always(function () {
+                            $('html').removeClass("page-loading");
+                        });
+
+                    return false;
+
+                });
+
+        });
+
+
+    </script>
+
+{% endblock %}

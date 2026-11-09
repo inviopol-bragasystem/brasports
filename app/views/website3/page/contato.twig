@@ -1,0 +1,47 @@
+{% extends layout %}
+
+{% block main %}
+    <div class="container py-3">
+
+        <div class="page-title">
+            <h1 class="title">
+                <i class="fa fa-envelope"></i> Fale Conosco
+            </h1>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-12">
+                <form class="admpage" data-adminpage="{{ {autoSearch: false, alertSuccess: true, autoReset: true}|json_encode }}">
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" name="nome" class="form-control" required/>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-9 col-12">
+                            <label>E-mail</label>
+                            <input type="email" name="email" class="form-control" required/>
+                        </div>
+                        <div class="form-group col-md-3 col-12">
+                            <label>Telefone</label>
+                            <input type="text" name="telefone" class="form-control mask-telefone" required/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Assunto</label>
+                        <input type="text" name="assunto" class="form-control" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Mensagem</label>
+                        <textarea name="mensagem" class="form-control" required rows="8"></textarea>
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fa fa-send"></i> Enviar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

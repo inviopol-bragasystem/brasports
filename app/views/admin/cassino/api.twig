@@ -1,0 +1,202 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="row">
+        <!-- Coluna da Esquerda: Formulário de Configuração do Agregador -->
+        <div class="col-md-7 col-xs-12">
+            <div class="panel panel-white">
+                <div class="panel-heading clearfix">
+                    <h4 class="panel-title"><i class="fa fa-cogs text-primary"></i> Credenciais do Agregador de Jogos (GamesVIP / Acelora)</h4>
+                </div>
+                <div class="panel-body">
+                    <form id="form-api-cassino">
+                        <input type="hidden" name="id" value="{{ settings.id }}">
+
+                        <!-- Habilitar Módulo Cassino em Todos os Temas -->
+                        <div class="panel panel-white" style="border: 2px solid #23a73d; border-radius: 6px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(35,167,61,0.15);">
+                            <div class="panel-heading" style="background: #23a73d; color: #fff; padding: 10px 15px; border-radius: 4px 4px 0 0;">
+                                <h4 class="panel-title font-weight-bold" style="color: #fff; margin: 0; font-size: 15px;">
+                                    <i class="fa fa-gamepad mr-1"></i> Habilitar módulo cassino
+                                </h4>
+                            </div>
+                            <div class="panel-body" style="background: #f9fdfa; padding: 15px;">
+                                <div class="form-group" style="margin-bottom: 8px;">
+                                    <label class="font-weight-bold text-dark" style="font-size: 14px;">
+                                        Exibição do Módulo Cassino no Site
+                                    </label>
+                                    <select name="exibircassino" class="form-control font-weight-bold" style="font-size: 14px; height: 42px; border: 2px solid #23a73d; color: #155724;">
+                                        <option value="1" {% if dados.getExibirCassino() %}selected{% endif %}>✓ HABILITADO (Cassino ativo e visível em todos os temas)</option>
+                                        <option value="0" {% if not dados.getExibirCassino() %}selected{% endif %}>✕ DESABILITADO (Cassino desativado e oculto em todos os temas)</option>
+                                    </select>
+                                    <small class="help-block text-muted" style="margin-top: 6px;">
+                                        Quando habilitado, o botão/menu de Cassino e o catálogo completo de 240+ jogos aparecem em <b>todos os 12 temas</b> do site.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Status Geral do Cassino</label>
+                            <select name="active" class="form-control">
+                                <option value="1" {% if settings.active %}selected{% endif %}>Ativado (Jogos Liberados)</option>
+                                <option value="0" {% if not settings.active %}selected{% endif %}>Pausado (Manutenção)</option>
+                            </select>
+                            <small class="help-block">Quando pausado, exibe aviso aos jogadores informando manutenção.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">URL Endpoint do Agregador</label>
+                            <input type="url" name="api_url" class="form-control" value="{{ settings.api_url }}" placeholder="https://acelora.0um.online" required>
+                            <small class="help-block">Endereço da API v2 do Agregador central (ex: <code>https://acelora.0um.online</code>).</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Código do Agente (Agent Code)</label>
+                            <input type="text" name="agent_code" class="form-control" value="{{ settings.agent_code }}" placeholder="banca-vip" required>
+                            <small class="help-block">Identificador único da banca no Agregador (ex: <code>banca-vip</code>).</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Agent Token</label>
+                            <input type="text" name="agent_token" class="form-control" value="{{ settings.agent_token }}" placeholder="ex: agt_285cb5406376d80239618d61537faefee07e36df" required>
+                            <small class="help-block">Token de autenticação do agente fornecido pelo Agregador.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Secret Key</label>
+                            <div class="input-group">
+                                <input type="password" name="secret_key" id="secret_key" class="form-control" value="{{ settings.secret_key }}" placeholder="ex: sec_fe52000e7b7b38ca21dcac8d1d7ae897..." required>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" onclick="togglePassword()"><i class="fa fa-eye"></i></button>
+                                </span>
+                            </div>
+                            <small class="help-block">Chave secreta para validação e assinatura HMAC SHA256 de apostas e prêmios.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold">Provedores Habilitados</label>
+                            <input type="text" name="allowed_providers" class="form-control" value="{{ settings.allowed_providers }}" placeholder="WG,POPOK,G759,MINES,TADA,PRAGMATIC,CRASH,CPGAMES,PGSOFT,AVIATOR">
+                            <small class="help-block">Códigos dos provedores permitidos separados por vírgula.</small>
+                        </div>
+
+                        <div class="m-t-20 text-right">
+                            <button type="button" class="btn btn-default" onclick="testarConexao()"><i class="fa fa-plug"></i> Testar Conexão</button>
+                            <button type="button" class="btn btn-success" onclick="sincronizarCatalogo()"><i class="fa fa-refresh"></i> Sincronizar Catálogo</button>
+                            <button type="submit" class="btn btn-primary font-weight-bold"><i class="fa fa-save"></i> Salvar Configurações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna da Direita: Instruções de Webhook e Informações -->
+        <div class="col-md-5 col-xs-12">
+            <div class="panel panel-white">
+                <div class="panel-heading">
+                    <h4 class="panel-title"><i class="fa fa-exchange text-success"></i> Webhook da Carteira (Wallet Callback)</h4>
+                </div>
+                <div class="panel-body">
+                    <p class="text-muted small">
+                        Esta é a URL que o agregador utiliza para consultar saldos e processar apostas/ganhos em tempo real com validação criptográfica HMAC SHA256:
+                    </p>
+
+                    <div class="form-group">
+                        <label class="small font-weight-bold">Callback Oficial da Carteira:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control input-sm" value="{{ walletCallbackUrl }}" readonly id="cb-url">
+                            <span class="input-group-btn">
+                                <button class="btn btn-sm btn-default" type="button" onclick="copiarTexto('cb-url')"><i class="fa fa-copy"></i></button>
+                            </span>
+                        </div>
+                        <small class="text-success"><i class="fa fa-check-circle"></i> Sincronizado automaticamente com o Agregador ao salvar.</small>
+                    </div>
+
+                    <div class="alert alert-info small m-t-15 m-b-0">
+                        <i class="fa fa-info-circle"></i> <b>Saldo Integrado Seguro:</b> O cassino e as apostas esportivas compartilham a mesma carteira de crédito (<code>sis_users.credito</code>). Todas as chamadas são idempotentes e protegidas contra requisições duplicadas.
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-white">
+                <div class="panel-heading">
+                    <h4 class="panel-title"><i class="fa fa-cubes text-warning"></i> Provedores Integrados (10 Provedores)</h4>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-unstyled small text-muted" style="line-height: 2;">
+                        <li><i class="fa fa-check text-success"></i> <b>PG Soft</b> (Fortune Tiger, Fortune Ox, Fortune Rabbit, etc.)</li>
+                        <li><i class="fa fa-check text-success"></i> <b>Pragmatic Play</b> (Gates of Olympus, Sweet Bonanza, etc.)</li>
+                        <li><i class="fa fa-check text-success"></i> <b>Spribe Aviator</b> (Aviator Oficial)</li>
+                        <li><i class="fa fa-check text-success"></i> <b>Spribe Mines</b> (Mines Oficial)</li>
+                        <li><i class="fa fa-check text-success"></i> <b>TaDa Gaming</b> (Fortune Gems, TaDa Slots)</li>
+                        <li><i class="fa fa-check text-success"></i> <b>World Games (WG)</b> (WG Fortune Slots)</li>
+                        <li><i class="fa fa-check text-success"></i> <b>PopOK Gaming</b> (Yo Dragon, PopOK Slots)</li>
+                        <li><i class="fa fa-check text-success"></i> <b>CP Games</b> (Crazy 777, CP Slots)</li>
+                        <li><i class="fa fa-check text-success"></i> <b>G759 Gaming</b> & <b>Crash Games</b></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        function togglePassword() {
+            var el = $('#secret_key');
+            el.attr('type', el.attr('type') === 'password' ? 'text' : 'password');
+        }
+
+        function copiarTexto(id) {
+            var copyText = document.getElementById(id);
+            copyText.select();
+            document.execCommand("copy");
+            swal({ title: 'Copiado!', text: 'URL copiada para a área de transferência.', type: 'success', timer: 1000, showConfirmButton: false });
+        }
+
+        $('#form-api-cassino').submit(function(e) {
+            e.preventDefault();
+            swal({ title: 'Salvando...', text: 'Atualizando credenciais e sincronizando callback no agregador...', showConfirmButton: false });
+            $.post('{{ url("admin/cassino/api/salvar") }}', $(this).serialize(), function(res) {
+                if (res.result) {
+                    swal('Sucesso!', res.message, 'success');
+                } else {
+                    swal('Erro', res.message || 'Falha ao salvar.', 'error');
+                }
+            }, 'json');
+        });
+
+        function testarConexao() {
+            swal({ title: 'Testando conexão...', text: 'Consultando o Agregador com as credenciais salvas...', showConfirmButton: false });
+            $.post('{{ url("admin/cassino/api/testar") }}', {}, function(res) {
+                if (res.result) {
+                    swal('Conexão OK!', res.message, 'success');
+                } else {
+                    swal('Aviso', res.message, 'warning');
+                }
+            }, 'json');
+        }
+
+        function sincronizarCatalogo() {
+            swal({
+                title: 'Sincronizar Catálogo?',
+                text: 'Deseja importar e atualizar todos os jogos e capas oficiais do Agregador?',
+                type: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Sim, sincronizar!',
+                cancelButtonText: 'Cancelar',
+                closeOnConfirm: false
+            }, function() {
+                swal({ title: 'Sincronizando catálogo...', text: 'Buscando jogos e capas no agregador central...', showConfirmButton: false });
+                $.post('{{ url("admin/cassino/api/sincronizar") }}', {}, function(res) {
+                    if (res.result) {
+                        swal('Catálogo Atualizado!', res.message, 'success');
+                    } else {
+                        swal('Erro', res.message || 'Falha ao sincronizar.', 'error');
+                    }
+                }, 'json');
+            });
+        }
+    </script>
+{% endblock %}

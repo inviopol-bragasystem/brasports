@@ -1,0 +1,146 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="container-fluid px-lg-4 px-3 py-4">
+        <div class="dm-page-card">
+            <h3 class="dm-page-title"><i class="fa fa-user-plus"></i> Cadastro de Conta / Registe-se</h3>
+
+            <form class="admpage-form" enctype="multipart/form-data" onsubmit="javascript:return false;">
+
+                <!-- 1. Dados Pessoais -->
+                <div class="mb-4">
+                    <h5 class="text-warning font-weight-bold text-uppercase small mb-3">
+                        <i class="fa fa-id-card mr-1"></i> 1. Dados Pessoais
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-12 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">NOME COMPLETO</label>
+                            <input name="nome" type="text" required class="form-control bg-dark border-secondary text-white" placeholder="Digite seu nome completo"/>
+                        </div>
+                        <div class="col-md-4 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">CPF</label>
+                            <input name="cpf" type="text" required class="mask-cpf form-control bg-dark border-secondary text-white" placeholder="000.000.000-00"/>
+                        </div>
+                        <div class="col-md-4 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">SEXO</label>
+                            <select name="sexo" required class="form-control bg-dark border-secondary text-white">
+                                <option value="m">Masculino</option>
+                                <option value="f">Feminino</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">DATA DE NASCIMENTO</label>
+                            <input name="nascimento" type="date" required class="form-control bg-dark border-secondary text-white"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Endereço / Localização -->
+                <div class="mb-4">
+                    <h5 class="text-warning font-weight-bold text-uppercase small mb-3">
+                        <i class="fa fa-map-marker mr-1"></i> 2. Endereço / Localização
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-3 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">CEP</label>
+                            <input name="cep" type="text" required class="mask-cep form-control bg-dark border-secondary text-white"/>
+                        </div>
+                        <div class="col-md-6 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">LOGRADOURO</label>
+                            <input name="logradouro" type="text" class="form-control bg-dark border-secondary text-white"/>
+                        </div>
+                        <div class="col-md-3 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">NÚMERO</label>
+                            <input name="numero" type="text" class="form-control bg-dark border-secondary text-white"/>
+                        </div>
+                        <div class="col-md-4 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">COMPLEMENTO</label>
+                            <input name="complemento" type="text" class="form-control bg-dark border-secondary text-white"/>
+                        </div>
+                        <div class="col-md-4 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">BAIRRO</label>
+                            <input name="bairro" type="text" class="form-control bg-dark border-secondary text-white"/>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <label class="text-white-50 small font-weight-bold">ESTADO</label>
+                            <select name="estado" required class="form-control bg-dark border-secondary text-white">
+                                {{ optEstados() }}
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <label class="text-white-50 small font-weight-bold">CIDADE</label>
+                            <select name="cidade" required class="form-control bg-dark border-secondary text-white"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Contato -->
+                <div class="mb-4">
+                    <h5 class="text-warning font-weight-bold text-uppercase small mb-3">
+                        <i class="fa fa-phone mr-1"></i> 3. Contato
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-4 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">TELEFONE</label>
+                            <input name="telefone" type="text" class="mask-telefone form-control bg-dark border-secondary text-white"/>
+                        </div>
+                        <div class="col-md-4 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">CELULAR</label>
+                            <input name="celular" type="text" class="mask-telefone form-control bg-dark border-secondary text-white" required/>
+                        </div>
+                        <div class="col-md-4 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">WHATSAPP</label>
+                            <input name="whatsapp" type="text" class="mask-telefone form-control bg-dark border-secondary text-white"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Dados de Acesso -->
+                <div class="mb-4">
+                    <h5 class="text-warning font-weight-bold text-uppercase small mb-3">
+                        <i class="fa fa-lock mr-1"></i> 4. Dados de Acesso
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-12 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">E-MAIL</label>
+                            <input name="email" type="email" placeholder="seu-email@dominio.com" required class="form-control bg-dark border-secondary text-white"/>
+                        </div>
+                        <div class="col-md-4 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">USUÁRIO / LOGIN</label>
+                            <input name="login" type="text" placeholder="Seu usuário" pattern="[A-Za-z0-9_]{5,20}" required class="form-control bg-dark border-secondary text-white"/>
+                        </div>
+                        <div class="col-md-4 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">SENHA</label>
+                            <input name="senha" type="password" placeholder="Mínimo 5 caracteres" pattern="[A-Za-z0-9]{5,20}" maxlength="20" class="form-control bg-dark border-secondary text-white"/>
+                        </div>
+                        <div class="col-md-4 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">CONFIRMAR SENHA</label>
+                            <input name="confirmar-senha" type="password" placeholder="Repita a senha" pattern="[A-Za-z0-9]{5,20}" maxlength="20" class="form-control bg-dark border-secondary text-white"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-right pt-3 border-top" style="border-color: var(--dm-border) !important;">
+                    <button class="dm-btn-bet px-5 py-2 font-weight-bold" type="submit" style="width: auto; display: inline-flex;">
+                        <i class="fa fa-check-circle"></i> Criar Conta
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $('.admpage-form')
+            .adminPage({
+                alertSuccess: true,
+                autoSearch: false,
+                autoReset: false,
+                reloadSuccess: url(),
+            });
+    </script>
+{% endblock %}

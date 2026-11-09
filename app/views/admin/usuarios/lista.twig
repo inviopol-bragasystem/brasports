@@ -1,0 +1,178 @@
+{% extends layout %}
+
+{% block links %}
+
+
+    {% if vars['type'] is empty %}
+        <button type="button" class="btn-csv btn btn-primary">
+            <i class="fa fa-"></i> Baixar CSV
+        </button>
+    {% endif %}
+
+    <button type="button" onclick="$('.admpage-form').setValues({});" class="btn btn-success">
+        <i class="fa fa-plus"></i> Novo
+    </button>
+
+{% endblock %}
+
+{% block main %}
+
+    <form id="modal-saldoinicial" class="modal-saldoinicial modal fade" onclick="javascript:return false;">
+        <input type="hidden" name="token" required/>
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="close" data-dismiss="modal">&times;</div>
+                    <h3 class="modal-title">Saldo inicial</h3>
+                </div>
+                <div class="modal-body">
+                    <input type="text" name="credito" class="form-control form-control-lg mask-valor" required
+                           placeholder="Valor do saldo a dever"/>
+                </div>
+                <div class="modal-footer">
+                    <button data-dismiss="modal" class="btn btn-link" type="button">
+                        Cancelar
+                    </button>
+                    <button class="btn btn-primary" onclick="$(this).submit();">
+                        Atualizar saldo inicial
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {% include 'admin/usuarios/form.twig' %}
+
+    <div class="modal fade modal-credito" onsubmit="return false;">
+        <input type="hidden" name="user" required/>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="close" data-dismiss="modal">&times;</div>
+                    <h3 class="modal-title">Crédito</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Créditos</label>
+                        <input type="text" name="credito" class="form-control input-lg mask-valor"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="pull-left">
+                        <button class="btn btn-danger btn-remover">
+                            Remover
+                        </button>
+                    </div>
+                    <button class="btn btn-primary btn-adicionar">
+                        Adicionar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form class="admpage-form-search panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-12">
+                    <label>Nome, login, cpf, cidade ou e-mail</label>
+                    <span class="pointer" data-toggle="popover" data-trigger="hover"
+                          data-content="Digite o nome, cidade, cpf, login ou e-mail" data-original-title="" title="">
+                        [<i class="fa fa-question"></i>]
+                    </span>
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control"/>
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary">
+                                <i class="fa fa-filter"></i> Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="page-container"></div>
+
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        var container = $('.page-container');
+        var modalCredito = $('.modal-credito');
+
+        var formSearch = $('.admpage-form-search');
+        var page = $
+            .adminPage({
+                form: '.admpage-form',
+                searchValues: {{ json(vars) }},
+                saveValues: {{ json(vars) }},
+                container: container,
+                formSearch: formSearch,
+            });
+
+        modalCredito
+            .on("click", '.btn-remover, .btn-adicionar', function () {
+                if (!$("html").hasClass('page-loading')) {
+
+                    var values = {};
+
+                    values.user = modalCredito.attr('data-user');
+                    values.credito = modalCredito.find('[name=credito]').val();
+                    values.pontos = modalCredito.find('[name=pontos]').val();
+                    values.acao = $(this).hasClass('btn-remover') ? 'remover' : 'adicionar';
+
+                    $('html').addClass('page-loading');
+
+                    $.post(url('users/users/credito'), values, function (e) {
+
+                        swal(
+                            'Aviso',
+                            e.message,
+                            'success'
+                        );
+
+                        if (e.result == 1) {
+                            modalCredito.modal("hide").find("input").val('');
+                            page.reloadSearch();
+                        }
+                    }, 'json')
+                        .always(function () {
+                            $('html').removeClass('page-loading');
+                        });
+
+                }
+            });
+
+        $("#modal-saldoinicial")
+            .adminPage({
+                autoSearch: false,
+                updateAction: 'saldoInicial',
+                insertAction: 'saldoInicial',
+            })
+            .on('success', function () {
+                page.reloadSearch();
+            });
+
+        container
+            .on('click', '[data-credito]', function () {
+                modalCredito.attr("data-user", $(this).attr('data-credito'));
+                modalCredito.modal('show');
+            })
+            .on('click', '[data-saldoinicial]', function () {
+                $('#modal-saldoinicial')
+                    .setValues($(this).data("saldoinicial"));
+            });
+
+        $('.btn-csv')
+            .click(function () {
+                window.location.href = url('users/users/csv') + '?' + $.param(formSearch.getValues());
+            });
+
+    </script>
+
+{% endblock %}

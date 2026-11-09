@@ -1,0 +1,47 @@
+{% extends layout %}
+
+{% set codigoBusca = _get.codigo|default(_post.codigo|default('')) %}
+{% set activeNav = 'bilhete' %}
+
+{% block main %}
+
+    <div style="background:var(--theme-card-2);border:1px solid var(--theme-card-border);border-radius:16px;padding:24px;margin-bottom:24px;">
+        <h4 class="font-weight-bold text-white mb-2">
+            <i class="fa fa-ticket mr-2" style="color:var(--theme-primary);"></i> Consultar Bilhete
+        </h4>
+        <p style="color:var(--theme-text-muted);font-size:13px;" class="mb-4">
+            Digite o código do bilhete para conferir status, partidas e premiação.
+        </p>
+
+        <form class="admpage-form mb-4">
+            <div class="row align-items-end">
+                <div class="col-md-8 col-sm-12">
+                    <label class="font-weight-bold small text-white">CÓDIGO DO BILHETE</label>
+                    <div class="input-group">
+                        <input type="text"
+                               maxlength="16"
+                               name="codigo"
+                               value="{{ codigoBusca }}"
+                               class="form-control"
+                               placeholder="Ex: ABC1234"
+                               required
+                               style="height: 46px; font-size: 16px; font-weight: bold; text-transform: uppercase; background:var(--theme-card-1); border-color:var(--theme-card-border); color:#fff; border-radius:12px 0 0 12px;" />
+                        <div class="input-group-append">
+                            <button type="submit" class="btn-play-primary" style="height: 46px; padding: 0 24px; border-radius:0 12px 12px 0;">
+                                <i class="fa fa-search"></i> Consultar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="admpage-container"></div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    {{ block('script', 'website/page/bilhete.twig') }}
+{% endblock %}
+

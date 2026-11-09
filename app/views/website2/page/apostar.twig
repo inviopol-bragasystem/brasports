@@ -1,0 +1,380 @@
+{% extends layout %}
+
+{% set hoje = hoje|default('now'|date('Y-m-d')) %}
+{% set amanha = amanha|default('+1day'|date('Y-m-d')) %}
+
+{% block jogos %}
+
+    <div class="table-responsive table-responsive-jogos mb-sm-0 mb-3" v-if="getCampeonatos().length">
+        <table class="table table-jogos">
+
+            {#<thead>#}
+            {#<tr class="tr-header">#}
+            {#<th>Jogos</th>#}
+            {#<th class="th-cotacao" v-for="c in getCotacoesPrincipais()">#}
+            {#<div v-bind:title="c.title" data-toggle="tooltip">#}
+            {#${c.title}#}
+            {#</div>#}
+            {#</th>#}
+            {#<th class="th-cotacao">Outras</th>#}
+            {#</tr>#}
+            {#</thead>#}
+
+            <tbody v-for="campeonato in getCampeonatos(null, true)">
+
+            <tr class="campeonato">
+                <td colspan="10">
+                    <div class="row m-0">
+                        <div class="col p-0">
+                            <a href="javascript:;" v-on:click="setCampeonato(campeonato)">${campeonato.title}</a>
+                        </div>
+                        <div class="col-auto p-0">
+                            <button type="button" v-on:click="imprimir(campeonato.id)" class="btn btn-link">
+                                <i class="fa fa-print text-warning"></i>
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <tr v-for="jogo in getJogos(campeonato)">
+                <td>
+                    <div v-on:click="maisCotacoes(jogo)" class="pointer">
+                        <div class="text-truncate">
+                            <div class="bold">
+                                <div>
+                                    <img v-if="jogo.imgCasa" :src="jogo.imgCasa" class="team-crest" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'">
+                                    <span>${jogo.casa}</span>
+                                </div>
+                                <div class="mt-1">
+                                    <img v-if="jogo.imgFora" :src="jogo.imgFora" class="team-crest" style="width:18px;height:18px;object-fit:contain;vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'">
+                                    <span>${jogo.fora}</span>
+                                </div>
+                            </div>
+                            <time class="d-block d-md-none" v-bind:datetime="jogo.data + 'T' + jogo.hora">
+                                ${jogo.data.split('-').reverse().join('/')} às ${jogo.hora.replace(/:00$/, '')}
+                            </time>
+                        </div>
+                    </div>
+                </td>
+                <td width="150" class="d-none d-md-table-cell">
+                    <i class="fa fa-calendar"></i>
+                    <time v-bind:datetime="jogo.data + 'T' + jogo.hora">${jogo.data.split('-').reverse().join('/')} às
+                        ${jogo.hora.replace(/:00$/, '')}
+                    </time>
+                </td>
+                <td class="td-cotacao text-center" v-for="c in getCotacoesPrincipais()">
+                    <div class="btn-cotacao" v-bind:class="{active: jogo.apostaEm == '90' + c.campo}"
+                         v-bind:title="c.title + ': ' + ((jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo]) ? maskReal(jogo.cotacoes['90'][c.campo]) : '-')"
+                         data-toggle="tooltip"
+                         v-on:click="apostar(jogo, '90', c)">
+                        ${(jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo]) ? maskReal(jogo.cotacoes['90'][c.campo]) : '-'}
+                    </div>
+                </td>
+                <td class="td-cotacao td-cotacao-mais">
+                    <div class="btn-cotacao outras" data-toggle="tooltip" title="Outras cotações"
+                         v-bind:class="{active: jogo.outras}" v-on:click="maisCotacoes(jogo)">
+                        +${Math.max(0, totalCotacoes(jogo.cotacoes) - getCotacoesPrincipais().length)}
+                    </div>
+                </td>
+            </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+
+    {{ block('modalCotacoes') }}
+
+{% endblock %}
+
+{% block modalCotacoes %}
+    <div id="modal-cotacoes" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Mais cotações</h5>
+                    <div class="close" data-dismiss="modal">&times;</div>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="p-3">
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-primary mr-1" v-bind:class="{active: key == mJogo.tempo || null}" v-for="(tempo, key) in tempos" v-on:click="mJogo.tempo = key">
+                                <span class="d-none d-md-block">${tempo}</span>
+                                <span class="d-block d-md-none text-uppercase">${key}</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row m-0" v-if="mJogo.jogo">
+                        <div class="table-responsive" style="max-height: calc(100vh - 63px - 63px - 18px); border-radius: 0 0 4px 4px;">
+                            <table class="table m-0 table-jogos" v-for="(grupo, id) in grupos">
+                                <tbody>
+                                <tr class="campeonato">
+                                    <th colspan="2">${grupo}</th>
+                                </tr>
+                                <tr v-for="c in cotacoes" v-if="c.grupo == id && mJogo.jogo && mJogo.jogo.cotacoes && mJogo.jogo.cotacoes[mJogo.tempo] && mJogo.jogo.cotacoes[mJogo.tempo][c.campo] > 1">
+                                    <td>${c.title}</td>
+                                    <td class="text-center no-wrap" width="5">
+                                        <a href="javascript:;" class="btn btn-warning btn-cotacao"
+                                           v-bind:class="{active: mJogo.jogo.apostaEm == mJogo.tempo + c.campo }"
+                                           v-on:click="apostar(mJogo.jogo, mJogo.tempo, c)">
+                                            <div>${(mJogo.jogo.cotacoes && mJogo.jogo.cotacoes[mJogo.tempo] && mJogo.jogo.cotacoes[mJogo.tempo][c.campo]) ? maskReal(mJogo.jogo.cotacoes[mJogo.tempo][c.campo]) : '-'}</div>
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main %}
+    <div id="pg-aposta">
+        <div class="container-fluid p-0">
+            <div class="row m-0">
+
+                {# Cotações #}
+                <div class="col-auto col-campeonatos d-none d-md-block col pl-0 pr-0">
+                    <div class="col-content pt-4">
+                        <form class="form-bilhete mb-4" method="post" action="{{ url("bilhete") }}">
+                            <h3 class="title">Conferir Bilhete</h3>
+                            <div class="p-2 m-0">
+                                <input type="text" name="codigo" class="form-control"
+                                       placeholder="Digite o código do bilhete" required/>
+                            </div>
+                        </form>
+                        <div class="menu-comapeonatos">
+                            <h3 class="title">Campeonatos</h3>
+                            <ul>
+                                <li>
+                                    <a href="javascript:;" v-on:click="setCampeonato()"
+                                       v-bind:class="{ active: !checkFiltros() }">
+                                        <i class="fa fa-angle-right"></i> Todos os jogos
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:;" v-on:click="setData('{{ hoje }}')"
+                                       v-bind:class="{ active: findData == '{{ hoje }}' }">
+                                        Hoje {{ hoje|split('-')|reverse|join("/") }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:;" v-on:click="setData('{{ amanha }}')"
+                                       v-bind:class="{active: findData == '{{ amanha }}'}">
+                                        Amanhã {{ amanha|split('-')|reverse|join('/') }}
+                                    </a>
+                                </li>
+                                <li v-for="c in getCampeonatos(null, false)">
+                                    <a href="javascript:;" v-on:click="setCampeonato(c)"
+                                       v-bind:class="{ active: findCampeonato == c.id }">
+                                        ${c.title}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                {# Jogos #}
+                <div class="col col-jogos pt-4">
+                    <div class="col-content">
+                        <div class="area-banner">
+
+                            {% include 'website/inc/slideshow.twig' with {ref: 'site-slideshow'} %}
+
+                            <form class="form-jogos mb-4" onsubmit="javascript:return false;">
+                                <div class="row">
+                                    <div class="d1 col-12 col-md">
+                                        <a class="form-control form-control-sm" href="javascript:;"
+                                           v-on:click="setCampeonato()"
+                                           v-bind:class="{ active: !checkFiltros() }">
+                                            <i class="fa fa-angle-right"></i> Todos os jogos
+                                        </a>
+                                        <div class="d-block d-md-none mb-3"></div>
+                                    </div>
+                                    <div class="d1 col-12 col-md">
+                                        <a class="form-control form-control-sm" href="javascript:;"
+                                           v-on:click="setData('{{ hoje }}')"
+                                           v-bind:class="{ active: findData == '{{ hoje }}' }">
+                                            Hoje {{ hoje|split('-')|reverse|join("/") }}
+                                        </a>
+                                        <div class="d-block d-md-none mb-3"></div>
+                                    </div>
+                                    <div class="d1 col-12 col-md">
+                                        <a class="form-control form-control-sm" href="javascript:;"
+                                           v-on:click="setData('{{ amanha }}')"
+                                           v-bind:class="{active: findData == '{{ amanha }}'}">
+                                            Amanhã {{ amanha|split('-')|reverse|join('/') }}
+                                        </a>
+                                        <div class="d-block d-md-none mb-3"></div>
+                                    </div>
+                                    <div class="col-12 col-md">
+                                        <input type="text" v-model="search" class="form-control form-control-sm"
+                                               placeholder="Pesquisar time, data ou campeonato..."/>
+                                        <div class="d-block d-md-none mb-3"></div>
+                                    </div>
+                                    <div class="col-12 col-md">
+                                        <select v-model="findCampeonato" class="form-control form-control-sm">
+                                            <option value="*">Campeonatos</option>
+                                            <optgroup v-for="p in paises" v-bind:label="p.title">
+                                                <option v-for="c in p.campeonatos" v-bind:value="c.id">
+                                                    ${c.title}
+                                                </option>
+                                            </optgroup>
+                                        </select>
+                                        <div class="d-block d-md-none mb-3"></div>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-danger btn-sm btn-block"
+                                                v-on:click="setCampeonato()">
+                                            <i class="fa fa-times"></i> Limpar Pesquisa
+                                        </button>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" class="btn btn-success btn-block btn-sm"
+                                                v-on:click="imprimir()">
+                                            <i class="fa fa-print"></i> Imprimir Tela
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="mb-3">
+                            {{ block("jogos") }}
+                        </div>
+                    </div>
+                </div>
+
+                {# Bilhete #}
+                <div class="col-md-auto col-12 col-bilhete py-4">
+                    <div class="col-content">
+                        {{ block('bilhete') }}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block bilhete %}
+    <div class="bilhete">
+
+        <h3 class="title">
+            <i class="fa fa-file-text-o"></i> Cupom de Apostas
+        </h3>
+
+        <div class="px-3 pb-3 bilhete-overflow">
+
+            <hr/>
+
+            {# Valor da aposta #}
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        R$
+                    </div>
+                </div>
+                <input type="number" v-model="valorAposta" v-bind:min="apostaMinima" v-bind:max="apostaMaxima"
+                       step="1.00"
+                       class="form-control"/>
+            </div>
+
+            <div class="lista-jogos" v-if="aposta.jogos.length > 0">
+
+                <hr/>
+
+                <div v-if="aposta.jogos.length < minJogos">
+                    <div class="alert alert-warning">
+                        Mínimo de jogos: ${minJogos}
+                    </div>
+                </div>
+
+                <div v-if="aposta.jogos.length">
+                    <table class="table table-minified table-striped table-hover table-aposta text-white table-bilhete mb-0">
+                        <tbody>
+                        <tr v-for="(v, i) in aposta.jogos">
+                            <td>
+                                <div class="time">
+                                    <img v-if="v.jogo.imgCasa" :src="v.jogo.imgCasa" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'"><b>${v.jogo.casa}</b> x <img v-if="v.jogo.imgFora" :src="v.jogo.imgFora" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'"><b>${v.jogo.fora}</b>
+                                </div>
+                                <div class="data">
+                                    ${v.jogo.data.split('-').reverse().join('/')} às ${v.jogo.hora.replace(/:00$/, '')}
+                                </div>
+                                <div class="cotacao">
+                                    ${v.cotacao.sigla} - Taxa:
+                                    ${(v && v.jogo && v.jogo.cotacoes && v.jogo.cotacoes[v.tempo] && v.cotacao && v.jogo.cotacoes[v.tempo][v.cotacao.campo]) ? maskReal(v.jogo.cotacoes[v.tempo][v.cotacao.campo]) : '-'}
+                                    <div class="d-inline" v-if="v.tempo != '90'">
+                                        ${v.tempo == 'pt' ? 'Primeiro tempo': 'Segundo tempo'}
+                                    </div>
+                                </div>
+                            </td>
+                            <td width="5">
+                                <a href="javascript:;" v-on:click="rmAposta(i)"
+                                   class="text-warning">
+                                    <i class="fa fa-times" style="font-size: 15px;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <hr/>
+
+            <div class="row align-items-center">
+                <div class="col-7">Nº Jogo</div>
+                <div class="col">${aposta.jogos.length}</div>
+            </div>
+
+            <hr/>
+
+            <div class="row align-items-center">
+                <div class="col-7">Cotação</div>
+                <div class="col">${valorCotacao}</div>
+            </div>
+
+            <hr/>
+
+            <div class="row align-items-center">
+                <div class="col-7">Poss. retorno</div>
+                <div class="col">R$ ${premio}</div>
+            </div>
+
+            <hr/>
+
+            {# Nome do cliente #}
+            <input type="text" v-model="cliente" class="form-control form-control-sm" placeholder="Ex: João da Silva"
+                   maxlength="50"/>
+
+
+        </div>
+
+
+        <div class="row m-0">
+            <div class="col p-0">
+                <button class="btn btn-block btn-info rounded-0 m-0" v-bind:disabled="!apostaValida"
+                        v-on:click="finalizarAposta">
+                    <i class="fa fa-check"></i> {{ user ? 'Concluír' : 'Pré-bilhete' }}
+                </button>
+            </div>
+            <div class="col p-0">
+                <button class="btn btn-block btn-warning rounded-0 m-0" v-on:click="limpaAposta">
+                    <i class="fa fa-eraser"></i> Limpar
+                </button>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block script %}
+    {% set selector = '#website' %}
+    {{ block('script', 'website/page/apostar.twig') }}
+{% endblock %}

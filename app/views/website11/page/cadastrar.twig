@@ -1,0 +1,267 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - CADASTRO DE CONTA
+   Visual: v4 (.account-form / .account-field / .account-label /
+   .account-input / .account-submit) em cartoes (.bet24-card).
+
+   LOGICA PRESERVADA DO TEMPLATE BASE (website/page/cadastrar.twig):
+     - POST /cadastrar/insert via adminPage (ajax_serialize)
+     - names obrigatorios: nome, cpf, sexo, nascimento, cep, logradouro,
+       numero, complemento, bairro, estado, cidade, telefone, celular,
+       whatsapp, email, login, senha, confirmar-senha
+     - {{ optEstados() }} no select de estado e select[name=cidade] vazio
+       (o admin.js transforma em select de cidades e preenche pelo CEP)
+     - mascaras .mask-cpf / .mask-cep / .mask-telefone (cdn/js/admin.js)
+     - validacao de senha no beforeSubmit + swal no success
+   ===================================================================== #}
+
+{% block main %}
+
+    <div class="bet24-page contas-cadastro">
+
+        <div class="bet24-page-head">
+            <div>
+                <h1 class="bet24-page-title">Criar conta</h1>
+                <p class="bet24-page-sub">
+                    Leva menos de um minuto. Depois do cadastro você já pode depositar e apostar.
+                </p>
+            </div>
+            <a class="bet24-voltar" href="{{ url() }}">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 5l-7 7 7 7"/>
+                </svg>
+                Início
+            </a>
+        </div>
+
+        <form class="admpage-form contas-form" autocomplete="off">
+
+            {# ------------------------------------------------------------
+               DADOS PESSOAIS
+               ------------------------------------------------------------ #}
+            <section class="bet24-card contas-secao">
+                <h2 class="contas-secao-titulo">
+                    <i class="fas fa-id-card" aria-hidden="true"></i> Dados pessoais
+                </h2>
+
+                <div class="contas-grade">
+                    <label class="account-field contas-largo">
+                        <span class="account-label">Nome completo *</span>
+                        <input name="nome" type="text" required class="account-input"
+                               autocomplete="name" placeholder="Como está no seu documento"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">CPF *</span>
+                        <input name="cpf" type="text" required class="mask-cpf account-input"
+                               inputmode="numeric" autocomplete="off"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Sexo *</span>
+                        <select name="sexo" required class="account-input">
+                            <option value="m">Masculino</option>
+                            <option value="f">Feminino</option>
+                        </select>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Data de nascimento *</span>
+                        <input name="nascimento" type="date" required class="account-input"/>
+                    </label>
+                </div>
+            </section>
+
+            {# ------------------------------------------------------------
+               LOCALIZAÇÃO
+               ------------------------------------------------------------ #}
+            <section class="bet24-card contas-secao">
+                <h2 class="contas-secao-titulo">
+                    <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Localização
+                </h2>
+
+                <div class="contas-grade">
+                    <label class="account-field">
+                        <span class="account-label">CEP *</span>
+                        <input name="cep" type="text" required class="mask-cep account-input"
+                               inputmode="numeric" autocomplete="postal-code"/>
+                    </label>
+
+                    <label class="account-field contas-largo">
+                        <span class="account-label">Logradouro</span>
+                        <input name="logradouro" type="text" class="account-input"
+                               autocomplete="address-line1" placeholder="Rua, avenida..."/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Número</span>
+                        <input name="numero" type="text" class="account-input" autocomplete="off"/>
+                    </label>
+
+                    <label class="account-field contas-largo">
+                        <span class="account-label">Complemento</span>
+                        <input name="complemento" type="text" class="account-input"
+                               autocomplete="address-line2" placeholder="Apto, bloco... (opcional)"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Bairro</span>
+                        <input name="bairro" type="text" class="account-input" autocomplete="off"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Estado *</span>
+                        <select name="estado" required class="account-input">
+                            {{ optEstados() }}
+                        </select>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Cidade *</span>
+                        <select name="cidade" required class="account-input"></select>
+                    </label>
+                </div>
+            </section>
+
+            {# ------------------------------------------------------------
+               CONTATO
+               ------------------------------------------------------------ #}
+            <section class="bet24-card contas-secao">
+                <h2 class="contas-secao-titulo">
+                    <i class="fas fa-phone" aria-hidden="true"></i> Telefones de contato
+                </h2>
+
+                <div class="contas-grade">
+                    <label class="account-field">
+                        <span class="account-label">Telefone</span>
+                        <input name="telefone" type="text" class="mask-telefone account-input"
+                               inputmode="tel" autocomplete="tel"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Celular *</span>
+                        <input name="celular" type="text" required class="mask-telefone account-input"
+                               inputmode="tel" autocomplete="tel-national"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">WhatsApp</span>
+                        <input name="whatsapp" type="text" class="mask-telefone account-input"
+                               inputmode="tel"/>
+                    </label>
+                </div>
+            </section>
+
+            {# ------------------------------------------------------------
+               DADOS DE ACESSO
+               ------------------------------------------------------------ #}
+            <section class="bet24-card contas-secao">
+                <h2 class="contas-secao-titulo">
+                    <i class="fas fa-lock" aria-hidden="true"></i> Dados de acesso
+                </h2>
+
+                <div class="contas-grade">
+                    <label class="account-field contas-largo">
+                        <span class="account-label">E-mail *</span>
+                        <input name="email" type="email" required class="account-input"
+                               placeholder="exemplo@email.com" autocomplete="email"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Login / usuário *</span>
+                        <input name="login" type="text" placeholder="Seu usuário" pattern="[A-Za-z0-9_]{5,20}"
+                               required class="account-input" autocapitalize="off" autocomplete="username"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Senha *</span>
+                        <input name="senha" type="password" placeholder="Mínimo 5 caracteres"
+                               pattern="[A-Za-z0-9]{5,20}" maxlength="20" required class="account-input"
+                               autocomplete="new-password"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Confirmar senha *</span>
+                        <input name="confirmar-senha" type="password" placeholder="Repita a senha"
+                               pattern="[A-Za-z0-9]{5,20}" maxlength="20" required class="account-input"
+                               autocomplete="new-password"/>
+                    </label>
+                </div>
+
+                <p class="account-hint contas-dica">
+                    O login e a senha são usados para acessar sua conta. Use de 5 a 20 letras ou números.
+                </p>
+            </section>
+
+            {# ------------------------------------------------------------
+               CONCLUIR
+               ------------------------------------------------------------ #}
+            <div class="bet24-card contas-form-rodape">
+                <p class="account-hint contas-termos">
+                    Ao concluir o cadastro você declara ter mais de 18 anos e aceita os
+                    <a href="{{ url('termos-uso') }}">termos de uso</a>{% if dados.getExibirRegras() %}
+                        e as <a href="{{ url('regras') }}">regras do site</a>{% endif %}.
+                </p>
+
+                <button type="submit" class="account-submit contas-btn">
+                    <i class="fas fa-check" aria-hidden="true"></i> Concluir cadastro
+                </button>
+
+                {% if dados.getExibirLogin() %}
+                    <p class="contas-rodape-link">
+                        Já tem conta?
+                        <a href="#modal-login" data-toggle="modal">Entrar</a>
+                    </p>
+                {% endif %}
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        $('.admpage-form')
+            .adminPage({
+                alertSuccess: false,
+                autoSearch: false,
+                autoReset: false,
+                reloadSuccess: false,
+                errorAlert: false,
+            })
+            .on('beforeSubmit', function (e, data) {
+                if (data.senha !== data['confirmar-senha']) {
+                    if (typeof swal === 'function') {
+                        swal('Aviso', 'A confirmação da senha não confere com a senha digitada.', 'warning');
+                    } else {
+                        alert('A confirmação da senha não confere com a senha digitada.');
+                    }
+                    return false;
+                }
+            })
+            .on('success', function (event, res) {
+                if (res.result == 1) {
+                    if (typeof swal === 'function') {
+                        swal('Sucesso!', res.message || 'Cadastro realizado com sucesso!', 'success').then(function () {
+                            window.location.href = url();
+                        });
+                    } else {
+                        alert(res.message || 'Cadastro realizado com sucesso!');
+                        window.location.href = url();
+                    }
+                } else {
+                    if (typeof swal === 'function') {
+                        swal('Erro', res.message || 'Não foi possível concluir o cadastro.', 'error');
+                    } else {
+                        alert(res.message || 'Não foi possível concluir o cadastro.');
+                    }
+                }
+            });
+    </script>
+
+{% endblock %}

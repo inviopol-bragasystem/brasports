@@ -1,0 +1,781 @@
+{% extends layout %}
+
+{% block head %}
+<style>
+    /* Estilos Premium do Lobby de Cassino Leon Bet */
+    .casino-main-wrap {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 12px 16px 48px 16px;
+    }
+    @media (max-width: 768px) {
+        .casino-main-wrap {
+            padding: 8px 10px 30px 10px;
+        }
+    }
+
+    .casino-hero {
+        background: linear-gradient(135deg, #101418 0%, #1a2228 50%, #0d1217 100%);
+        border: 1px solid var(--leon-border);
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .casino-hero::after {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle, rgba(0, 230, 118, 0.15) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .casino-hero-title {
+        font-size: 22px;
+        font-weight: 900;
+        color: #ffffff;
+        letter-spacing: -0.5px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .casino-hero-badge {
+        background: linear-gradient(135deg, #ffb300, #ff8f00);
+        color: #000;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 4px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .casino-hero-sub {
+        color: var(--leon-text-muted);
+        font-size: 13px;
+        max-width: 600px;
+        line-height: 1.4;
+    }
+
+    /* Barra de Navegação e Filtros de Categorias */
+    .casino-nav-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    .casino-cats-strip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+    }
+    .casino-cats-strip::-webkit-scrollbar {
+        display: none;
+    }
+    .casino-cat-chip {
+        background: var(--leon-inner);
+        border: 1px solid var(--leon-border);
+        color: var(--leon-text-sub);
+        font-size: 13px;
+        font-weight: 700;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .casino-cat-chip:hover {
+        background: #252b31;
+        color: #ffffff;
+        text-decoration: none;
+    }
+    .casino-cat-chip.active {
+        background: var(--leon-green);
+        border-color: var(--leon-green);
+        color: #000000;
+        box-shadow: 0 0 12px var(--leon-green-glow);
+    }
+
+    /* Campo de Pesquisa */
+    .casino-search-box {
+        position: relative;
+        min-width: 240px;
+    }
+    .casino-search-input {
+        background: var(--leon-inner);
+        border: 1px solid var(--leon-border);
+        color: #ffffff;
+        border-radius: 20px;
+        padding: 8px 16px 8px 36px;
+        font-size: 13px;
+        width: 100%;
+        transition: border-color 0.2s;
+    }
+    .casino-search-input:focus {
+        border-color: var(--leon-green);
+        outline: none;
+    }
+    .casino-search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--leon-text-muted);
+        font-size: 13px;
+    }
+
+    /* Grid de Jogos Compacto e Proporcional */
+    .casino-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+        gap: 14px;
+    }
+    @media (max-width: 991px) {
+        .casino-grid {
+            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+            gap: 12px;
+        }
+    }
+    @media (max-width: 768px) {
+        .casino-grid {
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+        }
+    }
+    @media (max-width: 480px) {
+        .casino-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+    }
+
+    /* Card do Jogo */
+    .casino-card {
+        background: var(--leon-inner);
+        border: 1px solid var(--leon-border);
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+        transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+    }
+    .casino-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--leon-green);
+        box-shadow: 0 12px 24px rgba(0, 230, 118, 0.15);
+    }
+    .casino-card-thumb-wrap {
+        position: relative;
+        width: 100%;
+        padding-top: 100%; /* Quadrado 1:1 */
+        overflow: hidden;
+        background: #111417;
+    }
+    .casino-card-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.35s ease;
+    }
+    .casino-card:hover .casino-card-img {
+        transform: scale(1.08);
+    }
+    .casino-card-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    .casino-card:hover .casino-card-overlay {
+        opacity: 1;
+    }
+    .casino-play-btn {
+        background: var(--leon-green);
+        color: #000000;
+        font-weight: 800;
+        font-size: 13px;
+        padding: 8px 18px;
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 4px 15px var(--leon-green-glow);
+        transform: scale(0.9);
+        transition: transform 0.2s ease;
+    }
+    .casino-card:hover .casino-play-btn {
+        transform: scale(1);
+    }
+    .casino-featured-tag {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: linear-gradient(135deg, #ff9800, #e65100);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 3px 6px;
+        border-radius: 4px;
+        z-index: 2;
+        text-transform: uppercase;
+    }
+
+    .casino-card-footer {
+        padding: 10px 12px;
+        background: #181d22;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .casino-card-title {
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .casino-card-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--leon-text-muted);
+    }
+    .casino-prov-badge {
+        color: var(--leon-green);
+        font-weight: 700;
+    }
+    .casino-prov-badge.popok-badge {
+        color: var(--leon-green);
+        background: rgba(0, 230, 118, 0.15);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+    }
+    .casino-prov-badge.wg-badge {
+        color: #8b5cf6;
+        background: rgba(139, 92, 246, 0.15);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+    }
+    .casino-prov-badge.pragmatic-badge {
+        color: #ff4081;
+        background: rgba(255, 64, 129, 0.15);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+    }
+    .casino-prov-badge.tada-badge {
+        color: #00bcd4;
+        background: rgba(0, 188, 212, 0.15);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+    }
+    .casino-prov-badge.cpgames-badge {
+        color: #ff9800;
+        background: rgba(255, 152, 0, 0.15);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+    }
+    .casino-prov-badge.crash-badge {
+        color: #f44336;
+        background: rgba(244, 67, 54, 0.15);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+    }
+
+    /* Modal de Jogo em Tela Cheia */
+    .casino-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: #000000;
+        z-index: 999999;
+        display: none;
+        flex-direction: column;
+    }
+    .casino-modal-header {
+        background: #101418;
+        border-bottom: 1px solid var(--leon-border);
+        padding: 10px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .casino-modal-title {
+        color: #fff;
+        font-size: 15px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .casino-modal-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .casino-modal-stage {
+        display: flex;
+        flex: 1;
+        width: 100%;
+        height: calc(100vh - 54px);
+        justify-content: center;
+        align-items: center;
+        background: #000000;
+        overflow: hidden;
+    }
+    .casino-modal-frame {
+        width: 100%;
+        max-width: 480px;
+        height: 100%;
+        border: none;
+        background: #000000;
+        box-shadow: 0 0 35px rgba(0, 0, 0, 0.9);
+    }
+    @media (max-width: 576px) {
+        .casino-modal-frame {
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+    <div class="leon-main-wrap casino-main-wrap py-3">
+
+        <!-- ============================================================
+             CARROSSEL HERO CASSINO & SLOTS (PERSONALIZÁVEL PELO ADMIN)
+             ============================================================ -->
+        {% set casinoSlideMode = dados.getTipoSlidesCassino()|default('mesclado') %}
+        {% set adminBanners = banners('site-slideshow', null, null, 10) %}
+        {% set heroFeaturedGames = [] %}
+        {% for j in jogos %}
+            {% if (j.featured or j.game_code in ['fortune-tiger', 'fortune-ox', 'fortune-rabbit', 'fortune-mouse', 'treasures-of-aztec', 'fortune-dragon']) and heroFeaturedGames|length < 6 %}
+                {% set heroFeaturedGames = heroFeaturedGames|merge([j]) %}
+            {% endif %}
+        {% endfor %}
+        {% if heroFeaturedGames|length == 0 and jogos|length > 0 %}
+            {% set heroFeaturedGames = jogos|slice(0, 4) %}
+        {% endif %}
+
+        {% set blendedSlides = [] %}
+        {% set numGames = heroFeaturedGames|length %}
+        {% set numBanners = adminBanners|length %}
+
+        {% if casinoSlideMode == 'banners' %}
+            {# Apenas Banners Promocionais do Admin #}
+            {% for b in adminBanners %}
+                {% set blendedSlides = blendedSlides|merge([{
+                    'type': 'banner',
+                    'banner': b
+                }]) %}
+            {% endfor %}
+
+        {% elseif casinoSlideMode == 'jogos' %}
+            {# Apenas Jogos de Cassino #}
+            {% for j in heroFeaturedGames %}
+                {% set blendedSlides = blendedSlides|merge([{
+                    'type': 'game',
+                    'game': j
+                }]) %}
+            {% endfor %}
+
+        {% elseif casinoSlideMode != 'desativado' %}
+            {# Modo Padrão: Mesclado 1-a-1 (Jogo de Cassino -> Banner -> Jogo de Cassino -> Banner) #}
+            {% if numGames > 0 and numBanners > 0 %}
+                {% for i in 0..(numGames - 1) %}
+                    {% set blendedSlides = blendedSlides|merge([{
+                        'type': 'game',
+                        'game': heroFeaturedGames[i]
+                    }]) %}
+                    {% set bIdx = i % numBanners %}
+                    {% set blendedSlides = blendedSlides|merge([{
+                        'type': 'banner',
+                        'banner': adminBanners[bIdx]
+                    }]) %}
+                {% endfor %}
+            {% elseif numGames > 0 %}
+                {% for j in heroFeaturedGames %}
+                    {% set blendedSlides = blendedSlides|merge([{
+                        'type': 'game',
+                        'game': j
+                    }]) %}
+                {% endfor %}
+            {% else %}
+                {% for b in adminBanners %}
+                    {% set blendedSlides = blendedSlides|merge([{
+                        'type': 'banner',
+                        'banner': b
+                    }]) %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
+        {% if casinoSlideMode != 'desativado' and blendedSlides|length > 0 %}
+        <div class="casino-hero-carousel" id="casinoHeroCarousel" onmouseenter="pauseCasinoCarousel(true)" onmouseleave="pauseCasinoCarousel(false)">
+            
+            {% for idx, slide in blendedSlides %}
+                {% if slide.type == 'game' %}
+                    {% set j = slide.game %}
+                    <div class="casino-hero-slide{{ idx == 0 ? ' active' : '' }}" 
+                         data-slide-index="{{ idx }}"
+                         style="background: {% if 'tiger' in j.game_code %}linear-gradient(135deg, #181205 0%, #2b1d06 50%, #0d1217 100%){% elseif 'ox' in j.game_code %}linear-gradient(135deg, #200d0d 0%, #301414 50%, #0d1217 100%){% elseif 'rabbit' in j.game_code %}linear-gradient(135deg, #1c0f24 0%, #291238 50%, #0d1217 100%){% elseif 'mouse' in j.game_code %}linear-gradient(135deg, #1e1307 0%, #2d1c08 50%, #0d1217 100%){% else %}linear-gradient(135deg, #091a13 0%, #10261d 50%, #0d1217 100%){% endif %};">
+                        
+                        <div class="casino-hero-slide-content">
+                            <div class="casino-hero-slide-badges">
+                                <span class="badge" style="background: {% if j.provider == 'POPOK' %}rgba(0, 230, 118, 0.2){% else %}rgba(255, 107, 53, 0.2){% endif %}; color: {% if j.provider == 'POPOK' %}var(--leon-green){% else %}#ff6b35{% endif %}; font-weight: 800; border: 1px solid {% if j.provider == 'POPOK' %}var(--leon-green){% else %}#ff6b35{% endif %}; font-size: 11px;">
+                                    <i class="fa fa-bolt mr-1"></i> {% if j.provider == 'POPOK' %}POPOK{% else %}PG SOFT{% endif %}
+                                </span>
+                                <span class="badge" style="background: rgba(255, 179, 0, 0.2); color: #ffb300; font-weight: 800; border: 1px solid #ffb300; font-size: 11px;">
+                                    <i class="fa fa-star mr-1"></i> POPULAR
+                                </span>
+                                <span class="badge badge-secondary" style="font-size: 11px; opacity: 0.85;">
+                                    RTP {{ j.rtp }}%
+                                </span>
+                            </div>
+
+                            <div class="casino-hero-slide-title">
+                                {{ j.name }}
+                            </div>
+
+                            <div class="casino-hero-slide-desc">
+                                {% if 'tiger' in j.game_code %}
+                                    O lendário Jogo do Tigrinho com multiplicadores de até 2.500x e bônus de re-spin dourado!
+                                {% elseif 'ox' in j.game_code %}
+                                    O Jogo do Touro com rodadas da sorte e multiplicadores épicos de até 2.000x!
+                                {% elseif 'rabbit' in j.game_code %}
+                                    O Jogo do Coelho com giros grátis explosivos e multiplicadores acumulados de até 3.000x!
+                                {% elseif 'mouse' in j.game_code %}
+                                    O Jogo do Rato da Fortuna com rodadas extras e ganhos rápidos garantidos!
+                                {% elseif 'aztec' in j.game_code %}
+                                    Explore as riquezas secretas do Império Asteca com multiplicadores crescentes!
+                                {% else %}
+                                    Slot oficial de alta volatilidade com gráficos incríveis e rodadas bônus emocionantes!
+                                {% endif %}
+                            </div>
+
+                            <div class="casino-hero-slide-actions">
+                                <a href="{{ url('cassino/jogar', [j.game_code|default(j.code)]) }}" class="btn font-weight-bold d-inline-flex align-items-center" 
+                                   style="background: var(--leon-green); color: #000; border-radius: 8px; padding: 10px 22px; font-size: 14px; box-shadow: 0 4px 15px rgba(0,230,118,0.4); text-decoration: none;">
+                                    <i class="fa fa-play mr-2"></i> JOGAR AGORA
+                                </a>
+                                <a href="{{ url('cassino/jogar', [j.game_code|default(j.code)]) }}" class="btn btn-outline-light font-weight-bold d-inline-flex align-items-center"
+                                   style="border-radius: 8px; padding: 10px 18px; font-size: 14px; background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.2); text-decoration: none;">
+                                    <i class="fa fa-gamepad mr-2"></i> TESTAR DEMO
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="casino-hero-slide-thumb-wrap">
+                            <img src="{{ j.image }}" alt="{{ j.name }}" class="casino-hero-slide-thumb" onerror="this.src='{{ url('imagens/sem-imagem.png') }}'">
+                        </div>
+
+                    </div>
+                {% elseif slide.type == 'banner' %}
+                    {% set b = slide.banner %}
+                    <a href="{{ b.getLink() ?: 'javascript:;' }}" target="{{ b.getLinktarget() ?: '_self' }}"
+                       class="casino-hero-slide slide-banner{{ idx == 0 ? ' active' : '' }}"
+                       data-slide-index="{{ idx }}">
+                        <picture>
+                            <source srcset="{{ b.imgCapa(true, 'mobile').getSource(true) }}" media="(max-width: 768px)">
+                            <img src="{{ b.imgCapa(true, 'desktop').getSource(true) }}" alt="{{ b.getTitle() }}">
+                        </picture>
+                    </a>
+                {% endif %}
+            {% endfor %}
+
+            {% if blendedSlides|length > 1 %}
+                <!-- Setas de navegação -->
+                <button type="button" class="leon-carousel-arrow prev" onclick="casinoPrevSlide()" aria-label="Anterior">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
+                <button type="button" class="leon-carousel-arrow next" onclick="casinoNextSlide()" aria-label="Próximo">
+                    <i class="fa fa-chevron-right"></i>
+                </button>
+
+                <!-- Dots -->
+                <div class="leon-carousel-dots" id="casinoDots">
+                    {% for i in 0..(blendedSlides|length - 1) %}
+                        <button type="button" class="leon-carousel-dot{{ i == 0 ? ' active' : '' }}" 
+                                onclick="casinoGoToSlide({{ i }})" aria-label="Slide {{ i + 1 }}">
+                        </button>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+        </div>
+        {% endif %}
+
+        <!-- Barra de Navegação e Filtros de Categoria -->
+        <div class="casino-nav-bar">
+            <div class="casino-cats-strip">
+                <a href="{{ url('cassino') }}" class="casino-cat-chip {% if not category or category == 'all' or category == 'Destaque' %}active{% endif %}">
+                    <i class="fa fa-star text-warning"></i> Destaque
+                </a>
+                <a href="{{ url('cassino?category=PRAGMATIC') }}" class="casino-cat-chip {% if category == 'PRAGMATIC' or category == 'Pragmatic' %}active{% endif %}">
+                    <i class="fa fa-bolt" style="color: #ff4081;"></i> Pragmatic
+                </a>
+                <a href="{{ url('cassino?category=PGSOFT') }}" class="casino-cat-chip {% if category == 'PGSOFT' or category == 'PG Soft' %}active{% endif %}">
+                    <i class="fa fa-gamepad" style="color: #ff6b35;"></i> PG SOFT
+                </a>
+                <a href="{{ url('cassino?category=TADA') }}" class="casino-cat-chip {% if category == 'TADA' or category == 'TaDa' %}active{% endif %}">
+                    <i class="fa fa-fire" style="color: #00bcd4;"></i> TaDa
+                </a>
+                <a href="{{ url('cassino?category=Crash') }}" class="casino-cat-chip {% if category == 'Crash' %}active{% endif %}">
+                    <i class="fa fa-plane" style="color: #f44336;"></i> Aviator & Crash
+                </a>
+                <a href="{{ url('cassino?category=CPGAMES') }}" class="casino-cat-chip {% if category == 'CPGAMES' or category == 'CP Games' %}active{% endif %}">
+                    <i class="fa fa-cube" style="color: #ff9800;"></i> CP Games
+                </a>
+                <a href="{{ url('cassino?category=POPOK') }}" class="casino-cat-chip {% if category == 'POPOK' or category == 'PopOK' %}active{% endif %}">
+                    <i class="fa fa-diamond" style="color: var(--leon-green);"></i> POPOK
+                </a>
+                <a href="{{ url('cassino?category=WG') }}" class="casino-cat-chip {% if category == 'WG' %}active{% endif %}">
+                    <i class="fa fa-trophy" style="color: #8b5cf6;"></i> WG
+                </a>
+            </div>
+
+            <!-- Pesquisa Instantânea -->
+            <div class="casino-search-box">
+                <i class="fa fa-search casino-search-icon"></i>
+                <input type="text" class="casino-search-input" id="casinoSearch" placeholder="Pesquisar jogos..." value="{{ search }}" oninput="filtrarJogosNaTela()">
+            </div>
+        </div>
+
+        <!-- Grade com os Jogos do Catálogo -->
+        <div class="casino-grid" id="casinoGrid">
+            {% for j in jogos %}
+                <a href="{{ url('cassino/jogar', [j.game_code|default(j.code)]) }}" class="casino-card" data-code="{{ j.game_code }}" data-title="{{ j.name }}" data-id="{{ j.game_id }}" data-name="{{ j.name|lower }}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column;">
+                    <div class="casino-card-thumb-wrap">
+                        {% if j.featured %}
+                            <span class="casino-featured-tag">★ Destaque</span>
+                        {% endif %}
+                        <img src="{{ j.image }}" class="casino-card-img" alt="{{ j.name }}" loading="lazy" onerror="this.src='{{ url('imagens/sem-imagem.png') }}'">
+                        <div class="casino-card-overlay">
+                            <span class="casino-play-btn">
+                                <i class="fa fa-play mr-1"></i> JOGAR
+                            </span>
+                        </div>
+                    </div>
+                    <div class="casino-card-footer">
+                        <span class="casino-card-title">{{ j.name }}</span>
+                        <div class="casino-card-meta">
+                            <span class="casino-prov-badge {% if j.provider == 'POPOK' %} popok-badge{% elseif j.provider == 'WG' %} wg-badge{% elseif j.provider == 'PRAGMATIC' or j.provider == 'PRAGMATICPLAY' %} pragmatic-badge{% elseif j.provider == 'TADA' %} tada-badge{% elseif j.provider == 'CPGAMES' %} cpgames-badge{% elseif j.provider == 'CRASH' or j.provider == 'AVIATOR' or j.provider == 'MINES' %} crash-badge{% endif %}">
+                                {% if j.provider == 'POPOK' %}POPOK{% elseif j.provider == 'WG' %}WG{% elseif j.provider == 'PRAGMATIC' or j.provider == 'PRAGMATICPLAY' %}PRAGMATIC{% elseif j.provider == 'TADA' %}TADA{% elseif j.provider == 'CPGAMES' %}CP GAMES{% elseif j.provider == 'CRASH' or j.provider == 'AVIATOR' or j.provider == 'MINES' %}CRASH{% else %}PG SOFT{% endif %}
+                            </span>
+                            <span>RTP {{ j.rtp }}%</span>
+                        </div>
+                    </div>
+                </a>
+            {% else %}
+                <div class="col-12 text-center py-5 text-muted">
+                    <i class="fa fa-gamepad fa-3x mb-3 text-secondary"></i>
+                    <h5>Nenhum jogo encontrado</h5>
+                    <p class="small">Tente selecionar outra categoria ou limpar o campo de busca.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <!-- Modal Imersivo do Jogo (Tela Cheia) -->
+    <div class="casino-modal-overlay" id="casinoGameModal">
+        <div class="casino-modal-header">
+            <div class="casino-modal-title">
+                <i class="fa fa-gamepad text-success" style="color: var(--leon-green) !important;"></i>
+                <span id="activeGameTitle">Jogo</span>
+                <span class="badge badge-success ml-2" id="casinoLiveBadge" style="background: var(--leon-green); color: #000; font-weight: 800;">AO VIVO</span>
+                <span class="badge badge-warning ml-2" id="casinoDemoBadge" style="display: none; background: #ff9800; color: #000; font-weight: 800;">DEMO</span>
+            </div>
+            <div class="casino-modal-actions">
+                <span class="text-white small font-weight-bold d-none d-sm-inline" id="casinoSaldoWrap">
+                    <i class="fa fa-wallet text-success mr-1"></i> Saldo: <span class="text-success font-weight-bold" id="casinoModalSaldo">R$ {{ user ? user.getCredito(true) : '1.000,00' }}</span>
+                </span>
+                <button type="button" class="btn btn-sm btn-outline-secondary text-white" onclick="recarregarJogo()" title="Atualizar Jogo" id="btnAtualizarJogo"><i class="fa fa-refresh mr-1"></i> <span class="d-none d-sm-inline">Atualizar</span></button>
+                <button type="button" class="btn btn-sm btn-danger font-weight-bold" onclick="fecharJogo()" title="Sair do Jogo" id="btnSairJogo"><i class="fa fa-sign-out mr-1"></i> <span>Sair</span></button>
+            </div>
+        </div>
+        <div class="casino-modal-stage" style="position: relative;">
+            <div id="casinoIframeLoader" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; text-align: center; z-index: 10;">
+                <i class="fa fa-spinner fa-spin fa-3x" style="color: var(--leon-green);"></i>
+                <div class="text-white font-weight-bold mt-2" style="font-size: 14px;">Carregando jogo...</div>
+            </div>
+            <iframe src="" class="casino-modal-frame" id="casinoIframe" allow="fullscreen; autoplay; screen-wake-lock"></iframe>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        var isUsuarioLogado = {{ user ? 'true' : 'false' }};
+        var baseUrlApp = '{{ url("") }}'.replace(/\/+$/, '');
+        var activeGameUrl = '';
+
+        function filtrarJogosNaTela() {
+            var q = $('#casinoSearch').val().toLowerCase().trim();
+            $('.casino-card').each(function() {
+                var nome = $(this).attr('data-name') || '';
+                if (!q || nome.indexOf(q) !== -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+
+        function iniciarJogoCard(el) {
+            var $el = $(el);
+            iniciarJogo($el.attr('data-code'), $el.attr('data-title'), $el.attr('data-id'));
+        }
+
+        function iniciarJogo(gameCode, gameName, gameId) {
+            $('#activeGameTitle').text(gameName);
+            $('#casinoGameModal').css('display', 'flex');
+            $('#casinoIframe').attr('src', 'about:blank');
+            $('#casinoIframeLoader').show();
+
+            var gid = gameId || '126';
+            var fallbackUrl = baseUrlApp + '/games/pgv4/src/public/' + gid + '/index.html?operator_token=Zm9saWFiZXQ=&btt=1&gi=' + gid + '&n=' + gid + '&l=pt&ct=BRL';
+            var playEndpoint = baseUrlApp + '/cassino/jogar/' + encodeURIComponent(gameCode);
+
+            activeGameUrl = fallbackUrl;
+
+            // Chamada de Inicialização
+            $.ajax({
+                url: playEndpoint,
+                type: 'GET',
+                dataType: 'json',
+                success: function(res) {
+                    $('#casinoIframeLoader').hide();
+                    if (res && res.result && res.url) {
+                        activeGameUrl = res.url;
+                        $('#casinoIframe').attr('src', res.url);
+                        if (res.isDemo) {
+                            $('#casinoDemoBadge').show();
+                        } else {
+                            $('#casinoDemoBadge').hide();
+                        }
+                        if (res.saldo) {
+                            $('#casinoModalSaldo').text('R$ ' + res.saldo);
+                        }
+                    } else if (res && res.auth === false) {
+                        fecharJogo();
+                        $('#modal-login').modal('show');
+                    } else {
+                        // Fallback direto nos arquivos do jogo
+                        activeGameUrl = fallbackUrl;
+                        $('#casinoIframe').attr('src', fallbackUrl);
+                    }
+                },
+                error: function() {
+                    $('#casinoIframeLoader').hide();
+                    // Fallback para carregamento direto local
+                    activeGameUrl = fallbackUrl;
+                    $('#casinoIframe').attr('src', fallbackUrl);
+                }
+            });
+        }
+
+        function fecharJogo() {
+            $('#casinoGameModal').hide();
+            $('#casinoIframe').attr('src', 'about:blank');
+            $('#casinoIframeLoader').hide();
+        }
+
+        function recarregarJogo() {
+            var frame = document.getElementById('casinoIframe');
+            if (frame) {
+                var url = activeGameUrl || frame.getAttribute('src');
+                if (url && url !== 'about:blank') {
+                    $('#btnAtualizarJogo i').addClass('fa-spin');
+                    $('#casinoIframeLoader').show();
+                    
+                    frame.src = 'about:blank';
+                    setTimeout(function() {
+                        frame.src = url;
+                        setTimeout(function() {
+                            $('#btnAtualizarJogo i').removeClass('fa-spin');
+                            $('#casinoIframeLoader').hide();
+                        }, 1200);
+                    }, 100);
+                }
+            }
+        }
+
+        // =====================================================================
+        // CARROSSEL HERO DO CASSINO (Jogos em Destaque + Banners do Admin)
+        // =====================================================================
+        var casinoSlideIdx = 0;
+        var casinoIsPaused = false;
+        var casinoSlides = $('.casino-hero-slide');
+        var casinoTotalSlides = casinoSlides.length;
+        var casinoCarouselTimer = null;
+
+        function casinoShowSlide(idx) {
+            if (casinoTotalSlides <= 0) return;
+            if (idx >= casinoTotalSlides) casinoSlideIdx = 0;
+            else if (idx < 0) casinoSlideIdx = casinoTotalSlides - 1;
+            else casinoSlideIdx = idx;
+
+            casinoSlides.removeClass('active').eq(casinoSlideIdx).addClass('active');
+            $('#casinoDots .leon-carousel-dot').removeClass('active').eq(casinoSlideIdx).addClass('active');
+        }
+
+        function casinoNextSlide() {
+            casinoShowSlide(casinoSlideIdx + 1);
+        }
+
+        function casinoPrevSlide() {
+            casinoShowSlide(casinoSlideIdx - 1);
+        }
+
+        function casinoGoToSlide(idx) {
+            casinoShowSlide(idx);
+        }
+
+        function pauseCasinoCarousel(state) {
+            casinoIsPaused = state;
+        }
+
+        if (casinoTotalSlides > 1) {
+            casinoCarouselTimer = setInterval(function() {
+                if (!casinoIsPaused) {
+                    casinoNextSlide();
+                }
+            }, 5000);
+        }
+
+        // Fechar ao pressionar ESC
+        $(document).keyup(function(e) {
+            if (e.key === "Escape") {
+                fecharJogo();
+            }
+        });
+    </script>
+{% endblock %}

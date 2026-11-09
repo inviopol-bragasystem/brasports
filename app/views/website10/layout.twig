@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="pt-br" data-theme="light">
+<head>
+    {{ seo_header() }}
+
+    <link rel="stylesheet" href="css/bootstrap4.css"/>
+    <link rel="stylesheet" href="css/dpsports.css?v=2.5.3"/>
+    <link rel="stylesheet" href="css/loading.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+    {% block head %}{% endblock %}
+
+    {{ dados.getHtmlHead()|raw }}
+    {% include 'website/inc/personalizacao-css.twig' %}
+</head>
+<body>
+
+{% set hoje = 'now'|date('Y-m-d') %}
+{% set amanha = '+1day'|date('Y-m-d') %}
+{% set diasSemana = {'Sunday': 'Domingo', 'Monday': 'Segunda-feira', 'Tuesday': 'Terça-feira', 'Wednesday': 'Quarta-feira', 'Thursday': 'Quinta-feira', 'Friday': 'Sexta-feira', 'Saturday': 'Sábado'} %}
+{% set diaHoje = diasSemana['now'|date('l')]|default('Hoje') %}
+{% set diaAmanha = diasSemana['+1day'|date('l')]|default('Amanhã') %}
+{% set diaDepois = diasSemana['+2days'|date('l')]|default('Sábado') %}
+
+<!-- Modal de Login DP Sports -->
+<form id="modal-login" class="modal fade" method="post">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content dp-modal-content">
+            <div class="dp-modal-header">
+                <h5><i class="fa fa-lock mr-2"></i> Acessar DP Sports</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="form-group">
+                    <label class="small font-weight-bold text-muted">USUÁRIO OU E-MAIL</label>
+                    <input type="text" name="username" class="form-control" placeholder="Digite seu usuário" required/>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="small font-weight-bold text-muted">SENHA</label>
+                    <input type="password" name="password" class="form-control" placeholder="Digite sua senha" required minlength="5" maxlength="20"/>
+                </div>
+                <button type="submit" class="dp-btn-criar-aposta ready w-100">
+                    <i class="fa fa-sign-in"></i> Entrar
+                </button>
+                {% if dados.getExibirRegistro() %}
+                    <div class="text-center mt-3">
+                        <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="small font-weight-bold text-primary">
+                            Não tem conta? Cadastre-se
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
+<div id="website" {% if pageAposta %}v-cloak{% endif %}>
+
+    <!-- Header BRASPORTS (1:1 Oficial dpsportsbr.com) -->
+    <header class="dp-header">
+        <div class="dp-header-container">
+            
+            <!-- Esquerda: Logo Texto + Toggle Switch Claro/Escuro -->
+            <div class="dp-header-left">
+                <a href="{{ url() }}" class="dp-brand-text">
+                    {% if dados.imgCapa(true, 'logo').getSource() %}
+                        <img src="{{ dados.imgCapa(true, 'logo').getSource(true) }}" alt="{{ dados.getBanca() }}" style="max-height: 38px; max-width: 170px; object-fit: contain;"/>
+                    {% else %}
+                        BRASPORTS
+                    {% endif %}
+                </a>
+
+                <!-- Pill Switch Tema Claro / Escuro com Sol/Lua -->
+                <div class="dp-theme-switch" id="dpThemeToggle" onclick="toggleDpTheme()" title="Alternar Modo Claro / Escuro">
+                    <div class="dp-theme-slider">
+                        <i class="fa fa-sun-o" id="dpThemeIcon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direita: Idioma / Ações do Usuário -->
+            <div class="dp-header-right">
+                
+                {% if user.getType() == 1 %}
+                    <a href="{{ url('twig') }}" class="btn btn-sm btn-outline-light d-none d-md-inline-block" title="Limpar Cache Twig">
+                        <i class="fa fa-refresh"></i> Twig
+                    </a>
+                {% endif %}
+
+                {% if not user %}
+                    {% if dados.getExibirLogin() %}
+                        <a href="#modal-login" data-toggle="modal" class="dp-header-auth-btn d-none d-md-inline-block">
+                            <i class="fa fa-sign-in mr-1"></i> Entrar
+                        </a>
+                    {% endif %}
+                    {% if dados.getExibirRegistro() %}
+                        <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="btn btn-sm btn-outline-light font-weight-bold d-none d-md-inline-block">
+                            Criar Conta
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <div class="dropdown d-none d-md-inline-block">
+                        <a href="javascript:;" class="dp-user-badge dropdown-toggle text-decoration-none" data-toggle="dropdown">
+                            <i class="fa fa-user-circle"></i> Saldo: <b>R$ {{ user.getCredito(true) }}</b>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="{{ url("financeiro/extrato") }}"><i class="fa fa-list-alt mr-2"></i> Extrato</a>
+                            <a class="dropdown-item" href="{{ url("financeiro/caixa") }}"><i class="fa fa-calculator mr-2"></i> Caixa</a>
+                            <a class="dropdown-item" href="{{ url("financeiro/deposito") }}"><i class="fa fa-arrow-down mr-2 text-success"></i> Depósito</a>
+                            <a class="dropdown-item" href="{{ url("financeiro/saque") }}"><i class="fa fa-arrow-up mr-2 text-danger"></i> Saque</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="{{ url('logout') }}"><i class="fa fa-sign-out mr-2"></i> Sair</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Botão de Perfil Premium (Ao clicar abre a barra lateral) -->
+                <button type="button" class="dp-profile-btn" onclick="$('html').toggleClass('show-menu');" title="Perfil e Menu">
+                    <span class="dp-profile-avatar">
+                        <i class="fa fa-user"></i>
+                    </span>
+                    <span class="dp-profile-info">
+                        {% if user %}
+                            <small class="dp-profile-sub">Saldo</small>
+                            <strong class="dp-profile-saldo">R$ {{ user.getCredito(true) }}</strong>
+                        {% else %}
+                            <strong class="dp-profile-label">Perfil</strong>
+                        {% endif %}
+                    </span>
+                    <span class="dp-profile-trigger">
+                        <i class="fa fa-bars"></i>
+                    </span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main id="main">
+        {% block main %}{% endblock %}
+    </main>
+
+    <!-- Rodapé Desktop DP Sports -->
+    <footer class="dp-footer d-none d-lg-block">
+        <div class="container-fluid px-lg-5 px-3">
+            <div class="row align-items-center">
+                <div class="col-12 col-md-7">
+                    <div class="mb-2">
+                        <a href="{{ url() }}">Início</a>
+                        {% if dados.getExibirCassino() %}<a href="{{ url('cassino') }}"><i class="fa fa-gamepad text-warning"></i> Cassino</a>{% endif %}
+                        <a href="{{ url('termos-uso') }}">Termos de Uso</a>
+                        {% if dados.getExibirRegras() %}<a href="{{ url('regras') }}">Regulamento</a>{% endif %}
+                        {% if dados.getExibirBilhete() %}<a href="{{ url('bilhete') }}">Conferir Bilhete</a>{% endif %}
+                        {% if dados.getExibirCotacoes() %}<a href="{{ url('cotacoes') }}">Cotações</a>{% endif %}
+                        {% if dados.getExibirApp() %}<a href="{{ dados.getApp()|default(url('app')) }}" target="_blank">Aplicativo</a>{% endif %}
+                    </div>
+                    <div class="small text-muted">
+                        <span class="badge badge-danger mr-2">18+</span>
+                        Apostas esportivas envolvem risco financeiro. Jogue com moderação. Proibido para menores de 18 anos.
+                    </div>
+                </div>
+                <div class="col-12 col-md-5 text-md-right mt-3 mt-md-0">
+                    <div class="small">
+                        ©{{ 'now'|date('Y') }} <b>{{ dados.getBanca() }}</b>. Todos os direitos reservados.<br/>
+                        BRASPORTS Plataforma Oficial.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Barra de Navegação Inferior Mobile (3 itens: Cassino, Início/Logo, Apostas) -->
+    <nav class="dp-footer-mobile d-flex d-lg-none">
+        {% if dados.getExibirCassino() %}
+            <a href="{{ url('cassino') }}" class="dp-mobile-nav-item">
+                <i class="fa fa-gamepad text-warning"></i>
+                <span>Cassino</span>
+            </a>
+        {% else %}
+            <a href="{{ url('apostar') }}" class="dp-mobile-nav-item">
+                <i class="fa fa-futbol-o text-warning"></i>
+                <span>Jogos</span>
+            </a>
+        {% endif %}
+
+        
+           <a href="{{ url() }}" class="dp-mobile-center-btn" title="BRASPORTS">
+    <img src="img/logo-footer.png"
+         alt="Brasports"
+         class="dp-mobile-center-logo"
+         style="max-height: 28px; width: auto; object-fit: contain;"/>
+</a>
+        
+
+        <button type="button" class="dp-mobile-nav-item" onclick="$('#dpMobileBetslipModal').addClass('open');">
+            <i class="fa fa-ticket"></i>
+            <span>Apostas</span>
+            {% if pageAposta %}
+                <span class="dp-mobile-badge" v-cloak v-if="aposta && aposta.jogos && aposta.jogos.length > 0">${aposta.jogos.length}</span>
+            {% endif %}
+        </button>
+    </nav>
+
+</div>
+
+<!-- Backdrop do Menu Mobile -->
+<div class="dp-mobile-drawer-backdrop" onclick="$('html').removeClass('show-menu');"></div>
+
+<!-- Drawer Menu Mobile DP Sports -->
+<div class="dp-mobile-drawer">
+    <div class="dp-drawer-header">
+        <div class="d-flex align-items-center">
+            {% if dados.imgCapa(true, 'logo').getSource() %}
+                <img src="{{ dados.imgCapa(true, 'logo').getSource(true) }}" alt="{{ dados.getBanca() }}" style="height: 32px; max-width: 140px; object-fit: contain; margin-right: 8px;"/>
+            {% else %}
+                <img src="img/dpsports-logo.png" alt="DP Sports" style="height: 32px; width: auto; margin-right: 8px;"/>
+                <span class="font-weight-bold text-white font-italic" style="letter-spacing: 0.5px;">DP SPORTS</span>
+            {% endif %}
+        </div>
+        <button class="close text-white" onclick="$('html').removeClass('show-menu');">&times;</button>
+    </div>
+
+    <!-- Seção de Modalidades e Competições na Gaveta -->
+    <div class="dp-drawer-sports-section">
+        <div class="dp-drawer-section-title">MODALIDADE</div>
+        <a href="{{ url() }}" onclick="$('html').removeClass('show-menu'); if (window.app && window.app.setCampeonato) { window.app.setCampeonato(); if (window.renderDrawerCompeticoes) window.renderDrawerCompeticoes(); }" class="dp-drawer-sport-link active">
+            <i class="fa fa-futbol-o mr-2"></i> Futebol (Todos os Jogos)
+        </a>
+        <div id="dpDrawerCompeticoes"></div>
+    </div>
+
+    <div class="dp-drawer-section-title">MENU GERAL</div>
+    <ul class="dp-drawer-menu">
+        <li><a href="{{ url() }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-home"></i> Início</a></li>
+        {% if dados.getExibirBilhete() %}<li><a href="{{ url('bilhete') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-ticket"></i> Conferir Bilhete</a></li>{% endif %}
+        
+        {% if user %}
+            <li><a href="{{ url('apostas') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-history"></i> Minhas Apostas</a></li>
+            <li><a href="{{ url('perfil') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-user"></i> Meu Perfil</a></li>
+            <li><a href="{{ url('financeiro/extrato') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-money"></i> Extrato</a></li>
+            <li><a href="{{ url('financeiro/deposito') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-arrow-down text-success"></i> Depósito</a></li>
+            <li><a href="{{ url('financeiro/saque') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-arrow-up text-danger"></i> Saque</a></li>
+            <li><a href="{{ url('logout') }}" class="text-danger" onclick="$('html').removeClass('show-menu');"><i class="fa fa-sign-out"></i> Sair</a></li>
+        {% else %}
+            {% if dados.getExibirLogin() %}
+                <li>
+                    <a href="#modal-login" data-toggle="modal" onclick="$('html').removeClass('show-menu');">
+                        <i class="fa fa-sign-in text-primary"></i> Entrar
+                    </a>
+                </li>
+            {% endif %}
+            {% if dados.getExibirRegistro() %}
+                <li>
+                    <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" onclick="$('html').removeClass('show-menu');" class="text-primary font-weight-bold">
+                        <i class="fa fa-user-plus text-primary"></i> Criar Conta
+                    </a>
+                </li>
+            {% endif %}
+        {% endif %}
+
+        {% if dados.getExibirCassino() %}<li><a href="{{ url('cassino') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-gamepad text-warning"></i> Cassino</a></li>{% endif %}
+        {% if dados.getExibirCotacoes() %}<li><a href="{{ url('cotacoes') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-line-chart"></i> Cotações</a></li>{% endif %}
+        {% if dados.getExibirRegras() %}<li><a href="{{ url('regras') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-book"></i> Regulamento</a></li>{% endif %}
+        <li><a href="{{ url('termos-uso') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-file-text-o"></i> Termos de Uso</a></li>
+        {% if dados.getExibirApp() %}<li><a href="{{ dados.getApp()|default(url('app')) }}" target="_blank"><i class="fa fa-android text-success"></i> Baixar App</a></li>{% endif %}
+    </ul>
+</div>
+
+{{ seo_footer() }}
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="node_modules/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.mask.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.form.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.serializeObject.js"></script>
+<script type="text/javascript" src="cdn/js/fastclick.js"></script>
+<script type="text/javascript" src="cdn/js/modernizr.min.js"></script>
+<script type="text/javascript" src="cdn/js/mask.js"></script>
+<script type="text/javascript" src="cdn/js/string.js"></script>
+<script type="text/javascript" src="node_modules/owl.carousel2/dist/owl.carousel.js"></script>
+<script type="text/javascript" src="cdn/js/clipboard.min.js"></script>
+<script type="text/javascript" src="cdn/js/admin.js"></script>
+<script type="text/javascript" src="js/site.js?v=1.0.0"></script>
+
+<script>
+    // Gerenciamento de Tema Claro/Escuro (DPSports)
+    function applyDpTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        var icon = document.getElementById('dpThemeIcon');
+        if (icon) {
+            icon.className = theme === 'dark' ? 'fa fa-moon-o' : 'fa fa-sun-o';
+        }
+        localStorage.setItem('dpsports_theme', theme);
+    }
+
+    function toggleDpTheme() {
+        var current = document.documentElement.getAttribute('data-theme') || 'light';
+        var next = current === 'light' ? 'dark' : 'light';
+        applyDpTheme(next);
+    }
+
+    (function() {
+        var saved = localStorage.getItem('dpsports_theme') || 'light';
+        applyDpTheme(saved);
+    })();
+
+    $('#modal-login')
+        .adminPage({
+            autoSearch: false,
+            controller: 'login',
+            module: 'entrar',
+        })
+        .on("success", function (event, e) {
+            if (e.result == 1) {
+                window.location.href = e.url;
+            }
+        });
+</script>
+
+{% block script %}{% endblock %}
+
+{{ dados.getHtmlFooter()|raw }}
+
+</body>
+</html>

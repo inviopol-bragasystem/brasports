@@ -1,0 +1,16 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="gold-card m-3">
+        <div class="gold-card-header">
+            <i class="fa fa-file-text-o"></i> {{ pagina.getTitle()|default('Informações') }}
+        </div>
+
+        <div class="p-3 content-body" style="line-height: 1.8; font-size: 14px;">
+            {{ pagina.getTexto()|raw }}
+        </div>
+    </div>
+
+{% endblock %}
+

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-br" class="pre-loading {{ responsive ? 'responsive' : null }}">
+<head>
+
+    {{ seo_header() }}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/bootstrap4.css"/>
+    <link rel="stylesheet" href="css/site.css?v=2.0.0"/>
+    <link rel="stylesheet" href="css/bonanza-theme.css?v=2.4.0"/>
+    <link rel="stylesheet" href="css/loading.css"/>
+
+    {{ dados.getHtmlHead()|raw }}
+    {% include 'website/inc/personalizacao-css.twig' %}
+    {% block head %}{% endblock %}
+
+</head>
+<body>
+
+<div id="website" class="{% if pageAposta %}has-sidebar{% endif %}" {% if pageAposta %}v-cloak{% endif %}>
+
+    {% include 'website/inc/header.twig' %}
+
+    <div class="bonanza-content-wrapper">
+        <main class="app-main">
+            {% block main %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- FOOTER COM SELOS DE RESPONSABILIDADE BONANZA SPORT -->
+    <footer class="bonanza-footer">
+        <div class="container-fluid px-lg-4 px-3">
+            <div class="badges-row">
+                <img src="img/bonanza/pix.png" alt="Pix" title="Pix"/>
+                <img src="img/bonanza/gamcare.png" alt="GamCare" title="GamCare"/>
+                <img src="img/bonanza/gambleaware.png" alt="BeGambleAware" title="BeGambleAware"/>
+                <img src="img/bonanza/more18.png" alt="18+" title="Proibido para menores de 18 anos"/>
+                <img src="img/bonanza/gamblers_anonymous.png" alt="Gamblers Anonymous" title="Gamblers Anonymous"/>
+            </div>
+
+            <div class="links-row">
+                {% if dados.getExibirCassino() %}<a href="{{ url('cassino') }}"><i class="fa fa-gamepad mr-1 text-warning"></i> Cassino</a>{% endif %}
+                {% if dados.getExibirRegras() %}<a href="{{ url('regras') }}"><i class="fa fa-book mr-1"></i> Regulamento</a>{% endif %}
+                {% if dados.getExibirCotacoes() %}<a href="{{ url('cotacoes') }}"><i class="fa fa-line-chart mr-1"></i> Cotações</a>{% endif %}
+                {% if dados.getExibirComunicados() %}<a href="{{ url('comunicados') }}"><i class="fa fa-bullhorn mr-1"></i> Comunicados</a>{% endif %}
+                {% if dados.getExibirContato() %}<a href="{{ url('contato') }}"><i class="fa fa-envelope mr-1"></i> Contato</a>{% endif %}
+            </div>
+
+            <div class="copyright-text">
+                ©{{ 'now'|date('Y') }} BONANZA SPORT. Todos os direitos reservados. Aposte com responsabilidade.
+            </div>
+        </div>
+    </footer>
+
+    <!-- BOTÃO FLUTUANTE WHATSAPP -->
+    <a href="https://api.whatsapp.com/send?phone={{ dados.getTelefone()|default('5511999999999') }}" target="_blank" class="floating-whatsapp-btn" title="Fale conosco no WhatsApp">
+        <img src="img/bonanza/whatsapp.png" alt="WhatsApp"/>
+    </a>
+
+    <!-- BARRA FIXA INFERIOR MOBILE -->
+    <div class="bonanza-mobile-bottom-nav d-flex d-lg-none">
+        <a href="{{ url() }}" class="{% if not controller or controller == 'index' or controller == 'apostar' %}active{% endif %}">
+            <i class="fa fa-home"></i>
+            <span>Início</span>
+        </a>
+        {% if dados.getExibirCassino() %}
+            <a href="{{ url('cassino') }}" class="{% if controller == 'cassino' %}active{% endif %}">
+                <i class="fa fa-gamepad text-warning"></i>
+                <span>Cassino</span>
+            </a>
+        {% endif %}
+        {% if user %}
+            <a href="{{ url('financeiro/deposito') }}" class="{% if controller == 'financeiro' and action == 'deposito' %}active{% endif %}">
+                <i class="fa fa-arrow-down text-success"></i>
+                <span>Depósito</span>
+            </a>
+            <a href="{{ url('financeiro/saque') }}" class="{% if controller == 'financeiro' and action == 'saque' %}active{% endif %}">
+                <i class="fa fa-arrow-up text-danger"></i>
+                <span>Saque</span>
+            </a>
+            <a href="{{ url('perfil') }}" class="{% if controller == 'perfil' %}active{% endif %}">
+                <i class="fa fa-user"></i>
+                <span>Perfil</span>
+            </a>
+        {% endif %}
+        <a href="javascript:;" onclick="$('html').toggleClass('show-menu');">
+            <i class="fa fa-bars"></i>
+            <span>Menu</span>
+        </a>
+    </div>
+
+</div>
+
+{{ seo_footer() }}
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="node_modules/owl.carousel2/dist/owl.carousel.js"></script>
+<script type="text/javascript" src="node_modules/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript" src="cdn/js/clipboard.min.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.form.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.serializeObject.js"></script>
+<script type="text/javascript" src="cdn/js/modernizr.min.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.mask.js"></script>
+<script type="text/javascript" src="cdn/js/mask.js"></script>
+<script type="text/javascript" src="cdn/js/fastclick.js"></script>
+<script type="text/javascript" src="cdn/js/admin.js?v=1.0.0"></script>
+<script type="text/javascript" src="cdn/js/string.js"></script>
+<script type="text/javascript" src="js/site.js?v=1.0.0"></script>
+
+{% include 'website/modals/login.twig' %}
+
+{{ dados.getHtmlFooter()|raw }}
+
+{% block script %}{% endblock %}
+
+<script>
+    if ($('.carousel').length) {
+        $('.carousel').carousel();
+    }
+</script>
+
+</body>
+</html>

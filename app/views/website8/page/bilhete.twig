@@ -1,0 +1,120 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="container-fluid px-lg-4 px-3 py-4">
+        <div class="sb-page-card">
+            <h3 class="sb-page-title"><i class="fa fa-ticket"></i> Consulta de Bilhete</h3>
+            
+            <form class="admpage-form mb-4">
+                <div class="row align-items-end">
+                    <div class="col-12 col-md-8 col-lg-6">
+                        <label class="text-white-50 font-weight-bold small">CÓDIGO DO BILHETE</label>
+                        <div class="input-group input-group-lg">
+                            <input type="text" maxlength="12" name="codigo" class="form-control bg-dark border-secondary text-white font-weight-bold" value="{{ _post.codigo }}" placeholder="Ex: ABC123XYZ"/>
+                            <div class="input-group-append">
+                                <button class="btn btn-success font-weight-bold px-4" style="background-color: var(--sb-green); border-color: var(--sb-green);">
+                                    <i class="fa fa-search"></i> Pesquisar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="admpage-container"></div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block bilhete %}
+
+    <div class="sb-card">
+        <div class="sb-card-header">
+            <span><i class="fa fa-info-circle mr-1"></i> Detalhes do Bilhete</span>
+            <span class="badge badge-warning text-dark font-weight-bold">#{{ aposta.getId() }}</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive m-0">
+                <table class="table sb-table m-0">
+                    <tbody>
+                    <tr>
+                        <th style="width: 20%;">Código:</th>
+                        <td style="width: 30%;" class="font-weight-bold text-warning">{{ aposta.getCodigoBilhete() }}</td>
+                        <th style="width: 20%;">Data da Aposta:</th>
+                        <td style="width: 30%;">{{ aposta.getData(true) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Cliente:</th>
+                        <td class="font-weight-bold text-white">{{ aposta.getApostadorNome() }}</td>
+                        <th>Usuário / Cambista:</th>
+                        <td>{{ user.getNome() }}</td>
+                    </tr>
+                    <tr>
+                        <th>Valor da Aposta:</th>
+                        <td class="font-weight-bold">R$ {{ aposta.getValor(true) }}</td>
+                        <th>Número de Jogos:</th>
+                        <td>{{ aposta.getJogos() }}</td>
+                    </tr>
+                    <tr>
+                        <th>Possível Retorno:</th>
+                        <td class="font-weight-bold text-success" style="font-size: 16px;">R$ {{ aposta.getRetornoValido(true) }}</td>
+                        <th>Qtd. Acertos:</th>
+                        <td>{{ aposta.get('acertos') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Situação:</th>
+                        <td colspan="3">
+                            {% if aposta.getStatus() == 1 %}
+                                <span class="badge badge-{{ aposta.getVerificado() ? (aposta.getGanhou() ? 'success' : 'danger') : 'info' }} p-2">
+                                    {{ aposta.getVerificado() ? (aposta.getGanhou() ? 'Ganhou' : 'Perdeu') : 'Aguardando conclusão dos jogos' }}
+                                </span>
+                            {% else %}
+                                <span class="badge badge-warning text-dark p-2">
+                                    {{ {0: 'Cancelada', 2: 'Aguardando pagamento', 3: 'Não recebeu pagamento', 99: 'Excluída'}[aposta.getStatus()] }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if aposta.getStatus() == 2 %}
+        <div class="text-right pt-3">
+            <form onsubmit="javascript:return false;" class="form-bilhete">
+                <input type="hidden" name="token" value="{{ aposta.getToken() }}">
+                <button class="sb-btn-bet px-4 py-2 d-inline-flex" style="width: auto;">
+                    <i class="fa fa-check"></i> Validar Aposta
+                </button>
+            </form>
+        </div>
+        <script>
+            $('.form-bilhete')
+                .adminPage({
+                    autoSearch: false,
+                    controller: 'bilhete',
+                    insertAction: 'validar',
+                    alertSuccess: true,
+                })
+                .on("success", function (event, e) {
+                    if (e.result == 1)
+                        page.reloadSearch();
+                });
+        </script>
+    {% endif %}
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        var page = $.adminPage({
+            formSearch: '.admpage-form',
+            container: '.admpage-container',
+            searchValues: {codigo: '{{ _post.codigo }}'},
+        });
+    </script>
+{% endblock %}

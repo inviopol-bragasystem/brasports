@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+
+    {{ seo_header() }}
+
+    <link rel="stylesheet" href="css/bootstrap4.css"/>
+    <link rel="stylesheet" href="css/site2.css?v=0.0.2"/>
+    <link rel="stylesheet" href="css/loading.css"/>
+
+    {% block head %}{% endblock %}
+
+    {{ dados.getHtmlHead()|raw }}
+<style>
+@media only screen and (min-width: 768px){
+    .d1{
+        display:none;
+    }
+}
+@media only screen and (max-width: 600px){
+    .d1{
+        border-radius: 0;
+        background-color: transparent;
+        color: white;
+        display:visible;
+    }
+}
+</style>
+{% include 'website/inc/personalizacao-css.twig' %}
+</head>
+<body>
+
+{% set hoje = 'now'|date('Y-m-d') %}
+{% set amanha = '+1day'|date('Y-m-d') %}
+
+<form id="modal-login" class="modal fade" method="post">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Entrar</h5>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Login/E-mail</label>
+                    <input type="text" name="username" class="form-control" required/>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" name="password" class="form-control" required minlength="5" maxlength="20"/>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fa fa-sign-in"></i> Entrar
+                </button>
+                {% if dados.getExibirRegistro() %}
+                    <div class="text-center mt-3">
+                        <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="btn btn-link btn-sm">
+                            Cadastre-se
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
+<div id="website">
+
+    <header class="lw-header">
+        <div class="container-fluid">
+            <div class="row align-items-center justify-content-between">
+                <div class="col col-md-auto">
+                    <a href="{{ url() }}">
+                        <img src="{{ dados.imgCapa(true, 'logo').getSource(true) }}" class="brand"/>
+                    </a>
+                </div>
+                <div class="col d-none d-md-block">
+                    <ul class="menu text-right">
+                        {% if dados.getExibirCassino() %}
+                            <li>
+                                <a href="{{ url('cassino') }}"><i class="fa fa-gamepad text-warning"></i> Cassino</a>
+                            </li>
+                        {% endif %}
+                        {% if dados.getExibirApp() %}
+                            <li>
+                                <a href="{{ dados.getApp()|default(url('app')) }}" target="_blank"><i class="fa fa-android"></i> APP</a>
+                            </li>
+                        {% endif %}
+                        {% if user.getType() == 1 %}
+                            <li>
+                                <a href="{{ url('twig') }}">
+                                    <i class="fa fa-refresh"></i> Twig Clean
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if not user %}
+                            {% if dados.getExibirLogin() %}
+                                <li>
+                                    <a href="#modal-login" data-toggle="modal">
+                                        <i class="fa fa-sign-in"></i> Entrar
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if dados.getExibirRegistro() %}
+                                <li>
+                                    <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}">
+                                        <i class="fa fa-edit"></i> Criar conta
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li>
+                                <a href="{{ url("comunicados") }}">
+                                    <i class="fa fa-bullhorn"></i> Comunicados
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url('logout') }}">
+                                    <i class="fa fa-sign-out"></i> Sair
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    <hr/>
+                    <ul class="menu">
+                        <li>
+                            <a href="{{ url() }}">
+                                Apostar
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('bilhete') }}">
+                                Consultar Bilhete
+                            </a>
+                        </li>
+                        {% if user %}
+                            <li>
+                                <a href="{{ url('apostas') }}">
+                                    Minhas Apostas
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url('perguntas-frequentes') }}">Formas de Pagamentos</a>
+                            </li>
+                            <li>
+                                <a href="{{ url("perfil") }}">
+                                    Perfil
+                                </a>
+                            </li>
+                            <li>
+                                <div class="btn-group d-block">
+                                    <a href="{{ url('financeiro/extrato') }}" class="dropdown-toggle d-block"
+                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Meu saldo: <span class="text-warning">R$ {{ user.getCredito(true) }}</span>
+                                    </a>
+                                    <div class="dropdown-menu text-dark">
+                                        <a class="dropdown-item" href="{{ url("financeiro/extrato") }}">Extrato</a>
+                                        <a class="dropdown-item" href="{{ url("financeiro/caixa") }}">Caixa</a>
+                                        <a class="dropdown-item" href="{{ url("financeiro/deposito") }}">Depósito</a>
+                                        <a class="dropdown-item" href="{{ url("financeiro/transferencia") }}">Transferencia</a>
+                                        <a class="dropdown-item" href="{{ url("financeiro/saque") }}">Saque</a>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% if user %}
+                <div class="col-auto d-block d-md-none">
+                    <div class="btn-group d-block">
+                        <a href="{{ url('financeiro/extrato') }}" class="dropdown-toggle d-block"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="text-warning">R$ {{ user.getCredito(true) }}</span>
+                        </a>
+                        <div class="dropdown-menu text-dark">
+                            <a class="dropdown-item" href="{{ url("financeiro/extrato") }}">Extrato</a>
+                            <a class="dropdown-item" href="{{ url("financeiro/deposito") }}">Depósito</a>
+                            <a class="dropdown-item" href="{{ url("financeiro/transferencia") }}">Transferencia</a>
+                            <a class="dropdown-item" href="{{ url("financeiro/saque") }}">Saque</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="col-auto d-block d-md-none">
+                    <button class="btn btn-primary" onclick="$('html').toggleClass('show-menu');">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="main">
+        {% block main %}{% endblock %}
+    </div>
+
+    <footer class="lw-rodape">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col d-none d-xl-block"></div>
+                <div class="col-auto d-none d-md-block">
+                    <ul>
+                        <li>
+                            <a href="{{ url('termos-uso') }}">Termos de Uso</a>
+                        </li>
+                        <li>
+                            <a href="{{ url('regras') }}">Regras</a>
+                        </li>
+                        <li>
+                            <a href="{{ url('cotacoes') }}">Cotações</a>
+                        </li>
+                        <li>
+                            <a href="{{ url('perguntas-frequentes') }}">Formas de Pagamentos</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col text-right d-sm-none d-md-block d-xl-block">
+                    ©{{ 'now'|date('Y') }} {{ dados('Banca') }}. Todos os direitos reservados
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<div class="menu-mobile">
+    <div class="title">
+        <i class="fa fa-bars"></i> Menu
+    </div>
+    <ul>
+        <li>
+            <a href="{{ url() }}">
+                Apostar
+            </a>
+        </li>
+        <li>
+            <a href="{{ url('bilhete') }}">
+                Consultar Bilhete
+            </a>
+        </li>
+        {% if user %}
+            <li>
+                <a href="{{ url('apostas') }}">
+                    Minhas Apostas
+                </a>
+            </li>
+            <li>
+                <a href="{{ url("perfil") }}">
+                    Perfil
+                </a>
+            </li>
+        {% endif %}
+
+        <li>
+            <a href="{{ url('termos-uso') }}">Termos de Uso</a>
+        </li>
+        {% if dados.getExibirRegras() %}
+            <li>
+                <a href="{{ url('regras') }}">Regras</a>
+            </li>
+        {% endif %}
+        {% if dados.getExibirCotacoes() %}
+            <li>
+                <a href="{{ url('cotacoes') }}">Cotações</a>
+            </li>
+        {% endif %}
+        <li>
+            <a href="{{ url('perguntas-frequentes') }}">Formas de Pagamentos</a>
+        </li>
+
+        {% if dados.getExibirApp() %}
+            <li>
+                <a href="{{ dados.getApp()|default(url('app')) }}" target="_blank">Baixar APP</a>
+            </li>
+        {% endif %}
+        {% if not user %}
+            {% if dados.getExibirLogin() %}
+                <li>
+                    <a href="#modal-login" data-toggle="modal" onclick="$('html').removeClass('show-menu');">
+                        Entrar
+                    </a>
+                </li>
+            {% endif %}
+            {% if dados.getExibirRegistro() %}
+                <li>
+                    <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}">
+                        Criar conta
+                    </a>
+                </li>
+            {% endif %}
+        {% else %}
+            {% if dados.getExibirComunicados() %}
+                <li>
+                    <a href="{{ url("comunicados") }}">
+                        Comunicados
+                    </a>
+                </li>
+            {% endif %}
+            <li>
+                <a href="{{ url('logout') }}">
+                    Sair
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+
+{{ seo_footer() }}
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="node_modules/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.mask.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.form.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.serializeObject.js"></script>
+<script type="text/javascript" src="cdn/js/fastclick.js"></script>
+<script type="text/javascript" src="cdn/js/modernizr.min.js"></script>
+<script type="text/javascript" src="cdn/js/mask.js"></script>
+<script type="text/javascript" src="cdn/js/string.js"></script>
+<script type="text/javascript" src="node_modules/owl.carousel2/dist/owl.carousel.js"></script>
+<script type="text/javascript" src="cdn/js/clipboard.min.js"></script>
+<script type="text/javascript" src="cdn/js/admin.js"></script>
+<script type="text/javascript" src="js/site.js?v=1.0.0"></script>
+
+{% block script %}{% endblock %}
+
+{{ dados.getHtmlFooter()|raw }}
+
+<script>
+
+    $("#modal-login")
+        .adminPage({
+            module: 'entrar',
+            controller: 'login',
+            autoSearch: false,
+        })
+        .on("success", function (event, e) {
+            console.log(e);
+            if (e.result == 1) {
+                window.location.href = e.url;
+            }
+        });
+
+</script>
+
+</body>
+</html>

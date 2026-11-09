@@ -1,0 +1,1023 @@
+/* ==========================================================================
+   TEMA 6: BETANO SPORTS (appbetano.paineldemonstrativo.com.br)
+   Estilo: Betano Laranja Vibrante (#EA580C / #FF5722), Grafite & Boletim de Apostas Moderno
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700;900&display=swap');
+
+:root {
+  --btn-orange: #ea580c;
+  --btn-orange-dark: #c2410c;
+  --btn-orange-light: #ff7828;
+  --btn-orange-glow: rgba(234, 88, 12, 0.4);
+  --btn-bg-main: #070b14;
+  --btn-bg-header: #0e1626;
+  --btn-bg-subnav: #0a101d;
+  --btn-bg-card: #131d31;
+  --btn-bg-card-alt: #1a2742;
+  --btn-bg-hover: #223254;
+  --btn-border: #1e2d4a;
+  --btn-border-light: #2c416a;
+  --btn-odd-bg: #1c2942;
+  --btn-odd-border: #26385a;
+  --btn-odd-hover: #26385d;
+  --btn-text-white: #ffffff;
+  --btn-text-gray: #94a3b8;
+  --btn-text-muted: #64748b;
+  --btn-green: #22c55e;
+  --btn-live: #ef4444;
+}
+
+html, body {
+  background-color: var(--btn-bg-main) !important;
+  color: var(--btn-text-white);
+  font-family: 'Roboto', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--btn-text-white);
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: var(--btn-orange-light);
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   HEADER BETANO
+   ========================================================================== */
+.btn-header {
+  background: var(--btn-bg-header);
+  border-bottom: 2px solid var(--btn-orange);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  position: relative;
+  z-index: 100;
+}
+
+.btn-header-top {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btn-logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.btn-logo-container .brand-img {
+  max-height: 44px;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+.btn-logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.btn-logo-badge {
+  background: var(--btn-orange);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-left: 2px;
+  box-shadow: 0 2px 8px var(--btn-orange-glow);
+}
+
+.btn-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.btn-top-nav li a {
+  color: var(--btn-text-gray);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-top-nav li a:hover {
+  color: #ffffff;
+  background-color: var(--btn-bg-hover);
+}
+
+.btn-btn-login {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid var(--btn-border-light) !important;
+  padding: 7px 16px !important;
+  border-radius: 6px !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+}
+
+.btn-btn-login:hover {
+  background-color: var(--btn-bg-hover) !important;
+  border-color: #ffffff !important;
+}
+
+.btn-btn-register {
+  background: linear-gradient(135deg, var(--btn-orange) 0%, var(--btn-orange-dark) 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--btn-orange-light) !important;
+  padding: 7px 18px !important;
+  border-radius: 6px !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  box-shadow: 0 2px 10px var(--btn-orange-glow) !important;
+}
+
+.btn-btn-register:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px var(--btn-orange-glow) !important;
+}
+
+.btn-user-balance {
+  background: #152238;
+  border: 1px solid var(--btn-border);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.btn-user-balance .val {
+  color: var(--btn-orange-light);
+  font-weight: 800;
+  margin-left: 4px;
+}
+
+/* Submenu Esportes com Ícones Circulares */
+.btn-subnav {
+  background-color: var(--btn-bg-subnav);
+  padding: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.btn-subnav ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 2px;
+}
+
+.btn-subnav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--btn-text-gray);
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.btn-subnav ul li a:hover,
+.btn-subnav ul li.active a {
+  color: #ffffff;
+  border-bottom-color: var(--btn-orange);
+  background: rgba(234, 88, 12, 0.08);
+}
+
+.btn-subnav ul li.active a i {
+  color: var(--btn-orange);
+}
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL BETANO
+   ========================================================================== */
+.btn-main-wrapper {
+  padding: 20px 0 40px;
+}
+
+.btn-layout-grid {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.btn-col-left {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.btn-col-center {
+  flex: 1;
+  min-width: 0;
+}
+
+.btn-col-right {
+  width: 320px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1200px) {
+  .btn-col-left { width: 220px; }
+  .btn-col-right { width: 300px; }
+}
+
+@media (max-width: 991px) {
+  .btn-layout-grid { flex-direction: column; }
+  .btn-col-left, .btn-col-right { width: 100%; }
+}
+
+/* Cards & Sidebars */
+.btn-card {
+  background-color: var(--btn-bg-card);
+  border: 1px solid var(--btn-border);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.btn-card-header {
+  background: linear-gradient(180deg, #18253e 0%, #131d31 100%);
+  border-bottom: 1px solid var(--btn-border);
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+
+.btn-menu-list li a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  color: var(--btn-text-gray);
+  font-size: 13px;
+  font-weight: 600;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-menu-list li a:hover,
+.btn-menu-list li a.active {
+  color: #ffffff;
+  background-color: var(--btn-bg-hover);
+  border-left-color: var(--btn-orange);
+}
+
+.btn-menu-list li a i {
+  color: var(--btn-orange);
+  margin-right: 8px;
+}
+
+/* Toolbar de Filtros */
+.btn-toolbar {
+  background: var(--btn-bg-card);
+  border: 1px solid var(--btn-border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.btn-toolbar input,
+.btn-toolbar select {
+  background-color: #0b1220 !important;
+  border: 1px solid var(--btn-border) !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+}
+
+.btn-toolbar input:focus,
+.btn-toolbar select:focus {
+  border-color: var(--btn-orange) !important;
+  box-shadow: 0 0 8px var(--btn-orange-glow) !important;
+}
+
+/* ==========================================================================
+   PARTIDAS & MERCADOS BETANO
+   ========================================================================== */
+.btn-league-section {
+  background-color: var(--btn-bg-card);
+  border: 1px solid var(--btn-border);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.btn-league-header {
+  background: linear-gradient(90deg, #1a2844 0%, #131d31 100%);
+  border-bottom: 2px solid var(--btn-orange);
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-league-title {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-league-title i {
+  color: var(--btn-orange);
+}
+
+.btn-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.btn-table thead th {
+  background-color: #0d1524;
+  color: var(--btn-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--btn-border);
+  text-align: center;
+}
+
+.btn-match-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background-color 0.15s ease;
+}
+
+.btn-match-row:hover {
+  background-color: var(--btn-bg-hover);
+}
+
+.btn-teams {
+  padding: 10px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-times-box {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.35;
+  max-width: 100%;
+}
+
+.btn-time-casa,
+.btn-time-fora {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  gap: 5px;
+  color: #ffffff;
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 200px;
+}
+
+.btn-team-name {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.btn-versus {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--btn-orange);
+  font-weight: 700;
+  opacity: 0.95;
+  flex-shrink: 0;
+  padding: 0 4px;
+}
+
+.btn-team-flag {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 3px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+  vertical-align: middle;
+  background-color: rgba(255, 255, 255, 0.04);
+  padding: 1px;
+}
+
+.btn-league-flag {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  object-fit: contain;
+  border-radius: 2px;
+  vertical-align: middle;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.btn-match-time {
+  font-size: 11px;
+  color: var(--btn-text-muted);
+  font-weight: 500;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Botões de Cotação Betano */
+.btn-odd-btn {
+  background: var(--btn-odd-bg);
+  border: 1px solid var(--btn-odd-border);
+  border-radius: 8px;
+  padding: 8px 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 62px;
+  user-select: none;
+}
+
+.btn-odd-btn:hover {
+  background-color: var(--btn-odd-hover);
+  border-color: var(--btn-orange);
+  transform: translateY(-1px);
+}
+
+.btn-odd-btn.active {
+  background: linear-gradient(135deg, var(--btn-orange) 0%, var(--btn-orange-dark) 100%) !important;
+  border-color: var(--btn-orange-light) !important;
+  box-shadow: 0 0 12px var(--btn-orange-glow);
+}
+
+.btn-odd-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--btn-text-muted);
+  text-transform: uppercase;
+}
+
+.btn-odd-btn.active .btn-odd-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.btn-odd-val {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+.btn-more-odds-btn {
+  background: transparent;
+  border: 1px solid var(--btn-border);
+  color: var(--btn-orange-light);
+  font-weight: 800;
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-more-odds-btn:hover,
+.btn-more-odds-btn.active {
+  background-color: var(--btn-bg-hover);
+  border-color: var(--btn-orange);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   BOLETIM DE APOSTAS BETANO
+   ========================================================================== */
+.btn-betslip {
+  background-color: var(--btn-bg-card);
+  border: 1px solid var(--btn-border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.btn-betslip-header {
+  background: linear-gradient(135deg, var(--btn-orange) 0%, var(--btn-orange-dark) 100%);
+  padding: 14px 16px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-betslip-header h4 {
+  margin: 0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-betslip-badge {
+  background: #ffffff;
+  color: var(--btn-orange-dark);
+  font-size: 12px;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.btn-betslip-body {
+  padding: 16px;
+}
+
+/* Tabs do Boletim (Simples / Múltiplas) */
+.btn-betslip-tabs {
+  display: flex;
+  background: #0d1524;
+  border-radius: 8px;
+  padding: 3px;
+  margin-bottom: 14px;
+}
+
+.btn-betslip-tab {
+  flex: 1;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--btn-text-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-betslip-tab.active {
+  background: var(--btn-orange);
+  color: #ffffff;
+}
+
+.btn-selection-item {
+  background: #0d1524;
+  border: 1px solid var(--btn-border);
+  border-left: 3px solid var(--btn-orange);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.btn-selection-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--btn-text-muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-selection-remove:hover {
+  color: var(--btn-orange-light);
+}
+
+.btn-selection-teams {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  padding-right: 20px;
+}
+
+.btn-selection-market {
+  font-size: 11px;
+  color: var(--btn-text-muted);
+  margin: 3px 0;
+}
+
+.btn-selection-odd-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.btn-selection-odd-row .rate {
+  font-weight: 800;
+  color: var(--btn-orange-light);
+}
+
+/* Quick Stake Chips */
+.btn-quick-stakes {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.btn-chip-btn {
+  flex: 1;
+  background-color: #0d1524;
+  border: 1px solid var(--btn-border);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.btn-chip-btn:hover {
+  background-color: var(--btn-orange);
+  border-color: var(--btn-orange);
+}
+
+.btn-betslip-summary {
+  background: #0d1524;
+  border: 1px solid var(--btn-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.btn-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--btn-text-gray);
+  margin-bottom: 6px;
+}
+
+.btn-summary-row.total-return {
+  border-top: 1px dashed var(--btn-border);
+  padding-top: 8px;
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.btn-summary-row.total-return .val {
+  color: var(--btn-green);
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.btn-btn-bet {
+  width: 100%;
+  background: linear-gradient(135deg, var(--btn-orange) 0%, var(--btn-orange-dark) 100%);
+  color: #ffffff;
+  border: 1px solid var(--btn-orange-light);
+  border-radius: 8px;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--btn-orange-glow);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-btn-bet:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--btn-orange-glow);
+}
+
+.btn-btn-bet:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-btn-clear {
+  width: 100%;
+  background: transparent;
+  color: var(--btn-text-muted);
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px;
+  margin-top: 6px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.btn-btn-clear:hover {
+  color: var(--btn-orange-light);
+}
+
+/* ==========================================================================
+   RODAPÉ BETANO
+   ========================================================================== */
+.btn-footer {
+  background-color: #070b14;
+  border-top: 1px solid var(--btn-border);
+  padding: 30px 0;
+  color: var(--btn-text-muted);
+  font-size: 12px;
+}
+
+.btn-footer a {
+  color: var(--btn-text-gray);
+  margin-right: 15px;
+}
+
+.btn-footer a:hover {
+  color: var(--btn-orange);
+}
+
+.btn-age-badge {
+  display: inline-block;
+  background: var(--btn-orange);
+  color: #fff;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+/* Mobile Drawer */
+.btn-menu-mobile {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100vh;
+  background-color: #0e1626;
+  border-right: 2px solid var(--btn-orange);
+  z-index: 99999;
+  transition: left 0.3s ease;
+  padding: 20px 0;
+  overflow-y: auto;
+}
+
+html.show-menu .btn-menu-mobile {
+  left: 0;
+}
+
+.btn-menu-mobile-header {
+  padding: 0 20px 15px;
+  border-bottom: 1px solid var(--btn-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.btn-menu-mobile ul {
+  list-style: none;
+  margin: 15px 0 0;
+  padding: 0;
+}
+
+.btn-menu-mobile ul li a {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: var(--btn-text-gray);
+  font-size: 14px;
+  font-weight: 600;
+  border-left: 3px solid transparent;
+}
+
+.btn-menu-mobile ul li a:hover {
+  color: #ffffff;
+  background: var(--btn-bg-hover);
+  border-left-color: var(--btn-orange);
+}
+
+.btn-menu-mobile ul li a i {
+  color: var(--btn-orange);
+  margin-right: 12px;
+  width: 18px;
+  text-align: center;
+}
+
+/* Subpage Cards */
+.btn-page-card {
+  background-color: var(--btn-bg-card);
+  border: 1px solid var(--btn-border);
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.btn-page-title {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--btn-border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   AJUSTES RESPONSIVOS COMPACTOS (MOBILE JOGOS E ODDS)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .btn-league-section {
+    margin-bottom: 8px !important;
+    border-radius: 4px !important;
+  }
+
+  .btn-league-header {
+    padding: 6px 10px !important;
+  }
+
+  .btn-league-title {
+    font-size: 12px !important;
+    gap: 5px !important;
+  }
+
+  .btn-table {
+    width: 100% !important;
+  }
+
+  .btn-table thead th {
+    padding: 4px 2px !important;
+    font-size: 9.5px !important;
+    letter-spacing: 0 !important;
+  }
+
+  .btn-table thead th:first-child,
+  .btn-table tbody td:first-child {
+    min-width: 0 !important;
+    width: auto !important;
+    padding-left: 6px !important;
+  }
+
+  .btn-table thead th:not(:first-child):not(:last-child) {
+    width: 46px !important;
+    min-width: 42px !important;
+    max-width: 48px !important;
+  }
+
+  .btn-table thead th:last-child {
+    width: 36px !important;
+    min-width: 32px !important;
+    max-width: 38px !important;
+  }
+
+  .btn-match-row td {
+    padding: 4px 2px !important;
+  }
+
+  .btn-teams {
+    padding: 2px 4px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+
+  .btn-times-box {
+    display: inline-flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    font-size: 11px !important;
+    gap: 3px !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+  }
+
+  .btn-time-casa,
+  .btn-time-fora {
+    display: inline-flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    max-width: 95px !important;
+    gap: 3px !important;
+  }
+
+  .btn-team-name {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .btn-team-flag {
+    width: 15px !important;
+    height: 15px !important;
+    min-width: 15px !important;
+  }
+
+  .btn-versus {
+    font-size: 10px !important;
+    padding: 0 1px !important;
+  }
+
+  .btn-match-time {
+    font-size: 9px !important;
+    margin-top: 1px !important;
+    gap: 3px !important;
+  }
+
+  .btn-odd-btn {
+    min-width: 40px !important;
+    width: 100% !important;
+    max-width: 48px !important;
+    padding: 3px 1px !important;
+    margin: 0 auto !important;
+    border-radius: 4px !important;
+  }
+
+  .btn-odd-label {
+    font-size: 8px !important;
+    margin-bottom: 1px !important;
+    line-height: 1 !important;
+  }
+
+  .btn-odd-val {
+    font-size: 11.5px !important;
+    line-height: 1.1 !important;
+    font-weight: 800 !important;
+  }
+
+  .btn-more-odds-btn {
+    min-width: 30px !important;
+    width: 100% !important;
+    max-width: 36px !important;
+    padding: 5px 1px !important;
+    font-size: 10px !important;
+    border-radius: 4px !important;
+  }
+
+  .btn-toolbar {
+    padding: 8px 10px !important;
+    margin-bottom: 10px !important;
+  }
+}

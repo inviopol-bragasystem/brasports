@@ -1,0 +1,104 @@
+{% extends layout %}
+
+{% block list %}
+
+    <div class="table-responsive m-0">
+        {% if busca.getCount() %}
+            <table class="table table-striped table-bordered table-hover mb-0" style="font-size: 13px;">
+                <thead>
+                <tr style="background: #000; color: #fff;">
+                    <th>Código</th>
+                    <th>Cliente</th>
+                    <th>Jogos</th>
+                    <th>Valor</th>
+                    <th>Retorno</th>
+                    <th>Data</th>
+                    <th>Situação</th>
+                </tr>
+                </thead>
+                <tfoot>
+                <tr>
+                    <th colspan="7" class="bg-light small">{{ busca.getPageDescription() }}</th>
+                </tr>
+                </tfoot>
+                <tbody>
+                {% for v in busca.getRegistros() %}
+                    <tr class="table-{{ v.getStatusClass() }}">
+                        <td class="text-center font-weight-bold">
+                            <a href="{{ url('apostas/bilhete', [v.getToken()]) }}" target="_blank" style="color: #d29d00;">
+                                #{{ v.getId() }}
+                            </a>
+                        </td>
+                        <td>{{ v.getApostadorNome()|default('-') }}</td>
+                        <td class="text-center">{{ v.getJogos() }}</td>
+                        <td class="text-center font-weight-bold">R$ {{ v.getValor(true) }}</td>
+                        <td class="text-center font-weight-bold" style="color: #28a745;">R$ {{ v.getRetornoValido(true) }}</td>
+                        <td class="text-center small">{{ v.getData(true) }}</td>
+                        <td class="text-center">
+                            <span class="badge badge-{{ v.getStatusClass() }}">
+                                {{ {0: 'Cancelada', 1: 'Ativa', 2: 'Pendente', 3: 'Não paga', 99: 'Excluída'}[v.getStatus()]|default('Outro') }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="p-3 bg-light border-top">{{ busca|raw }}</div>
+        {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="fa fa-ticket fa-3x mb-3 text-warning"></i>
+                <p>Nenhuma aposta encontrada no período informado.</p>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block main %}
+
+    <div class="gold-card m-3">
+        <div class="gold-card-header">
+            <i class="fa fa-list"></i> Minhas Apostas
+        </div>
+
+        <form class="admpage-form-search mb-4">
+            <div class="row">
+                <div class="form-group col-md-3 col-sm-6">
+                    <label class="small font-weight-bold">DE:</label>
+                    <input type="date" name="dataInicial" class="form-control form-control-sm" value="{{ 'now'|date_modify('-7 days')|date('Y-m-d') }}"/>
+                </div>
+                <div class="form-group col-md-3 col-sm-6">
+                    <label class="small font-weight-bold">ATÉ:</label>
+                    <input type="date" name="dataFinal" class="form-control form-control-sm" value="{{ 'now'|date('Y-m-d') }}"/>
+                </div>
+                <div class="form-group col-md-3 col-sm-6">
+                    <label class="small font-weight-bold">ORDENAR POR:</label>
+                    <select name="orderby" class="form-control form-control-sm">
+                        <option value="data-desc">Data (decrescente)</option>
+                        <option value="data-asc">Data (crescente)</option>
+                        <option value="valor-desc">Valor (maior primeiro)</option>
+                        <option value="retorno-desc">Prêmio (maior primeiro)</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3 col-sm-6 d-flex align-items-end">
+                    <button type="submit" class="botao w-100" style="height: 31px; font-size: 13px;">
+                        <i class="fa fa-search"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="admpage-container"></div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $.adminPage({
+            formSearch: '.admpage-form-search',
+            container: '.admpage-container',
+        });
+    </script>
+{% endblock %}
+

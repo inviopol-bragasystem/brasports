@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="pt-BR" style="--mobile-nav-inset: calc(76px + env(safe-area-inset-bottom)); --theme-bg: #1d2f3d; --theme-bg-opacity: #1d2f3d00; --theme-primary: #1b75e2; --theme-primary-opacity: #1b75e230; --theme-primary-opacity-2: #1b75e260; --theme-primary-hover: #3b84e4; --theme-card-1: #263847; --theme-card-2: #243947; --theme-card-3: #1b2f41; --theme-card-3-opacity: #1b2f4190; --theme-card-text: #eaf2ff; --theme-on-primary: #ffffff; --theme-text: #FFFFFF; --theme-section-icon: #f2ba09; --theme-section-icon-glow: #f2ba0960; --theme-paid-value: #f2ba09;">
+<head>
+    {{ seo_header() }}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#1d2f3d"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="css/bootstrap4.css"/>
+    <link rel="stylesheet" href="css/loading.css"/>
+    <link rel="stylesheet" href="css/sweetalert2.min.css"/>
+    <link rel="stylesheet" href="css/99play/99play.css?v=2.0.0"/>
+
+    <style>
+        [v-cloak] { display: none !important; }
+        body {
+            background-color: #1d2f3d !important;
+            color: #FFFFFF !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .bg-theme-bg { background-color: var(--theme-bg) !important; }
+        .bg-theme-card-1 { background-color: var(--theme-card-1) !important; }
+        .bg-theme-card-2 { background-color: var(--theme-card-2) !important; }
+        .bg-theme-card-3 { background-color: var(--theme-card-3) !important; }
+        .text-theme-primary { color: var(--theme-primary) !important; }
+        .text-theme-card-text { color: var(--theme-card-text) !important; }
+        .bg-theme-primary { background-color: var(--theme-primary) !important; }
+
+        /* Sidebar (Desktop 260px) 1:1 99play.io */
+        aside#main-sidebar {
+            width: 260px !important;
+            min-width: 260px !important;
+            max-width: 260px !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        /* Sidebar Collapse (Sanfona Desktop) */
+        body.sidebar-collapsed aside#main-sidebar {
+            width: 0 !important;
+            min-width: 0 !important;
+            max-width: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            overflow: hidden !important;
+        }
+        body.sidebar-collapsed .sidebar-toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* 1:1 99Play: Responsividade da Sidebar Mobile vs Desktop */
+        @media (max-width: 1199px) {
+            aside#main-sidebar {
+                display: none !important;
+            }
+            .sidebar-toggle-btn {
+                display: none !important;
+            }
+            body.show-mobile-sidebar {
+                overflow: hidden !important;
+            }
+            body.show-mobile-sidebar aside#main-sidebar {
+                display: block !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                bottom: 0 !important;
+                width: 290px !important;
+                max-width: 86vw !important;
+                max-height: 100vh !important;
+                z-index: 1060 !important;
+                background: #15222e !important;
+                padding: 16px !important;
+                overflow-y: auto !important;
+                box-shadow: 12px 0 35px rgba(0,0,0,0.85) !important;
+            }
+            body.show-mobile-sidebar::after {
+                content: '';
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.72);
+                backdrop-filter: blur(2px);
+                z-index: 1055;
+            }
+            .mobile-sidebar-close-btn {
+                display: flex !important;
+            }
+        }
+        @media (min-width: 1200px) {
+            aside#main-sidebar {
+                display: block !important;
+            }
+            .sidebar-toggle-btn {
+                display: inline-flex !important;
+            }
+            .mobile-sidebar-close-btn {
+                display: none !important;
+            }
+        }
+
+        /* Painéis e Botões da Sidebar 1:1 99play */
+        aside#main-sidebar .panel {
+            background-color: var(--theme-card-2) !important; /* #243947 */
+            border: 1px solid rgba(255, 255, 255, 0.04) !important;
+            border-radius: 16px !important;
+            box-shadow: none !important;
+        }
+        aside#main-sidebar .product-switch {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 6px !important;
+            padding: 6px !important;
+        }
+        aside#main-sidebar .product-tab {
+            height: 44px !important;
+            border-radius: 12px !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+        }
+        aside#main-sidebar .product-tab.active {
+            background-color: var(--theme-primary) !important; /* #1b75e2 */
+            color: #ffffff !important;
+            box-shadow: 0 6px 18px -6px var(--theme-primary) !important;
+        }
+        aside#main-sidebar .product-tab:not(.active) {
+            background-color: transparent !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            box-shadow: none !important;
+        }
+        aside#main-sidebar .product-tab:not(.active):hover {
+            background-color: rgba(255, 255, 255, 0.04) !important;
+            color: #ffffff !important;
+        }
+
+        /* Itens das Listas da Sidebar */
+        aside#main-sidebar .panel ul li a {
+            height: 44px !important;
+            border-radius: 12px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            color: rgba(255, 255, 255, 0.75) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            padding: 0 12px !important;
+            transition: all 0.15s ease !important;
+            text-decoration: none !important;
+        }
+        aside#main-sidebar .panel ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.04) !important;
+            color: #ffffff !important;
+        }
+
+        /* Grade de Jogos Compacta 1:1 99Play (6 a 8 colunas desktop, 3 a 4 colunas mobile) */
+        .play-games-grid {
+            display: grid !important;
+            gap: 10px !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        }
+        @media (min-width: 560px) {
+            .play-games-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            }
+        }
+        @media (min-width: 820px) {
+            .play-games-grid {
+                grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+            }
+        }
+        @media (min-width: 1100px) {
+            .play-games-grid {
+                grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+            }
+        }
+        @media (min-width: 1350px) {
+            .play-games-grid {
+                grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+            }
+        }
+        @media (min-width: 1650px) {
+            .play-games-grid {
+                grid-template-columns: repeat(8, minmax(0, 1fr)) !important;
+            }
+        }
+        @media (max-width: 768px) {
+            .play-games-grid {
+                gap: 8px !important;
+            }
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+
+    {{ dados.getHtmlHead()|raw }}
+    {% include 'website/inc/personalizacao-css.twig' %}
+</head>
+<body class="font-sans">
+<div id="website">
+
+{% set userLogged = user() %}
+
+{# Logo do tema #}
+{% set logoUrl = 'cdn/99play/logo.webp' %}
+{% if dados.imgCapa(true, 'logo').getSource() %}
+    {% set logoUrl = dados.imgCapa(true, 'logo').getSource(true) %}
+{% endif %}
+
+<!-- ========================================================
+     TOP NAVBAR 1:1 99PLAY (72px Desktop / 60px Mobile)
+     ======================================================== -->
+<nav class="fixed top-0 left-0 right-0 z-50 h-[72px] max-[990px]:h-[60px] bg-theme-bg/90 backdrop-blur-md border-b border-white/[0.05]" v-pre>
+    <div class="max-w-[2000px] mx-auto h-full px-4 max-[990px]:px-3 flex items-center gap-3 max-[990px]:gap-2">
+        <!-- Logo -->
+        <a aria-label="Início" class="flex items-center shrink-0 w-[250px] max-[1200px]:w-auto" href="{{ url() }}">
+            <img src="{{ logoUrl }}" alt="{{ dados.getBanca()|default('99Play') }}" data-site-logo="" class="h-[48px] max-[990px]:h-[42px] w-auto max-w-[200px] max-[990px]:max-w-[140px] max-[400px]:max-w-[120px] object-contain object-left">
+        </a>
+
+        <!-- Botão Sanfona / Recolher Menu Lateral (Apenas Desktop >= 1200px) -->
+        <button type="button" aria-label="Recolher menu" title="Recolher menu" class="icon-btn shrink-0 sidebar-toggle-btn" onclick="toggleSidebar();">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 sidebar-toggle-icon transition-transform duration-200"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><path d="M9 3v18"></path><path d="m16 15-3-3 3-3"></path></svg>
+        </button>
+
+        <!-- Botão Abrir Menu Lateral Mobile (< 1200px) -->
+        <button type="button" aria-label="Abrir menu" title="Menu" class="icon-btn shrink-0 min-[1200px]:hidden text-white hover:text-white/80" onclick="$('body').toggleClass('show-mobile-sidebar');">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <!-- Barra de Busca Desktop -->
+        <form action="{{ url('cassino') }}" method="get" class="m-0 p-0 max-[990px]:hidden">
+            <div class="flex items-center gap-3 h-10 w-[300px] max-[1300px]:w-[220px] px-4 rounded-xl bg-theme-card-1 text-sm text-white/40 hover:text-white/60 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                <input type="text" name="search" value="{{ busca|default('') }}" placeholder="Buscar jogos" class="bg-transparent border-0 outline-none text-white text-sm w-full placeholder-white/40" autocomplete="off"/>
+            </div>
+        </form>
+
+        <!-- Links Rápidos Desktop -->
+        <div class="flex items-center gap-5 ml-2 max-[1440px]:hidden">
+            {% if dados.getExibirCassino() %}
+                <a class="text-sm font-medium text-white/60 hover:text-white whitespace-nowrap" href="{{ url('cassino', null, null, {'category': 'Ao Vivo'}) }}">Cassino ao vivo</a>
+                <a class="text-sm font-medium text-white/60 hover:text-white whitespace-nowrap" href="{{ url('cassino', null, null, {'category': 'Slots'}) }}">Slots</a>
+            {% endif %}
+            <a class="text-sm font-medium text-white/60 hover:text-white whitespace-nowrap" href="{{ url('apostar') }}">Esportes</a>
+        </div>
+
+        <div class="flex-1"></div>
+
+        <!-- Botão Busca Mobile -->
+        <button type="button" aria-label="Buscar jogos" onclick="$('#mobileSearchModal').toggle();" class="shrink-0 min-[991px]:hidden flex items-center justify-center w-9 h-9 rounded-full bg-white/[0.12] text-white transition-[filter,transform] hover:brightness-125 active:scale-[0.95]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px]"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        </button>
+
+        <!-- Ações / Login / Saldo -->
+        <div class="flex items-center gap-2 shrink-0">
+            {% if not userLogged %}
+                {% if dados.getExibirLogin() %}
+                    <button type="button" class="btn-ghost max-[990px]:px-3.5" onclick="$('#modal-login').modal('show');">Entrar</button>
+                {% endif %}
+                {% if dados.getExibirRegistro() %}
+                    <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="btn-primary relative max-[990px]:px-3.5">
+                        Cadastre-se
+                        <span class="absolute -top-2 -right-1.5 flex items-center gap-1 rounded-full bg-amber-300 px-1.5 py-[3px] text-[8px]/[1] font-bold uppercase text-zinc-800 shadow">
+                            <img src="cdn/99play/pix-icon.svg" alt="" class="w-[8px]">pix
+                        </span>
+                    </a>
+                {% endif %}
+            {% else %}
+                <!-- Saldo e Acesso Rápido PIX -->
+                <div class="flex items-center gap-2 bg-theme-card-1 px-3 py-1.5 rounded-xl border border-white/[0.08]">
+                    <div class="text-right">
+                        <span class="text-[10px] text-white/50 block leading-none">Saldo</span>
+                        <strong class="text-xs text-white">R$ {{ userLogged.getCredito(true) }}</strong>
+                    </div>
+                    <a href="{{ url('financeiro/deposito') }}" class="btn-primary text-xs py-1 px-2.5 rounded-lg flex items-center gap-1 font-bold">
+                        <img src="cdn/99play/pix-icon.svg" alt="" class="w-3 h-3"> + Depósito
+                    </a>
+                </div>
+
+                <!-- Menu Dropdown do Usuário -->
+                <div class="dropdown d-inline-block">
+                    <button class="btn-ghost p-1.5 rounded-full" type="button" id="userMenuBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-user-circle text-xl text-theme-primary"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right shadow-lg border-0" aria-labelledby="userMenuBtn" style="background:var(--theme-card-2);border:1px solid rgba(255,255,255,0.08);border-radius:14px;min-width:220px;padding:8px 0;z-index:1050;">
+                        <div class="px-3 py-2 border-bottom" style="border-color:rgba(255,255,255,0.08)!important;">
+                            <div class="font-weight-bold text-white text-truncate">{{ userLogged.getNome() }}</div>
+                            <small class="font-weight-bold text-emerald-400">Disponível: R$ {{ userLogged.getCredito(true) }}</small>
+                        </div>
+                        <a class="dropdown-item py-2 text-white" href="{{ url('financeiro/deposito') }}"><i class="fa fa-plus-circle mr-2 text-success"></i> Depositar (PIX)</a>
+                        <a class="dropdown-item py-2 text-white" href="{{ url('financeiro/saque') }}"><i class="fa fa-arrow-up mr-2 text-danger"></i> Solicitar Saque</a>
+                        <a class="dropdown-item py-2 text-white" href="{{ url('financeiro/extrato') }}"><i class="fa fa-history mr-2 text-info"></i> Extrato Financeiro</a>
+                        <a class="dropdown-item py-2 text-white" href="{{ url('apostas') }}"><i class="fa fa-ticket mr-2 text-warning"></i> Minhas Apostas</a>
+                        <a class="dropdown-item py-2 text-white" href="{{ url('perfil') }}"><i class="fa fa-user mr-2 text-primary"></i> Meu Perfil</a>
+                        <div class="dropdown-divider my-1" style="border-color:rgba(255,255,255,0.08);"></div>
+                        <a class="dropdown-item py-2 text-danger font-weight-bold" href="{{ url('logout') }}"><i class="fa fa-sign-out mr-2"></i> Sair</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<!-- Campo de Busca Mobile Expansível -->
+<div id="mobileSearchModal" class="fixed top-[60px] left-0 right-0 z-40 bg-theme-bg/95 backdrop-blur-md p-3 border-b border-white/[0.08]" style="display:none;">
+    <form action="{{ url('cassino') }}" method="get" class="m-0 flex items-center gap-2">
+        <input type="text" name="search" value="{{ busca|default('') }}" placeholder="Buscar jogos, slots ou eventos..." class="flex-1 h-10 px-3 rounded-xl bg-theme-card-1 text-white text-sm outline-none border border-white/[0.08]" autocomplete="off"/>
+        <button type="submit" class="btn-primary h-10 px-4 rounded-xl text-xs font-bold">Buscar</button>
+    </form>
+</div>
+
+<!-- ========================================================
+     ESTRUTURA PRINCIPAL (SIDEBAR 260px + MAIN CONTENT)
+     ======================================================== -->
+<section class="max-w-[2000px] mx-auto w-full pt-[92px] max-[990px]:pt-[72px] px-4 max-[990px]:px-3 flex items-start gap-6">
+
+    <!-- ASIDE 1:1 99PLAY SIDEBAR (DESKTOP 260px) -->
+    <aside aria-label="Menu lateral" id="main-sidebar" class="w-[260px] shrink-0 sticky top-[92px] self-start max-h-[calc(100vh-108px)] overflow-y-auto overscroll-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden" v-pre>
+        <div class="flex flex-col gap-3 pb-4">
+
+            <!-- Header Mobile Drawer (< 1200px) -->
+            <div class="mobile-sidebar-close-btn items-center justify-between pb-3 mb-1 border-b border-white/[0.08]">
+                <img src="{{ logoUrl }}" alt="{{ dados.getBanca()|default('99Play') }}" class="h-8 w-auto">
+                <button type="button" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors" onclick="$('body').removeClass('show-mobile-sidebar');">
+                    <i class="fa fa-times text-base"></i>
+                </button>
+            </div>
+
+            <!-- Botões Laterais Rápidos: DEPÓSITO e SAQUE -->
+            <div class="grid grid-cols-2 gap-2">
+                <a href="{{ userLogged ? url('financeiro/deposito') : 'javascript:;' }}" 
+                   {% if not userLogged %}onclick="$('#modal-login').modal('show');"{% endif %} 
+                   class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl font-extrabold text-xs uppercase tracking-wider text-white shadow-lg transition-transform active:scale-[0.98] text-center" 
+                   style="background: linear-gradient(135deg, #00e054 0%, #00b040 100%);">
+                    <img src="cdn/99play/pix-icon.svg" alt="" class="w-3.5 h-3.5">
+                    <span>Depósito</span>
+                </a>
+                <a href="{{ userLogged ? url('financeiro/saque') : 'javascript:;' }}" 
+                   {% if not userLogged %}onclick="$('#modal-login').modal('show');"{% endif %} 
+                   class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl font-extrabold text-xs uppercase tracking-wider text-white shadow-lg transition-transform active:scale-[0.98] text-center" 
+                   style="background: linear-gradient(135deg, #1b75e2 0%, #0d5bbd 100%);">
+                    <i class="fa fa-money text-xs"></i>
+                    <span>Saque</span>
+                </a>
+            </div>
+
+            <!-- Switch Produto [Cassino] [Esportes] (1:1 99play) -->
+            {% set isEsportes = (pageAposta is defined and pageAposta) or (activeTab is defined and activeTab == 'esportes') %}
+            <div class="panel product-switch" role="tablist" aria-label="Produto">
+                {% if dados.getExibirCassino() %}
+                    {% if not isEsportes %}
+                        <a role="tab" aria-selected="true" title="Cassino" class="product-tab active" href="{{ url('cassino') }}">
+                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 640 512" class="text-lg shrink-0" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M274.9 34.3c-28.1-28.1-73.7-28.1-101.8 0L34.3 173.1c-28.1 28.1-28.1 73.7 0 101.8L173.1 413.7c28.1 28.1 73.7 28.1 101.8 0L413.7 274.9c28.1-28.1 28.1-73.7 0-101.8L274.9 34.3zM200 224a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zM96 200a24 24 0 1 1 0 48 24 24 0 1 1 0-48zM224 376a24 24 0 1 1 0-48 24 24 0 1 1 0 48zM352 200a24 24 0 1 1 0 48 24 24 0 1 1 0-48zM224 120a24 24 0 1 1 0-48 24 24 0 1 1 0 48zm96 328c0 35.3 28.7 64 64 64H576c35.3 0 64-28.7 64-64V256c0-35.3-28.7-64-64-64H461.7c11.6 36 3.1 77-25.4 105.5L320 413.8V448zM480 328a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"></path></svg>
+                            Cassino
+                        </a>
+                    {% else %}
+                        <a role="tab" aria-selected="false" title="Cassino" class="product-tab" href="{{ url('cassino') }}">
+                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 640 512" class="text-lg shrink-0" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M274.9 34.3c-28.1-28.1-73.7-28.1-101.8 0L34.3 173.1c-28.1 28.1-28.1 73.7 0 101.8L173.1 413.7c28.1 28.1 73.7 28.1 101.8 0L413.7 274.9c28.1-28.1 28.1-73.7 0-101.8L274.9 34.3zM200 224a24 24 0 1 1 48 0 24 24 0 1 1 -48 0zM96 200a24 24 0 1 1 0 48 24 24 0 1 1 0-48zM224 376a24 24 0 1 1 0-48 24 24 0 1 1 0 48zM352 200a24 24 0 1 1 0 48 24 24 0 1 1 0-48zM224 120a24 24 0 1 1 0-48 24 24 0 1 1 0 48zm96 328c0 35.3 28.7 64 64 64H576c35.3 0 64-28.7 64-64V256c0-35.3-28.7-64-64-64H461.7c11.6 36 3.1 77-25.4 105.5L320 413.8V448zM480 328a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"></path></svg>
+                            Cassino
+                        </a>
+                    {% endif %}
+                {% endif %}
+
+                {% if isEsportes %}
+                    <a role="tab" aria-selected="true" title="Esportes" class="product-tab active" href="{{ url('apostar') }}">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 256 256" class="text-lg shrink-0" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,39.38,24.79-17.05a88.41,88.41,0,0,1,36.18,27l-8,26.94c-.2,0-.41.1-.61.17l-22.82,7.41a7.59,7.59,0,0,0-1,.4L136,88.62c0-.2,0-.41,0-.62V64C136,63.79,136,63.58,136,63.38ZM95.24,46.33,120,63.38c0,.2,0,.41,0,.62V88c0,.21,0,.42,0,.62L91.44,108.29a7.59,7.59,0,0,0-1-.4l-22.82-7.41c-.2-.07-.41-.12-.61-.17l-8-26.94A88.41,88.41,0,0,1,95.24,46.33Zm-13,129.09H53.9a87.4,87.4,0,0,1-13.79-43.07l22-16.88a5.77,5.77,0,0,0,.58.22l22.83,7.42a7.83,7.83,0,0,0,.93.22l10.79,31.42c-.15.18-.3.36-.44.55L82.7,174.71A7.8,7.8,0,0,0,82.24,175.42ZM150.69,213a88.16,88.16,0,0,1-45.38,0L95.25,184.6c.13-.16.27-.31.39-.48l14.11-19.42a7.66,7.66,0,0,0,.46-.7h35.58a7.66,7.66,0,0,0,.46.7l14.11,19.42c.12.17.26.32.39.48Zm23.07-37.61a7.8,7.8,0,0,0-.46-.71L159.19,155.3c-.14-.19-.29-.37-.44-.55l10.79-31.42a7.83,7.83,0,0,0,.93-.22l22.83-7.42a5.77,5.77,0,0,0,.58-.22l22,16.88a87.4,87.4,0,0,1-13.79,43.07Z"></path></svg>
+                        Esportes
+                    </a>
+                {% else %}
+                    <a role="tab" aria-selected="false" title="Esportes" class="product-tab" href="{{ url('apostar') }}">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 256 256" class="text-lg shrink-0" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,39.38,24.79-17.05a88.41,88.41,0,0,1,36.18,27l-8,26.94c-.2,0-.41.1-.61.17l-22.82,7.41a7.59,7.59,0,0,0-1,.4L136,88.62c0-.2,0-.41,0-.62V64C136,63.79,136,63.58,136,63.38ZM95.24,46.33,120,63.38c0,.2,0,.41,0,.62V88c0,.21,0,.42,0,.62L91.44,108.29a7.59,7.59,0,0,0-1-.4l-22.82-7.41c-.2-.07-.41-.12-.61-.17l-8-26.94A88.41,88.41,0,0,1,95.24,46.33Zm-13,129.09H53.9a87.4,87.4,0,0,1-13.79-43.07l22-16.88a5.77,5.77,0,0,0,.58.22l22.83,7.42a7.83,7.83,0,0,0,.93.22l10.79,31.42c-.15.18-.3.36-.44.55L82.7,174.71A7.8,7.8,0,0,0,82.24,175.42ZM150.69,213a88.16,88.16,0,0,1-45.38,0L95.25,184.6c.13-.16.27-.31.39-.48l14.11-19.42a7.66,7.66,0,0,0,.46-.7h35.58a7.66,7.66,0,0,0,.46.7l14.11,19.42c.12.17.26.32.39.48Zm23.07-37.61a7.8,7.8,0,0,0-.46-.71L159.19,155.3c-.14-.19-.29-.37-.44-.55l10.79-31.42a7.83,7.83,0,0,0,.93-.22l22.83-7.42a5.77,5.77,0,0,0,.58-.22l22,16.88a87.4,87.4,0,0,1-13.79,43.07Z"></path></svg>
+                        Esportes
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Cards Promocionais 99Play com Imagens Oficiais -->
+            <div class="flex gap-2 overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden rounded-2xl">
+                <a title="Promoções" class="group relative shrink-0 w-full snap-start aspect-[260/120] rounded-2xl overflow-hidden bg-gradient-to-br from-theme-primary to-theme-primary-hover" href="javascript:;" onclick="$('#modal-missao-99').removeClass('hidden');">
+                    <span class="absolute left-4 top-4 max-w-[55%] text-lg/[1.1] font-extrabold uppercase text-theme-on-primary">Promoções</span>
+                    <span class="absolute left-4 bottom-4 rounded-full bg-black/20 px-2.5 py-1 text-[10px] font-bold uppercase text-theme-on-primary">Ver agora</span>
+                    <img src="cdn/99play/gift.png" alt="" class="absolute right-2 bottom-1 h-[88%] w-auto object-contain transition-transform duration-300 group-hover:scale-110" loading="lazy">
+                </a>
+            </div>
+
+            <!-- Painel: Minha Conta & Financeiro -->
+            <div class="panel p-2">
+                <div class="flex items-center justify-between px-3 pt-1.5 pb-1">
+                    <span class="text-xs font-semibold text-theme-card-text">Minha Conta</span>
+                    {% if userLogged %}
+                        <span class="text-[11px] font-bold text-emerald-400">R$ {{ userLogged.getCredito(true) }}</span>
+                    {% endif %}
+                </div>
+                <ul class="flex flex-col gap-0.5 list-unstyled p-0 m-0">
+                    <li>
+                        <a title="Depósito PIX" href="{{ userLogged ? url('financeiro/deposito') : 'javascript:;' }}" {% if not userLogged %}onclick="$('#modal-login').modal('show');"{% endif %}>
+                            <span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-qrcode text-emerald-400 text-base"></i></span>
+                            <span class="flex-1 truncate">Depositar (PIX)</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a title="Solicitar Saque" href="{{ userLogged ? url('financeiro/saque') : 'javascript:;' }}" {% if not userLogged %}onclick="$('#modal-login').modal('show');"{% endif %}>
+                            <span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-arrow-circle-up text-blue-400 text-base"></i></span>
+                            <span class="flex-1 truncate">Solicitar Saque</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a title="Minhas Apostas" href="{{ userLogged ? url('apostas') : 'javascript:;' }}" {% if not userLogged %}onclick="$('#modal-login').modal('show');"{% endif %}>
+                            <span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-ticket text-amber-400 text-base"></i></span>
+                            <span class="flex-1 truncate">Minhas Apostas</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a title="Extrato Financeiro" href="{{ userLogged ? url('financeiro/extrato') : 'javascript:;' }}" {% if not userLogged %}onclick="$('#modal-login').modal('show');"{% endif %}>
+                            <span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-history text-purple-400 text-base"></i></span>
+                            <span class="flex-1 truncate">Extrato Financeiro</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a title="Meu Perfil" href="{{ userLogged ? url('perfil') : 'javascript:;' }}" {% if not userLogged %}onclick="$('#modal-login').modal('show');"{% endif %}>
+                            <span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-user-circle text-white/50 text-base"></i></span>
+                            <span class="flex-1 truncate">Meu Perfil</span>
+                        </a>
+                    </li>
+                    {% if userLogged %}
+                    <li>
+                        <a title="Sair da Conta" href="{{ url('logout') }}" class="text-red-400 hover:text-red-300">
+                            <span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-sign-out text-red-400 text-base"></i></span>
+                            <span class="flex-1 truncate text-red-400">Sair da Conta</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Painel: Os mais jogados (1:1 99play) -->
+            <div class="panel p-2">
+                <div class="flex items-center justify-between px-3 pt-1.5 pb-1">
+                    <span class="text-xs font-semibold text-theme-card-text">Os mais jogados</span>
+                </div>
+                <ul class="flex flex-col gap-0.5 list-unstyled p-0 m-0">
+                    <li>
+                        <a title="Mines" aria-label="Mines" href="{{ url('cassino/jogar/mines') }}">
+                            <span class="relative flex items-center justify-center w-6 shrink-0">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" class="text-lg transition-colors text-white/45 group-hover:text-theme-primary" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M459.1 52.4L442.6 6.5C440.7 2.6 436.5 0 432.1 0s-8.5 2.6-10.4 6.5L405.2 52.4l-46 16.8c-4.3 1.6-7.3 5.9-7.2 10.4c0 4.5 3 8.7 7.2 10.2l45.7 16.8 16.8 45.8c1.5 4.4 5.8 7.5 10.4 7.5s8.9-3.1 10.4-7.5l16.5-45.8 45.7-16.8c4.2-1.5 7.2-5.7 7.2-10.2c0-4.6-3-8.9-7.2-10.4L459.1 52.4zm-132.4 53c-12.5-12.5-32.8-12.5-45.3 0l-2.9 2.9C256.5 100.3 232.7 96 208 96C93.1 96 0 189.1 0 304S93.1 512 208 512s208-93.1 208-208c0-24.7-4.3-48.5-12.2-70.5l2.9-2.9c12.5-12.5 12.5-32.8 0-45.3l-80-80zM200 192c-57.4 0-104 46.6-104 104v8c0 8.8-7.2 16-16 16s-16-7.2-16-16v-8c0-75.1 60.9-136 136-136h8c8.8 0 16 7.2 16 16s-7.2 16-16 16h-8z"></path></svg>
+                            </span>
+                            <span class="flex-1 truncate">Mines</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a title="Aviator" aria-label="Aviator" href="{{ url('cassino/jogar/aviator') }}">
+                            <span class="relative flex items-center justify-center w-6 shrink-0">
+                                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" class="text-lg transition-colors text-white/45 group-hover:text-theme-primary" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568.14-1.271.428-1.849Z"></path></svg>
+                            </span>
+                            <span class="flex-1 truncate">Aviator</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a title="Fortune Tiger" aria-label="Fortune Tiger" href="{{ url('cassino/jogar/fortune-tiger') }}">
+                            <span class="relative flex items-center justify-center w-6 shrink-0">
+                                <i class="fa fa-paw text-white/45 group-hover:text-theme-primary text-base"></i>
+                            </span>
+                            <span class="flex-1 truncate">Fortune Tiger</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a title="Spaceman" aria-label="Spaceman" href="{{ url('cassino/jogar/spaceman') }}">
+                            <span class="relative flex items-center justify-center w-6 shrink-0">
+                                <i class="fa fa-rocket text-white/45 group-hover:text-theme-primary text-base"></i>
+                            </span>
+                            <span class="flex-1 truncate">Spaceman</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Painel: Cassino (1:1 99play) -->
+            <div class="panel p-2">
+                <div class="flex items-center justify-between px-3 pt-1.5 pb-1">
+                    <span class="text-xs font-semibold text-theme-card-text">Cassino</span>
+                    <a class="text-[11px] font-semibold text-theme-primary hover:underline" href="{{ url('cassino') }}">Ver todos</a>
+                </div>
+                <ul class="flex flex-col gap-0.5 list-unstyled p-0 m-0">
+                    <li><a title="Cassino ao vivo" href="{{ url('cassino', null, null, {'category': 'Ao Vivo'}) }}"><span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-play-circle text-white/45 group-hover:text-theme-primary text-base"></i></span><span class="flex-1 truncate">Cassino ao vivo</span></a></li>
+                    <li><a title="Jogos slot" href="{{ url('cassino', null, null, {'category': 'Slots'}) }}"><span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-clone text-white/45 group-hover:text-theme-primary text-base"></i></span><span class="flex-1 truncate">Jogos slot</span></a></li>
+                    <li><a title="Jogos crash" href="{{ url('cassino', null, null, {'category': 'Crash'}) }}"><span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-bolt text-white/45 group-hover:text-theme-primary text-base"></i></span><span class="flex-1 truncate">Jogos crash</span></a></li>
+                    <li><a title="PG Soft" href="{{ url('cassino', null, null, {'category': 'PGSOFT'}) }}"><span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-gamepad text-white/45 group-hover:text-theme-primary text-base"></i></span><span class="flex-1 truncate">PG Soft</span></a></li>
+                    <li><a title="Pragmatic Play" href="{{ url('cassino', null, null, {'category': 'PRAGMATIC'}) }}"><span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-diamond text-white/45 group-hover:text-theme-primary text-base"></i></span><span class="flex-1 truncate">Pragmatic Play</span></a></li>
+                </ul>
+            </div>
+
+            <!-- Painel: Esportes & Links (1:1 99play) -->
+            <div class="panel p-2">
+                <div class="flex items-center justify-between px-3 pt-1.5 pb-1">
+                    <span class="text-xs font-semibold text-theme-card-text">Esportes & Links</span>
+                </div>
+                <ul class="flex flex-col gap-0.5 list-unstyled p-0 m-0">
+                    <li><a title="Apostas Esportivas" href="{{ url('apostar') }}"><span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-futbol-o text-white/45 group-hover:text-theme-primary text-base"></i></span><span class="flex-1 truncate">Apostas Esportivas</span></a></li>
+                    <li><a title="Consultar Bilhete" href="{{ url('bilhete') }}"><span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-search text-white/45 group-hover:text-theme-primary text-base"></i></span><span class="flex-1 truncate">Consultar Bilhete</span></a></li>
+                    {% if dados.getExibirCotacoes() %}<li><a title="Cotações" href="{{ url('cotacoes') }}"><span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-line-chart text-white/45 group-hover:text-theme-primary text-base"></i></span><span class="flex-1 truncate">Tabela de Cotações</span></a></li>{% endif %}
+                    {% if dados.getExibirRegras() %}<li><a title="Regulamento" href="{{ url('regras') }}"><span class="relative flex items-center justify-center w-6 shrink-0"><i class="fa fa-book text-white/45 group-hover:text-theme-primary text-base"></i></span><span class="flex-1 truncate">Regulamento</span></a></li>{% endif %}
+                </ul>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- ÁREA DE CONTEÚDO PRINCIPAL -->
+    <div class="flex-1 min-w-0 h-full">
+        {% block main %}{% endblock %}
+    </div>
+
+</section>
+
+<!-- ========================================================
+     BOTTOM BAR FLUTUANTE MOBILE 1:1 99PLAY (5 ITENS)
+     ======================================================== -->
+<nav aria-label="Navegação principal" data-bottom-bar="true" class="hidden max-[990px]:block fixed z-50 rounded-[26px] bg-theme-card-2/90 backdrop-blur-md border border-white/[0.08] shadow-[0_10px_30px_-6px_rgba(0,0,0,0.6)] left-3 right-3" style="bottom:calc(10px + env(safe-area-inset-bottom))" v-pre>
+    <div class="grid h-[64px]" style="grid-template-columns:repeat(5, minmax(0, 1fr))">
+        <!-- 1. Início -->
+        <a class="relative flex items-center justify-center text-[22px]/[1] flex-col transition-transform active:scale-[0.97]" href="{{ url() }}">
+            {% if activeNav == 'inicio' or not activeNav %}
+                <span class="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-[3px] rounded-b-full bg-theme-primary"></span>
+            {% endif %}
+            <span class="relative flex items-center justify-center">
+                <svg class="{{ activeNav == 'inicio' or not activeNav ? 'text-theme-primary' : 'text-theme-card-text' }}" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path d="M9 16C9.85038 16.6303 10.8846 17 12 17C13.1154 17 14.1496 16.6303 15 16"></path><path d="M22 12.2039V13.725C22 17.6258 22 19.5763 20.8284 20.7881C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.7881C2 19.5763 2 17.6258 2 13.725V12.2039C2 9.91549 2 8.77128 2.5192 7.82274C3.0384 6.87421 3.98695 6.28551 5.88403 5.10813L7.88403 3.86687C9.88939 2.62229 10.8921 2 12 2C13.1079 2 14.1106 2.62229 16.116 3.86687L18.116 5.10812C20.0131 6.28551 20.9616 6.87421 21.4808 7.82274"></path></g></svg>
+            </span>
+            <span class="overflow-hidden px-0.5 text-center text-[9px] leading-[1.1] {{ activeNav == 'inicio' or not activeNav ? 'text-white font-semibold' : 'text-theme-card-text font-medium' }} mt-1">Início</span>
+        </a>
+
+        <!-- 2. Cassino (Ícone de Cerejas 99play) -->
+        <a class="relative flex items-center justify-center text-[22px]/[1] flex-col transition-transform active:scale-[0.97]" href="{{ url('cassino') }}">
+            {% if activeNav == 'cassino' %}
+                <span class="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-[3px] rounded-b-full bg-theme-primary"></span>
+            {% endif %}
+            <span class="relative flex items-center justify-center">
+                <svg class="{{ activeNav == 'cassino' ? 'text-theme-primary' : 'text-theme-card-text' }}" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path d="M22 16.5a5.5 5.5 0 1 1-11 0a5.5 5.5 0 0 1 11 0Z"></path><path d="M10.5 11c-.878-.63-1.948-1-3.104-1C4.416 10 2 12.462 2 15.5S4.416 21 7.396 21c.693 0 1.355-.133 1.963-.375"></path><path stroke-linejoin="round" d="M16 13c-1.837-1.896-4.27-5.863-2.205-9M16 2c-1.015.599-1.73 1.278-2.205 2m0 0c-2.394.5-7.704 2.5-6.66 8"></path></g></svg>
+            </span>
+            <span class="overflow-hidden px-0.5 text-center text-[9px] leading-[1.1] {{ activeNav == 'cassino' ? 'text-white font-semibold' : 'text-theme-card-text font-medium' }} mt-1">Cassino</span>
+        </a>
+
+        <!-- 3. Ao Vivo (TV) -->
+        <a class="relative flex items-center justify-center text-[22px]/[1] flex-col transition-transform active:scale-[0.97]" href="{{ url('cassino', null, null, {'category': 'Ao Vivo'}) }}">
+            <span class="relative flex items-center justify-center">
+                <svg class="text-theme-card-text" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path d="M2 14L2 16C2 18.8284 2 20.2426 2.87868 21.1213C3.75736 22 5.17157 22 8 22L16 22C18.8284 22 20.2426 22 21.1213 21.1213C22 20.2426 22 18.8284 22 16V12C22 9.17157 22 7.75736 21.1213 6.87868C20.2426 6 18.8284 6 16 6L8 6C5.17157 6 3.75736 6 2.87868 6.87868C2.23738 7.51998 2.06413 8.44655 2.01732 10"></path><path d="M9 2L12 5.5L15 2"></path><path d="M16 6V10M16 22V14"></path><path stroke-linejoin="round" d="M19 12H19.0001"></path><path stroke-linejoin="round" d="M19 16H19.0001"></path></g></svg>
+            </span>
+            <span class="overflow-hidden px-0.5 text-center text-[9px] leading-[1.1] text-theme-card-text font-medium mt-1">Ao Vivo</span>
+        </a>
+
+        <!-- 4. Promoções (Gift) -->
+        <a class="relative flex items-center justify-center text-[22px]/[1] flex-col transition-transform active:scale-[0.97]" href="javascript:;" onclick="$('#modal-missao-99').removeClass('hidden');">
+            <span class="relative flex items-center justify-center">
+                <svg class="text-theme-card-text" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path d="M22 12H2"></path><path d="M12 2V22"></path><path d="M13 12C13 14.2091 14.7909 16 17 16"></path><path d="M11 12C11 14.2091 9.20914 16 7 16"></path><path d="M12 10.0352C12 8.54529 13.014 7.24659 14.4594 6.88524C16.0631 6.48431 17.5158 7.93697 17.1148 9.5407C16.7535 10.9861 15.4548 12.0001 13.9649 12.0001H12V10.0352Z"></path><path d="M12.0001 10.0352C12.0001 8.54529 10.9861 7.24659 9.5407 6.88524C7.93698 6.48431 6.48431 7.93697 6.88524 9.5407C7.24659 10.9861 8.54529 12.0001 10.0352 12.0001H12.0001V10.0352Z"></path><path d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8"></path></g></svg>
+            </span>
+            <span class="overflow-hidden px-0.5 text-center text-[9px] leading-[1.1] text-theme-card-text font-medium mt-1">Promoções</span>
+        </a>
+
+        <!-- 5. Esportes (Soccer) -->
+        <a class="relative flex items-center justify-center text-[22px]/[1] flex-col transition-transform active:scale-[0.97]" href="{{ url('apostar') }}">
+            {% if activeNav == 'apostar' %}
+                <span class="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-[3px] rounded-b-full bg-theme-primary"></span>
+            {% endif %}
+            <span class="relative flex items-center justify-center">
+                <svg class="{{ activeNav == 'apostar' ? 'text-theme-primary' : 'text-theme-card-text' }}" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path d="M10.2558 14.786C10.1001 14.6634 9.98047 14.4944 9.91901 14.2952L9.19767 11.9582C9.13687 11.7613 9.1396 11.5559 9.19767 11.3678C9.25764 11.1735 9.37663 10.9976 9.54563 10.8683L11.3821 9.46375C11.5611 9.32686 11.7748 9.25841 11.9885 9.25841M13.7212 14.786C13.8769 14.6634 13.9965 14.4944 14.058 14.2952L14.7793 11.9582C14.8401 11.7613 14.8374 11.5559 14.7793 11.3678C14.7194 11.1735 14.6004 10.9976 14.4314 10.8683L12.5949 9.46375C12.4159 9.32686 12.2022 9.25841 11.9885 9.25841M11.9885 9.25841V5.34961M14.7793 11.3678L18.4808 9.83496M13.7212 14.786C13.5494 14.9213 13.3336 15 13.1037 15H10.8733C10.6434 15 10.4276 14.9213 10.2558 14.786M13.7212 14.786L15.9618 17.3775M10.2558 14.786L8.22076 17.3775M9.19767 11.3678L5.56031 9.83487M20.1848 17H18.5697C17.1799 17 16.4849 17 15.9618 17.3775M15.9618 17.3775C15.4386 17.755 15.2188 18.415 14.7793 19.7351L14.1917 21.5M9.99081 21.5L9.40319 19.7351C8.96368 18.4151 8.74393 17.755 8.22076 17.3775C7.69759 17 7.00267 17 5.61283 17H3.99774M4.83154 5.65332L5.24956 7.21519C5.60928 8.55922 5.78913 9.23123 5.56031 9.83487M5.56031 9.83487C5.33148 10.4385 4.75157 10.8218 3.59173 11.5885L2.04102 12.6136M19.2095 5.65341L18.7915 7.21528C18.4318 8.55931 18.2519 9.23133 18.4808 9.83496M18.4808 9.83496C18.7096 10.4386 19.2895 10.8219 20.4493 11.5886L22 12.6137M15.658 3.22334L14.3377 4.15456C13.2015 4.95591 12.6334 5.35658 11.9885 5.34961M11.9885 5.34961C11.3436 5.34263 10.7843 4.92976 9.66567 4.10403L8.17002 3"></path><path d="M4.00085 6.00037C5.01888 4.64041 6.39758 3.52194 8.07211 2.80651C13.1495 0.637194 19.0242 2.99469 21.1935 8.07211C23.3628 13.1495 21.0053 19.0242 15.9279 21.1935C10.8505 23.3628 4.97582 21.0053 2.80651 15.9279C2.09107 14.2533 1.868 12.4921 2.07249 10.8057"></path></g></svg>
+            </span>
+            <span class="overflow-hidden px-0.5 text-center text-[9px] leading-[1.1] {{ activeNav == 'apostar' ? 'text-white font-semibold' : 'text-theme-card-text font-medium' }} mt-1">Esportes</span>
+        </a>
+    </div>
+</nav>
+
+<!-- ========================================================
+     RODAPÉ OFICIAL 99PLAY
+     ======================================================== -->
+<footer class="relative mt-[60px] w-full border-t border-white/5 px-4 pt-8 pb-[calc(5rem+env(safe-area-inset-bottom))] text-sm text-white/60 md:px-10 md:pt-10 md:pb-12" v-pre>
+    <div class="max-w-[2000px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+            <img src="{{ logoUrl }}" alt="{{ dados.getBanca()|default('99Play') }}" class="h-9 w-auto">
+            <span class="text-xs text-white/40">© {{ "now"|date("Y") }} {{ dados.getBanca()|default('99Play') }}. Todos os direitos reservados.</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <img src="cdn/99play/pix-instantaneo.svg" alt="Pix — pagamento instantâneo" loading="lazy" class="h-8 w-auto">
+            <span class="text-xs px-2.5 py-1 rounded bg-red-500/20 text-red-400 font-bold border border-red-500/30">+18</span>
+        </div>
+    </div>
+</footer>
+
+</div> <!-- /#website -->
+
+<!-- ========================================================
+     MODAL DE LOGIN (99PLAY DESIGN SYSTEM)
+     ======================================================== -->
+<form id="modal-login" class="modal fade play-modal" method="post" action="javascript:;" onsubmit="return handleModalLogin(event, this);" v-pre>
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+        <div class="modal-content rounded-3xl overflow-hidden border border-white/[0.08]" style="background:var(--theme-bg);">
+            <div class="p-6 border-b border-white/[0.05] flex items-center justify-between">
+                <div>
+                    <img src="{{ logoUrl }}" alt="" class="h-7 w-auto mb-2">
+                    <h2 class="text-xl font-bold text-white m-0">Entrar</h2>
+                    <p class="text-sm text-theme-card-text m-0 mt-0.5">Bem-vindo de volta.</p>
+                </div>
+                <button type="button" class="icon-btn shrink-0 text-white/60 hover:text-white" data-dismiss="modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <!-- Alerta de Erro de Login -->
+                <div id="login-error-box" class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs text-center font-medium"></div>
+
+                <div class="mb-4">
+                    <div class="relative h-14 rounded-xl border bg-theme-card-2 border-white/[0.08] hover:border-white/15">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-theme-card-text"><i class="fa fa-envelope-o text-lg"></i></span>
+                        <input type="text" name="username" placeholder="E-mail ou Usuário" required class="w-full h-full bg-transparent outline-none text-white text-[15px] pl-12 pr-4"/>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <div class="relative h-14 rounded-xl border bg-theme-card-2 border-white/[0.08] hover:border-white/15">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-theme-card-text"><i class="fa fa-lock text-lg"></i></span>
+                        <input type="password" name="password" placeholder="Senha" required class="w-full h-full bg-transparent outline-none text-white text-[15px] pl-12 pr-4"/>
+                    </div>
+                </div>
+                <button id="btn-submit-login" type="submit" class="btn-success w-full h-12 text-base font-bold rounded-xl flex items-center justify-center gap-2">
+                    Entrar
+                </button>
+                {% if dados.getExibirRegistro() %}
+                    <div class="text-center mt-4 text-sm text-theme-card-text">
+                        Novo aqui? <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="font-semibold text-theme-primary hover:underline">Criar conta</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- ========================================================
+     MODAL POPUP MISSÃO 99 (IDÊNTICO AO 99PLAY.IO)
+     ======================================================== -->
+<div id="modal-missao-99" class="fixed inset-0 z-[1050] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden" v-pre>
+    <div class="relative w-full max-w-[420px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl" style="background:#0e1726;">
+        <!-- Botão Fechar (X) -->
+        <button type="button" onclick="$('#modal-missao-99').addClass('hidden');" class="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/90 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+        </button>
+
+        <!-- Imagem do Tigre Ganhe 99 Giros -->
+        <div class="relative w-full aspect-[420/380] overflow-hidden">
+            <img src="cdn/99play/popup-tiger.webp" alt="Ganhe 99 Giros" class="w-full h-full object-cover">
+        </div>
+
+        <!-- Conteúdo Textual e Ações -->
+        <div class="p-6 pt-2 text-center" style="background:#0e1726;">
+            <h3 class="text-xl font-extrabold text-white uppercase tracking-wide m-0">
+                COMPLETE A <span style="color:#00e054;">MISSÃO 99</span>
+            </h3>
+            <p class="text-xs font-bold text-white/80 uppercase tracking-wider mt-1 mb-3">
+                TODO DIA TEM MISSÃO NOVA
+            </p>
+            <div class="p-3 rounded-xl mb-4 text-xs font-semibold uppercase text-white/90 border border-white/10" style="background:rgba(255,255,255,0.04);">
+                CLIQUE EM PARTICIPAR NA MISSÃO ANTES DE JOGAR E CONFIRA AS REGRAS
+            </div>
+
+            <button type="button" onclick="$('#modal-missao-99').addClass('hidden'); location.href='{{ url('cassino') }}';" class="w-full h-12 rounded-xl text-white font-extrabold uppercase text-sm shadow-lg mb-2.5 transition-transform active:scale-[0.98]" style="background:#00e054;">
+                VER MISSÃO
+            </button>
+            <button type="button" onclick="$('#modal-missao-99').addClass('hidden');" class="w-full h-11 rounded-xl text-white/70 font-bold uppercase text-xs hover:text-white transition-colors" style="background:#283344;">
+                AGORA NÃO
+            </button>
+
+            <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-white/40">
+                <strong class="text-white/60 tracking-wider">MISSÃO 99</strong> • 99PLAY<br>
+                18+ • Jogue com responsabilidade. Aposta não é investimento.
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ seo_footer() }}
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="node_modules/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript" src="cdn/js/modernizr.min.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.mask.js"></script>
+<script type="text/javascript" src="cdn/js/mask.js"></script>
+<script type="text/javascript" src="cdn/js/fastclick.js"></script>
+<script type="text/javascript" src="cdn/js/string.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.form.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.serializeObject.js"></script>
+<script type="text/javascript" src="cdn/js/clipboard.min.js"></script>
+<script type="text/javascript" src="cdn/js/admin.js?v=1.0.0"></script>
+<script type="text/javascript" src="js/site.js?v=2.0.0"></script>
+
+<script>
+    // Controle de Recolhimento da Barra Lateral Desktop (1:1 99play)
+    function toggleSidebar() {
+        $('body').toggleClass('sidebar-collapsed');
+    }
+
+    // Submissão AJAX do Formulário de Login (Evita redirecionamento nativo e tela preta JSON)
+    function handleModalLogin(e, form) {
+        if (e && e.preventDefault) e.preventDefault();
+        var $form = $(form);
+        var $btn = $('#btn-submit-login');
+        var $errBox = $('#login-error-box');
+
+        $errBox.addClass('hidden').text('');
+        $btn.prop('disabled', true).addClass('opacity-75').html('<i class="fa fa-spinner fa-spin mr-1"></i> Entrando...');
+
+        $.ajax({
+            url: '{{ url("entrar/login/insert") }}',
+            type: 'POST',
+            data: $form.serialize(),
+            dataType: 'json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(res) {
+                $btn.prop('disabled', false).removeClass('opacity-75').text('Entrar');
+                if (res && res.result == 1) {
+                    window.location.href = res.url || '{{ url() }}';
+                } else {
+                    var msg = (res && res.message) ? res.message : 'Login inválido.';
+                    $errBox.removeClass('hidden').text(msg);
+                    if (typeof swal === 'function') {
+                        swal('Atenção', msg, 'error');
+                    }
+                }
+            },
+            error: function(xhr) {
+                $btn.prop('disabled', false).removeClass('opacity-75').text('Entrar');
+                var msg = 'Erro ao processar login. Tente novamente.';
+                try {
+                    var json = JSON.parse(xhr.responseText);
+                    if (json && json.message) msg = json.message;
+                } catch(err) {}
+                $errBox.removeClass('hidden').text(msg);
+                if (typeof swal === 'function') {
+                    swal('Erro', msg, 'error');
+                }
+            }
+        });
+
+        return false;
+    }
+
+    // Fechar gaveta da barra lateral mobile ao clicar fora
+    $(document).on('click', function(e) {
+        if ($('body').hasClass('show-mobile-sidebar')) {
+            if (!$(e.target).closest('#main-sidebar, [aria-label="Abrir menu"]').length) {
+                $('body').removeClass('show-mobile-sidebar');
+            }
+        }
+    });
+</script>
+
+{% block script %}{% endblock %}
+
+{{ dados.getHtmlFooter()|raw }}
+
+</body>
+</html>

@@ -1,0 +1,558 @@
+/*!
+ * Preboot v2
+ * LESS version by @mdo, http://getpreboot.com
+ *
+ * Open sourced under MIT license by @mustangostang.
+ * Some variables and mixins from Bootstrap (Apache 2 license).
+ */
+html, body {
+  background-color: #f2f2f2;
+  color: #446376;
+}
+
+html .menu-mobile, body .menu-mobile {
+  position: fixed;
+  top: 0;
+  left: -270px;
+  z-index: 999;
+  width: 270px;
+  height: 100vh;
+  background-color: #1e293b;
+  color: #ffffff;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+  -webkit-transition: left 0.3s ease-in-out;
+  -moz-transition: left 0.3s ease-in-out;
+  -o-transition: left 0.3s ease-in-out;
+  transition: left 0.3s ease-in-out;
+}
+
+html .menu-mobile .title, body .menu-mobile .title {
+  line-height: 56px;
+  padding: 0 15px;
+  background-color: #1c57a2;
+  color: #ffffff !important;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+html .menu-mobile ul, body .menu-mobile ul {
+  height: calc(100vh - 56px);
+  overflow: auto;
+}
+
+html .menu-mobile ul, html .menu-mobile ul li, body .menu-mobile ul, body .menu-mobile ul li {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+html .menu-mobile ul li, body .menu-mobile ul li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+html .menu-mobile ul a, body .menu-mobile ul a {
+  display: block;
+  line-height: 44px;
+  padding: 0 18px;
+  color: #f1f5f9 !important;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+html .menu-mobile ul a:hover, body .menu-mobile ul a:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #38bdf8 !important;
+}
+
+@media (max-width: 768px) {
+  html.show-menu .menu-mobile, body.show-menu .menu-mobile {
+    left: 0;
+  }
+}
+
+body {
+  background-color: #f2f2f2;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-top: 55px;
+  }
+}
+
+select optgroup, select option {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.lw-header {
+  background-color: #3ca2d8;
+  background-image: -moz-linear-gradient(top, #2660a8, #3ca2d8);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#2660a8), to(#3ca2d8));
+  background-image: -webkit-linear-gradient(top, #2660a8, #3ca2d8);
+  background-image: -o-linear-gradient(top, #2660a8, #3ca2d8);
+  background-image: linear-gradient(to bottom, #2660a8, #3ca2d8);
+  background-repeat: repeat-x;
+  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='argb(#2660a8)', endColorstr='argb(#3ca2d8)', GradientType=0)";
+  color: white;
+}
+
+.lw-header .brand {
+  height: 85px;
+}
+
+@media (max-width: 768px) {
+  .lw-header {
+    padding: 5px 0;
+    border-bottom: 1px solid white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    width: 100%;
+  }
+  .lw-header .brand {
+    height: 45px;
+  }
+}
+
+.lw-header hr {
+  border-color: #4a99ce;
+  margin: 0;
+  padding: 0;
+}
+
+.lw-header ul, .lw-header li {
+  display: block;
+  padding: 0;
+  margin: 0;
+}
+
+.lw-header .menu li {
+  display: inline-block;
+}
+
+.lw-header .menu li a {
+  line-height: 42.5px;
+  display: block;
+  padding: 0 15px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.lw-header .menu li a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.lw-header .menu li a.active {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.lw-rodape {
+  background-color: #1c57a2;
+  font-size: 13px;
+  color: white;
+  padding: 20px 0;
+}
+
+.lw-rodape ul, .lw-rodape li {
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+.lw-rodape li {
+  display: inline-block;
+  padding: 0 8px 0 5px;
+  line-height: 13px;
+}
+
+.lw-rodape li:not(:last-child) {
+  border-right: 1px solid white;
+}
+
+.lw-rodape li a {
+  color: inherit;
+}
+
+#pg-aposta .col-campeonatos .col-content {
+  width: 320px;
+}
+
+#pg-aposta .col-campeonatos .form-bilhete {
+  background-color: #0f5a88;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+#pg-aposta .col-campeonatos .form-bilhete .title {
+  margin: 0;
+  background-color: #09476d;
+  color: #ffffff !important;
+  text-align: center;
+  line-height: 38px;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+#pg-aposta .col-campeonatos .form-bilhete .form-control {
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #1e293b !important;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+}
+
+#pg-aposta .col-campeonatos .form-bilhete .form-control:-moz-placeholder {
+  color: #64748b;
+}
+
+#pg-aposta .col-campeonatos .form-bilhete .form-control::-moz-placeholder {
+  color: #64748b;
+}
+
+#pg-aposta .col-campeonatos .form-bilhete .form-control:-ms-input-placeholder {
+  color: #64748b;
+}
+
+#pg-aposta .col-campeonatos .form-bilhete .form-control::-webkit-input-placeholder {
+  color: #64748b;
+}
+
+#pg-aposta .col-campeonatos .menu-comapeonatos {
+  background-color: #ffffff;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  position: relative;
+}
+
+#pg-aposta .col-campeonatos .menu-comapeonatos .title {
+  background-color: #1c57a2;
+  color: #ffffff !important;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 38px;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+#pg-aposta .col-campeonatos .menu-comapeonatos a {
+  color: #1e293b !important;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 34px;
+  padding: 0 12px;
+  background-color: #f8fafc;
+  display: block;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+}
+
+#pg-aposta .col-campeonatos .menu-comapeonatos a i {
+  color: #0284c7;
+  margin-right: 6px;
+}
+
+#pg-aposta .col-campeonatos .menu-comapeonatos a:hover {
+  background-color: #e0f2fe;
+  color: #0284c7 !important;
+  border-color: #7dd3fc;
+  text-decoration: none;
+}
+
+#pg-aposta .col-campeonatos .menu-comapeonatos a.active {
+  background-color: #1c57a2 !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  border-color: #1c57a2 !important;
+  box-shadow: 0 2px 4px rgba(28, 87, 162, 0.25);
+}
+
+#pg-aposta .col-campeonatos .menu-comapeonatos a.active i {
+  color: #ffdf1b !important;
+}
+
+#pg-aposta .col-campeonatos .menu-comapeonatos ul,
+#pg-aposta .col-campeonatos .menu-comapeonatos li {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+#pg-aposta .col-campeonatos .menu-comapeonatos ul {
+  min-height: calc(100vh - 85px - 61px - 89px - 4.5rem - 35px);
+  margin-bottom: 1.5rem;
+  padding: 10px;
+}
+
+#pg-aposta .col-campeonatos .menu-comapeonatos li:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+#pg-aposta .col-jogos .form-jogos {
+  background-color: #0f5a88;
+  padding: 15px;
+  border-radius: 4px;
+}
+
+#pg-aposta .col-jogos .form-jogos .form-control {
+  border-radius: 3px;
+  background-color: #ffffff;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+}
+
+#pg-aposta .col-bilhete {
+  background-color: #f2f2f2;
+}
+
+#pg-aposta .col-bilhete .col-content {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 1.5rem;
+}
+
+@media (min-width: 769px) {
+  #pg-aposta .col-bilhete .col-content {
+    width: 280px;
+  }
+  #pg-aposta .col-bilhete .col-content .bilhete-overflow {
+    overflow: auto;
+    height: calc(100vh - 85px - 61px - 45px - 16px - 38px - 3rem);
+  }
+}
+
+#pg-aposta .bilhete {
+  border-top: 6px solid #1c57a2;
+  background-color: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+#pg-aposta .bilhete .title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1c57a2;
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 42px;
+  margin: 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+#pg-aposta .bilhete hr {
+  margin: 10px 0;
+  border-color: #e2e8f0 !important;
+}
+
+#pg-aposta .bilhete .table-bilhete,
+#pg-aposta .bilhete .table-bilhete td,
+#pg-aposta .bilhete .table-bilhete tr,
+#pg-aposta .bilhete .table-bilhete th {
+  border: none;
+  color: #1e293b !important;
+  background-color: transparent !important;
+}
+
+#pg-aposta .bilhete .table-bilhete .time {
+  color: #1c57a2 !important;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+#pg-aposta .bilhete .table-bilhete .data {
+  color: #64748b !important;
+  font-size: 11px;
+  opacity: 1 !important;
+}
+
+#pg-aposta .bilhete .table-bilhete .cotacao {
+  color: #0f172a !important;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#pg-aposta .bilhete .row {
+  color: #475569;
+  font-size: 13px;
+}
+
+#pg-aposta .bilhete .row .col:last-child {
+  color: #0f172a;
+  font-weight: 700;
+  text-align: right;
+}
+
+.table-jogos {
+  margin: 0;
+  font-size: 11px;
+}
+
+.table-jogos tbody {
+  border: none;
+}
+
+.table-jogos tbody a {
+  color: inherit;
+}
+
+.table-jogos tbody tr,
+.table-jogos tbody td,
+.table-jogos tbody th {
+  vertical-align: middle;
+}
+
+.table-jogos tbody tr {
+  color: #1c57a2;
+  border: none;
+}
+
+.table-jogos tbody td {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e5e5;
+  border-top: 1px solid #e5e5e5;
+}
+
+.table-jogos tbody td.td-cotacao {
+  width: 5px;
+  padding: 3px !important;
+}
+
+.table-jogos tbody td.td-cotacao.td-cotacao-mais .btn-cotacao {
+  background-color: transparent;
+  color: #446376;
+}
+
+.table-jogos tbody tr.campeonato {
+  font-size: 13px;
+  font-weight: bold;
+  color: #446376;
+}
+
+.table-jogos tbody tr.campeonato td {
+  background-color: #dae0e3;
+  line-height: 35px;
+}
+
+.table-jogos tbody .btn-cotacao {
+  width: 42.5px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  background-color: #f2f4f5;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px #dadfe3;
+  color: #446376;
+  line-height: 40px;
+}
+
+.table-jogos tbody .btn-cotacao.active {
+  background-color: rgba(9, 136, 209, 0.4);
+  color: #1c57a2;
+  font-weight: bold;
+}
+
+#modal-cotacoes .btn-cotacao {
+  width: 60px !important;
+  line-height: normal;
+}
+
+.page-title {
+  background-color: rgba(0, 0, 0, 0.21);
+  padding: 0 15px;
+  color: white;
+}
+
+.page-title .title {
+  font-size: 23px;
+  line-height: 60px;
+  margin: 0;
+}
+
+.page-subtitle {
+  background-color: rgba(0, 0, 0, 0.15);
+  color: whitesmoke;
+  padding: 0 15px;
+  font-size: 18px;
+  line-height: 45px;
+  margin: 0;
+}
+
+.block-text {
+  padding: 1.5rem;
+  color: #555;
+  font-size: 16px;
+  background-color: white;
+}
+
+.modal-content {
+  background-color: #ffffff;
+}
+
+.table, .card {
+  color: #1e293b;
+}
+
+.card-footer .pagination {
+  margin: 0;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-top: 56px;
+  }
+  .lw-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+}
+
+.comunicados .comunicado {
+  background-color: #f2f2f2;
+}
+
+.comunicados .comunicado:not(:last-child) {
+  margin-bottom: 1.5rem;
+}
+
+.comunicados .comunicado .header {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: #446376;
+  line-height: 50px;
+}
+
+.comunicados .comunicado .header .title {
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.comunicados .comunicado .header .hora {
+  font-style: italic;
+}
+
+.comunicados .comunicado .mensagem p:last-child {
+  margin-bottom: 0;
+}

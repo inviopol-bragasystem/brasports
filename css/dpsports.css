@@ -1,0 +1,2309 @@
+/* ==========================================================================
+   TEMA 10: DP SPORTS (dpsportsbr.com)
+   Fidelidade 1:1 com https://dpsportsbr.com/
+   Cores, Layout 3 colunas, Proporções, Cards, Odds & Cupom Oficial
+   ========================================================================== */
+
+[v-cloak] {
+  display: none !important;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Barlow:wght@600;700;800;900&display=swap');
+
+:root, [data-theme="light"] {
+  --dp-navy-dark: #0b1e3a;
+  --dp-navy-header: #0b1e3a;
+  --dp-navy-odd: #102a4e;
+  --dp-navy-odd-hover: #163766;
+  --dp-blue-active: #0066ff;
+  --dp-blue-brand: #0b5fff;
+  --dp-bg-page: #f6f7fb;
+  --dp-card-bg: #ffffff;
+  --dp-border: #e4e7ec;
+  --dp-border-subtle: #f1f3f7;
+  --dp-text-title: #101828;
+  --dp-text-body: #344054;
+  --dp-text-muted: #64748b;
+  --dp-text-gray: #98a2b3;
+  --dp-green: #12b76a;
+  --dp-red: #f04438;
+  --dp-yellow: #f79009;
+}
+
+[data-theme="dark"] {
+  --dp-navy-dark: #060c1f;
+  --dp-navy-header: #061f50;
+  --dp-navy-odd: #141c33;
+  --dp-navy-odd-hover: #1e2949;
+  --dp-blue-active: #0066ff;
+  --dp-blue-brand: #1877f2;
+  --dp-bg-page: #080e22;
+  --dp-card-bg: #0e172e;
+  --dp-border: #1e294b;
+  --dp-border-subtle: #141d38;
+  --dp-text-title: #ffffff;
+  --dp-text-body: #d0d5dd;
+  --dp-text-muted: #858b9d;
+  --dp-text-gray: #636b82;
+  --dp-green: #12b76a;
+  --dp-red: #f04438;
+  --dp-yellow: #f79009;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  background-color: var(--dp-bg-page) !important;
+  color: var(--dp-text-body);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  text-decoration: none;
+  color: var(--dp-blue-brand);
+}
+
+/* ==========================================================================
+   HEADER DP SPORTS (Oficial dpsportsbr.com)
+   ========================================================================== */
+.dp-header {
+  background: var(--dp-navy-header);
+  height: 60px;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.dp-header-container {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  max-width: 1540px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.dp-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dp-brand-text {
+  font-family: 'Barlow', 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dp-brand-text:hover {
+  color: #ffffff;
+}
+
+/* Light / Dark Mode Toggle Pill */
+.dp-theme-switch {
+  width: 58px;
+  height: 30px;
+  background-color: #a9b4c2;
+  border-radius: 30px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .dp-theme-switch {
+  background-color: #243552;
+}
+
+.dp-theme-slider {
+  width: 24px;
+  height: 24px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 31px;
+  transition: left 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .dp-theme-slider {
+  left: 3px;
+  background-color: #0b1e3a;
+}
+
+.dp-theme-slider i {
+  font-size: 13px;
+  color: #00008b;
+}
+
+[data-theme="dark"] .dp-theme-slider i {
+  color: #f79009;
+}
+
+/* Header Right Actions */
+.dp-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dp-globe-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 19px;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+}
+
+.dp-globe-btn:hover {
+  opacity: 1;
+}
+
+.dp-header-auth-btn {
+  background: var(--dp-blue-active);
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 7px 16px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.dp-header-auth-btn:hover {
+  background: #0052cc;
+  transform: translateY(-1px);
+}
+
+.dp-user-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dp-mobile-menu-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+/* Mobile Sub-Header (Under Top Header) */
+.dp-mobile-substrip {
+  background: #ffffff;
+  border-bottom: 1px solid var(--dp-border);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] .dp-mobile-substrip {
+  background: #0e172e;
+  border-bottom-color: #1e294b;
+}
+
+.dp-substrip-input {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid var(--dp-border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  width: 140px;
+}
+
+[data-theme="dark"] .dp-substrip-input {
+  background: #060c1f;
+  border-color: #1e294b;
+}
+
+.dp-substrip-input span {
+  font-size: 13px;
+  color: var(--dp-text-muted);
+  margin-right: 6px;
+  font-weight: 600;
+}
+
+.dp-substrip-input input {
+  border: none;
+  background: transparent;
+  color: var(--dp-text-title);
+  font-weight: 700;
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+  text-align: right;
+}
+
+.dp-substrip-return {
+  text-align: right;
+}
+
+.dp-substrip-return .label {
+  font-size: 12px;
+  color: var(--dp-text-muted);
+  font-weight: 500;
+}
+
+.dp-substrip-return .val {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--dp-text-title);
+}
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL: 3 COLUNAS (Desktop)
+   ========================================================================== */
+.dp-main-content {
+  max-width: 1540px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px 20px 60px;
+  box-sizing: border-box;
+}
+
+.dp-grid-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Coluna 1: Esquerda (~240px) */
+.dp-col-left {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+/* Coluna 2: Centro (Flex) */
+.dp-col-center {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Coluna 3: Direita (~290px) */
+.dp-col-right {
+  width: 290px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1200px) {
+  .dp-col-left { width: 220px; }
+  .dp-col-right { width: 270px; }
+}
+
+@media (max-width: 991px) {
+  .dp-grid-layout { flex-direction: column; }
+  .dp-col-left, .dp-col-right { width: 100%; }
+  .dp-col-right { display: none; } /* Cupom vira drawer / bottom em mobile */
+}
+
+/* ==========================================================================
+   COLUNA ESQUERDA: LOGO 3D & SPORT PILLS
+   ========================================================================== */
+.dp-logo-wrapper {
+  text-align: center;
+  padding: 10px 10px 20px;
+}
+
+.dp-official-shield {
+  max-width: 180px;
+  height: auto;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+  transition: transform 0.25s ease;
+}
+
+.dp-official-shield:hover {
+  transform: scale(1.02);
+}
+
+.dp-sports-pill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.dp-sport-pill {
+  background: var(--dp-card-bg);
+  border: 1px solid var(--dp-border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--dp-text-body);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.dp-sport-pill:hover {
+  border-color: #cbd5e1;
+  transform: translateX(2px);
+  color: var(--dp-text-title);
+}
+
+.dp-sport-pill.active {
+  background: #4a6282;
+  border-color: #4a6282;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(74, 98, 130, 0.3);
+}
+
+.dp-sport-pill.active .dp-sport-badge {
+  color: #ffffff;
+}
+
+.dp-sport-label-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dp-sport-icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+.dp-sport-badge {
+  color: var(--dp-blue-active);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* Lista de Competições no Menu Lateral Desktop */
+.dp-competicoes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.dp-competicoes-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.dp-competicoes-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dp-competicoes-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+[data-theme="dark"] .dp-competicoes-list::-webkit-scrollbar-thumb {
+  background: #1e294b;
+}
+
+.dp-comp-pill {
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  margin-bottom: 0 !important;
+}
+
+.dp-comp-pill .dp-sport-label-box {
+  gap: 8px !important;
+  min-width: 0;
+}
+
+.dp-comp-pill .dp-sport-icon {
+  font-size: 12px;
+  width: 14px;
+  color: var(--dp-blue-active);
+}
+
+.dp-comp-pill.active {
+  background: var(--dp-blue-active) !important;
+  border-color: var(--dp-blue-active) !important;
+  color: #ffffff !important;
+}
+
+.dp-comp-pill.active .dp-sport-icon,
+.dp-comp-pill.active .dp-sport-badge {
+  color: #ffffff !important;
+}
+
+/* Seção Extras na Esquerda */
+.dp-extras-header-pill {
+  background: #0d213a;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.dp-extra-item {
+  background: var(--dp-card-bg);
+  border: 1px solid var(--dp-border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--dp-text-body);
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  transition: all 0.2s ease;
+}
+
+.dp-extra-item:hover {
+  border-color: #cbd5e1;
+  color: var(--dp-blue-brand);
+}
+
+.dp-login-sidebar-btn {
+  background: var(--dp-blue-active);
+  color: #ffffff !important;
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.25);
+  transition: all 0.2s ease;
+}
+
+.dp-login-sidebar-btn:hover {
+  background: #0052cc;
+  box-shadow: 0 6px 16px rgba(0, 102, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.dp-version-text {
+  text-align: center;
+  color: var(--dp-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+/* ==========================================================================
+   COLUNA CENTRAL: BANNERS, TÍTULO, PESQUISA & JOGOS
+   ========================================================================== */
+
+/* Banner Carousel */
+.dp-banner-frame {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 900 / 130;
+  min-height: 84px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  margin-bottom: 16px;
+  background: #0b2142;
+}
+
+.dp-banner-frame img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.5s ease;
+}
+
+.dp-banner-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  z-index: 5;
+}
+
+.dp-banner-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dp-banner-dot.active {
+  background: #ffffff;
+}
+
+/* Título de Jogos */
+.dp-title-bar {
+  margin: 12px 0 14px;
+}
+
+.dp-main-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--dp-text-title);
+  margin: 0;
+  word-break: break-word;
+}
+
+/* Barra de Pesquisa e Botão Recolher */
+.dp-search-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.dp-search-box {
+  position: relative;
+  flex: 1;
+}
+
+.dp-search-box i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--dp-blue-active);
+  font-size: 16px;
+}
+
+.dp-search-input {
+  width: 100%;
+  height: 44px;
+  border-radius: 24px;
+  border: 1px solid var(--dp-border);
+  background: var(--dp-card-bg);
+  padding: 10px 18px 10px 44px;
+  font-size: 14px;
+  color: var(--dp-text-title);
+  outline: none;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  transition: border-color 0.2s ease;
+}
+
+.dp-search-input:focus {
+  border-color: var(--dp-blue-active);
+}
+
+.dp-btn-recolher {
+  background: #11233b;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  height: 44px;
+  padding: 0 18px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.dp-btn-recolher:hover {
+  background: #19355a;
+}
+
+/* Chips de Datas (Dias) */
+.dp-date-chips-wrap {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.dp-day-chip {
+  background: var(--dp-card-bg);
+  border: 1px solid var(--dp-border);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dp-text-body);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.dp-day-chip:hover {
+  border-color: #94a3b8;
+}
+
+.dp-day-chip.active {
+  background: #4a6282;
+  border-color: #4a6282;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   CARDS DE LIGAS E PARTIDAS (Oficial dpsportsbr.com)
+   ========================================================================== */
+.dp-league-card {
+  background: var(--dp-card-bg);
+  border: 1px solid var(--dp-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05);
+  content-visibility: auto;
+  contain-intrinsic-size: 0 250px;
+}
+
+.dp-league-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dp-league-title-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dp-league-flag-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.dp-league-flag-icon {
+  font-size: 20px;
+  color: var(--dp-text-title);
+  flex-shrink: 0;
+}
+
+.dp-league-title-text {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--dp-text-title);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dp-league-minus-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--dp-text-title);
+  cursor: pointer;
+  padding: 0 6px;
+  line-height: 1;
+}
+
+.dp-league-separator {
+  height: 1px;
+  background: var(--dp-border);
+  margin: 12px 0 14px;
+}
+
+/* Match Row */
+.dp-match-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--dp-border-subtle);
+}
+
+.dp-match-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.dp-match-row-desktop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* Data / Hora */
+.dp-match-date-col {
+  width: 70px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dp-match-date-col .dp-date {
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  line-height: 1.2;
+}
+
+[data-theme="dark"] .dp-match-date-col .dp-date {
+  color: #94a3b8;
+}
+
+.dp-match-date-col .dp-time {
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+/* Times com Escudos */
+.dp-match-teams-col {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.dp-team-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+}
+
+.dp-crest-img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.dp-crest-none {
+  width: 22px;
+  height: 22px;
+  color: #94a3b8;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dp-team-name-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dp-text-title);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Grupo de Botões de Cotações */
+.dp-odds-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.dp-odd-btn {
+  width: 64px;
+  height: 48px;
+  background: var(--dp-navy-odd);
+  border-radius: 6px;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.dp-odd-btn:hover {
+  background: var(--dp-navy-odd-hover);
+  transform: translateY(-1px);
+}
+
+.dp-odd-btn.active {
+  background: var(--dp-blue-active) !important;
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.45);
+}
+
+.dp-odd-btn .dp-odd-type {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+  text-transform: capitalize;
+  line-height: 1.1;
+  margin-bottom: 2px;
+}
+
+.dp-odd-btn.active .dp-odd-type {
+  color: #ffffff;
+  opacity: 0.85;
+}
+
+.dp-odd-btn .dp-odd-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+/* Botão +Mercados */
+.dp-more-btn {
+  width: 60px;
+  height: 48px;
+  background: var(--dp-navy-odd);
+  border-radius: 6px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dp-more-btn:hover {
+  background: var(--dp-navy-odd-hover);
+}
+
+/* Mobile Match Layout */
+.dp-match-row-mobile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.dp-match-mobile-left {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.dp-match-mobile-meta {
+  font-size: 11px;
+  color: var(--dp-text-muted);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dp-match-mobile-meta i {
+  font-size: 11px;
+}
+
+.dp-mobile-more-tag {
+  color: var(--dp-blue-active);
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   CARREGAMENTO PROGRESSIVO & PAGINAÇÃO DE JOGOS E COMPETIÇÕES
+   ========================================================================== */
+.dp-load-more-section {
+  background: var(--dp-card-bg);
+  border: 1px dashed var(--dp-border);
+  border-radius: 12px;
+  padding: 24px 16px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+}
+
+.dp-btn-load-more {
+  background: #0d213a;
+  color: #ffffff;
+  border: 1px solid rgba(0, 102, 255, 0.4);
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dp-btn-load-more:hover {
+  background: var(--dp-blue-brand);
+  border-color: var(--dp-blue-brand);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(11, 95, 255, 0.3);
+  color: #ffffff;
+}
+
+.dp-btn-load-more .badge {
+  background: var(--dp-blue-active);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+[data-theme="dark"] .dp-btn-load-more {
+  background: #141d38;
+  border-color: rgba(24, 119, 242, 0.4);
+}
+
+[data-theme="dark"] .dp-btn-load-more:hover {
+  background: var(--dp-blue-brand);
+}
+
+/* Botão Ver Mais Jogos da Mesma Liga */
+.dp-more-games-bar {
+  background: var(--dp-card-bg);
+  border-top: 1px solid var(--dp-border-subtle);
+  padding: 10px 14px;
+  border-radius: 0 0 12px 12px;
+}
+
+.dp-btn-more-games {
+  background: transparent;
+  border: 1px solid var(--dp-border);
+  color: var(--dp-blue-active);
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dp-btn-more-games:hover {
+  background: rgba(0, 102, 255, 0.08);
+  border-color: var(--dp-blue-active);
+  color: var(--dp-blue-brand);
+}
+
+[data-theme="dark"] .dp-btn-more-games {
+  border-color: var(--dp-border);
+}
+
+[data-theme="dark"] .dp-btn-more-games:hover {
+  background: rgba(24, 119, 242, 0.15);
+}
+
+/* ==========================================================================
+   COLUNA DIREITA: CUPOM DE APOSTAS (Oficial dpsportsbr.com)
+   ========================================================================== */
+.dp-betslip-card {
+  position: sticky;
+  top: 76px;
+  background: var(--dp-card-bg);
+  border: 1px solid var(--dp-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(16, 24, 40, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dp-betslip-header-bar {
+  background: var(--dp-navy-header);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 13px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dp-betslip-content {
+  padding: 14px;
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
+}
+
+.dp-betslip-empty-state {
+  text-align: center;
+  padding: 30px 10px;
+  color: var(--dp-text-muted);
+}
+
+.dp-betslip-empty-state i {
+  font-size: 32px;
+  color: #cbd5e1;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.dp-betslip-empty-state .title {
+  font-weight: 700;
+  color: var(--dp-text-title);
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.dp-betslip-empty-state .desc {
+  font-size: 12px;
+}
+
+/* Item de Aposta no Cupom */
+.dp-selection-card {
+  background: var(--dp-bg-page);
+  border: 1px solid var(--dp-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.dp-selection-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.dp-selection-head .time {
+  font-size: 11px;
+  color: var(--dp-text-muted);
+}
+
+.dp-selection-remove {
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  background: transparent;
+  border: none;
+}
+
+.dp-selection-teams {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dp-text-title);
+  margin-bottom: 6px;
+  line-height: 1.25;
+}
+
+.dp-selection-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dp-selection-market {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dp-blue-active);
+}
+
+.dp-selection-odd-pill {
+  background: var(--dp-card-bg);
+  border: 1px solid var(--dp-border);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--dp-text-title);
+}
+
+/* Rodapé do Cupom */
+.dp-betslip-summary-box {
+  border-top: 1px solid var(--dp-border);
+  padding: 14px;
+  background: var(--dp-card-bg);
+}
+
+.dp-summary-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.dp-summary-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.dp-summary-col.left {
+  align-items: flex-start;
+}
+
+.dp-summary-col.right {
+  align-items: flex-end;
+}
+
+.dp-summary-col .label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dp-text-muted);
+  margin-bottom: 2px;
+}
+
+.dp-summary-col .odd-val {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--dp-text-title);
+}
+
+.dp-summary-col .retorno-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--dp-blue-active);
+}
+
+/* Input de Valor (Stake) */
+.dp-stake-input-wrap {
+  position: relative;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.dp-stake-currency {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--dp-text-muted);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.dp-stake-input {
+  width: 100%;
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  padding: 8px 12px 8px 75px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #101828;
+  text-align: right;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+[data-theme="dark"] .dp-stake-input {
+  background: #060c1f;
+  border-color: #1e294b;
+  color: #ffffff;
+}
+
+.dp-stake-input:focus {
+  border-color: var(--dp-blue-active);
+}
+
+/* Botão Efetivar / Criar Aposta */
+.dp-btn-criar-aposta {
+  width: 100%;
+  height: 48px;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  background: #728495;
+  color: #ffffff;
+}
+
+.dp-btn-criar-aposta.ready {
+  background: var(--dp-blue-active) !important;
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+}
+
+.dp-btn-criar-aposta.ready:hover {
+  background: #0052cc !important;
+  transform: translateY(-1px);
+}
+
+.dp-btn-criar-aposta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ==========================================================================
+   MODAL DE MAIS MERCADOS (Todos os Mercados)
+   ========================================================================== */
+.dp-modal-content {
+  background: var(--dp-card-bg);
+  border: 1px solid var(--dp-border);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.dp-modal-header {
+  background: var(--dp-navy-header);
+  color: #ffffff;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dp-modal-header h5 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.dp-modal-header .close {
+  color: #ffffff;
+  opacity: 0.8;
+  font-size: 24px;
+}
+
+.dp-modal-header .close:hover {
+  opacity: 1;
+}
+
+.dp-market-group-card {
+  border: 1px solid var(--dp-border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.dp-market-group-title {
+  background: #0d213a;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 14px;
+}
+
+/* ==========================================================================
+   RODAPÉ MOBILE FIXO (1:1 Oficial dpsportsbr.com)
+   ========================================================================== */
+.dp-footer-mobile {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 62px;
+  background: var(--dp-navy-header);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.25);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dp-mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  gap: 3px;
+  cursor: pointer;
+  position: relative;
+  background: transparent;
+  border: none;
+  padding: 6px 16px;
+}
+
+.dp-mobile-nav-item i {
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.dp-mobile-center-btn {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #08162b;
+  border: 3px solid #e11d48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transform: translateY(-16px);
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.4);
+  transition: transform 0.2s;
+  overflow: hidden;
+}
+
+.dp-mobile-center-btn:active {
+  transform: translateY(-14px) scale(0.95);
+}
+
+.dp-mobile-center-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.dp-mobile-badge {
+  position: absolute;
+  top: 0;
+  right: 12px;
+  background: var(--dp-blue-active);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 10px;
+  padding: 1px 6px;
+  box-shadow: 0 2px 6px rgba(0, 102, 255, 0.5);
+}
+
+/* ==========================================================================
+   CARROSSEL DE MODALIDADES NO MOBILE (1:1 Oficial dpsportsbr.com)
+   ========================================================================== */
+.dp-mobile-sports-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 10px 4px;
+  margin-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.dp-mobile-sports-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.dp-mobile-sport-card {
+  flex: 0 0 92px;
+  height: 76px;
+  background: var(--dp-navy-header);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.dp-mobile-sport-card:active {
+  transform: scale(0.97);
+}
+
+.dp-mobile-sport-card.active {
+  background: #102a4e;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dp-mobile-sport-card.active::after {
+  display: none;
+}
+
+.dp-mobile-sport-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+  color: #ffffff;
+}
+
+.dp-live-tv-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dp-live-tv-icon i {
+  font-size: 22px;
+}
+
+.dp-live-badge-txt {
+  position: absolute;
+  top: 3px;
+  font-size: 7.5px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+}
+
+.dp-mobile-sport-name {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Barra de Progresso Vermelha do Carrossel de Esportes */
+.dp-sports-scrollbar-track {
+  height: 4px;
+  background: #cbd5e1;
+  border-radius: 999px;
+  margin: 4px 10px 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .dp-sports-scrollbar-track {
+  background: #1e294b;
+}
+
+.dp-sports-scrollbar-bar {
+  width: 25%;
+  height: 100%;
+  background: #dc2626;
+  border-radius: 999px;
+}
+
+/* ==========================================================================
+   SEÇÃO JOGOS EM DESTAQUES (1:1 Oficial dpsportsbr.com)
+   ========================================================================== */
+.dp-featured-section {
+  margin: 6px 0 16px;
+}
+
+.dp-featured-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 12px 8px;
+}
+
+.dp-featured-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0b1e3a;
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+[data-theme="dark"] .dp-featured-title {
+  color: #ffffff;
+}
+
+.dp-featured-count {
+  font-size: 12.5px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.dp-featured-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 10px 8px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.dp-featured-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.dp-featured-card {
+  flex: 0 0 280px;
+  scroll-snap-align: start;
+  background: 
+    radial-gradient(circle at 18% 14%, rgba(255, 255, 255, 0.45) 0%, rgba(59, 130, 246, 0.22) 22%, transparent 48%),
+    radial-gradient(circle at 82% 14%, rgba(255, 255, 255, 0.45) 0%, rgba(59, 130, 246, 0.22) 22%, transparent 48%),
+    radial-gradient(ellipse at 50% 95%, rgba(16, 185, 129, 0.25) 0%, transparent 55%),
+    linear-gradient(180deg, #10274c 0%, #08172c 65%, #051812 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 10px 12px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+}
+
+.dp-feat-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #cbd5e1;
+  font-weight: 700;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dp-feat-league {
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dp-feat-time {
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dp-feat-teams-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 8px;
+  cursor: pointer;
+}
+
+.dp-feat-team {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+}
+
+.dp-feat-crest {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.dp-feat-no-crest {
+  font-size: 28px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.dp-feat-team-name {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-height: 28px;
+  max-width: 100px;
+}
+
+.dp-feat-vs {
+  font-size: 13px;
+  font-weight: 900;
+  color: #94a3b8;
+  padding: 0 8px;
+  letter-spacing: 0.5px;
+}
+
+.dp-feat-odds-wrap {
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.dp-feat-odds-label {
+  text-align: center;
+  font-size: 10px;
+  color: #94a3b8;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.dp-feat-odds-row {
+  display: flex;
+  gap: 6px;
+}
+
+.dp-feat-odd-btn {
+  flex: 1;
+  height: 36px;
+  background: rgba(9, 23, 44, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 13.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.dp-feat-odd-btn:active {
+  transform: scale(0.96);
+}
+
+.dp-feat-odd-btn.active {
+  background: var(--dp-blue-active) !important;
+  border-color: var(--dp-blue-active);
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.5);
+}
+
+/* Drawer Menu Mobile */
+.dp-mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 300px;
+  height: 100vh;
+  background: var(--dp-navy-header);
+  color: #ffffff;
+  z-index: 10000;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  box-shadow: 4px 0 25px rgba(0, 0, 0, 0.5);
+}
+
+html.show-menu .dp-mobile-drawer {
+  left: 0;
+}
+
+.dp-mobile-drawer-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+}
+
+html.show-menu .dp-mobile-drawer-backdrop {
+  display: block;
+}
+
+.dp-drawer-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dp-drawer-section-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  padding: 14px 20px 4px;
+  letter-spacing: 0.6px;
+}
+
+.dp-drawer-sport-link {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  color: #cbd5e1;
+  font-weight: 600;
+  font-size: 13.5px;
+  transition: all 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.dp-drawer-sport-link:hover, .dp-drawer-sport-link.active {
+  background: rgba(0, 102, 255, 0.18);
+  color: #ffffff;
+}
+
+/* Links de Competições na Gaveta Lateral Mobile */
+.dp-drawer-comp-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  color: #cbd5e1;
+  font-weight: 500;
+  font-size: 13px;
+  transition: all 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  text-decoration: none !important;
+}
+
+.dp-drawer-comp-link:hover,
+.dp-drawer-comp-link.active {
+  background: rgba(0, 102, 255, 0.2);
+  color: #ffffff;
+}
+
+.dp-drawer-comp-link .badge {
+  background: rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 3px 8px;
+}
+
+.dp-drawer-comp-link.active .badge {
+  background: var(--dp-blue-active);
+  color: #ffffff;
+}
+
+.dp-drawer-menu {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0 20px;
+}
+
+.dp-drawer-menu li a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 20px;
+  color: #cbd5e1;
+  font-weight: 600;
+  font-size: 13.5px;
+  transition: background 0.2s;
+}
+
+.dp-drawer-menu li a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   MODAL / BOTTOM SHEET DO CUPOM (1:1 Oficial dpsportsbr.com)
+   ========================================================================== */
+.dp-mobile-betslip-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 2500;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.dp-mobile-betslip-modal.open {
+  display: flex;
+}
+
+.dp-mobile-betslip-sheet {
+  background: var(--dp-card-bg);
+  width: 100%;
+  height: 94vh;
+  max-height: 94vh;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.45);
+  animation: slideUpMobile 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpMobile {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.dp-mobile-betslip-header {
+  background: var(--dp-navy-header);
+  height: 52px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.dp-mobile-betslip-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.dp-mobile-betslip-close {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 8px;
+}
+
+.dp-mobile-betslip-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.dp-mobile-betslip-body .dp-betslip-card {
+  position: static;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+}
+
+.dp-mobile-betslip-body .dp-betslip-header-bar {
+  display: none;
+}
+
+.dp-mobile-betslip-body .dp-betslip-content {
+  flex: 1;
+  overflow-y: auto;
+  max-height: none;
+  padding: 14px;
+}
+
+.dp-mobile-betslip-body .dp-betslip-summary-box {
+  flex-shrink: 0;
+  padding: 14px 16px 24px;
+  border-top: 1px solid var(--dp-border);
+  background: var(--dp-card-bg);
+}
+
+/* ==========================================================================
+   RODAPÉ DESKTOP
+   ========================================================================== */
+.dp-footer {
+  background: var(--dp-card-bg);
+  border-top: 1px solid var(--dp-border);
+  padding: 30px 0;
+  margin-top: 40px;
+  color: var(--dp-text-muted);
+  font-size: 13px;
+}
+
+.dp-footer a {
+  color: var(--dp-text-body);
+  margin-right: 16px;
+  font-weight: 500;
+}
+
+.dp-footer a:hover {
+  color: var(--dp-blue-active);
+}
+
+/* ==========================================================================
+   ANIMAÇÕES & MICRO-INTERAÇÕES
+   ========================================================================== */
+.dp-odd-btn:active, .dp-more-btn:active {
+  transform: scale(0.96);
+}
+
+.dp-sport-pill:active {
+  transform: scale(0.98);
+}
+
+/* ==========================================================================
+   MEDIA QUERY MOBILE: REFINAMENTO 1:1 COM dpsportsbr.com
+   ========================================================================== */
+@media (max-width: 768px) {
+  .dp-header-container {
+    padding: 0 12px;
+    height: 54px;
+  }
+  .dp-header {
+    height: 54px;
+  }
+  .dp-brand-text {
+    font-size: 19px;
+  }
+  .dp-theme-switch {
+    width: 48px;
+    height: 26px;
+  }
+  .dp-theme-slider {
+    width: 20px;
+    height: 20px;
+    top: 3px;
+    left: 25px;
+  }
+  [data-theme="dark"] .dp-theme-slider {
+    left: 3px;
+  }
+
+  /* Substrip Sticky no Mobile */
+  .dp-mobile-substrip {
+    position: sticky;
+    top: 54px;
+    z-index: 990;
+    padding: 8px 12px;
+  }
+  .dp-substrip-input {
+    width: 120px;
+    padding: 5px 10px;
+  }
+  .dp-substrip-return .label {
+    font-size: 11px;
+  }
+  .dp-substrip-return .val {
+    font-size: 14.5px;
+  }
+
+  .dp-main-content {
+    padding: 6px 4px 85px;
+  }
+
+  /* Banner Mobile: Proporção natural sem cortes de logotipos */
+  .dp-banner-frame {
+    margin: 8px 10px 10px;
+    border-radius: 12px;
+    aspect-ratio: 900 / 230;
+    height: auto;
+    max-height: 98px;
+    background: transparent;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+  .dp-banner-frame img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    border-radius: 12px;
+  }
+
+  /* Chips de Data no Mobile: Scroll horizontal sem quebras */
+  .dp-date-chips-wrap {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding: 0 10px;
+    margin-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .dp-date-chips-wrap::-webkit-scrollbar {
+    display: none;
+  }
+  .dp-day-chip {
+    flex-shrink: 0;
+    border-radius: 20px;
+    height: 38px;
+    padding: 0 18px;
+    font-size: 13px;
+    font-weight: 700;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #0b1e3a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .dp-day-chip.active {
+    background: #0b1e3a !important;
+    border-color: #0b1e3a !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(11, 30, 58, 0.25);
+  }
+  [data-theme="dark"] .dp-day-chip {
+    background: #0a172c;
+    border-color: #152843;
+    color: #cbd5e1;
+  }
+  [data-theme="dark"] .dp-day-chip.active {
+    background: #102a4e !important;
+    border-color: #0066ff !important;
+    color: #ffffff !important;
+  }
+
+  /* Título e Pesquisa no Mobile */
+  .dp-title-bar {
+    padding: 0 10px;
+    margin: 12px 0 8px;
+  }
+  .dp-main-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #0b1e3a;
+    letter-spacing: -0.2px;
+  }
+  [data-theme="dark"] .dp-main-title {
+    color: #ffffff;
+  }
+  .dp-search-row {
+    padding: 0 10px;
+    margin-bottom: 12px;
+    width: 100%;
+  }
+  .dp-search-box {
+    width: 100%;
+    flex: 1;
+    position: relative;
+  }
+  .dp-search-input {
+    height: 44px;
+    font-size: 13px;
+    border-radius: 22px;
+    border: 1.5px solid #3b82f6;
+    background: #ffffff;
+    color: #0b1e3a;
+    padding: 10px 18px 10px 42px;
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.08);
+  }
+  [data-theme="dark"] .dp-search-input {
+    background: #0a172c;
+    color: #ffffff;
+  }
+  .dp-search-box i {
+    left: 16px;
+    color: #3b82f6;
+    font-size: 15px;
+  }
+
+  /* Card de Liga no Mobile (1:1 com dpsportsbr.com) */
+  .dp-league-card {
+    background: #f1f5f9;
+    border-radius: 16px;
+    padding: 8px 10px 10px;
+    margin: 12px 10px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+  }
+  [data-theme="dark"] .dp-league-card {
+    background: #0a172c;
+    border-color: #152843;
+  }
+
+  /* Header da Liga em Barra Capsular Navy Escura Oficial */
+  .dp-league-header-row {
+    background: #0b1e3a;
+    border-radius: 10px;
+    height: 38px;
+    padding: 0 14px;
+    color: #ffffff;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  .dp-league-title-text {
+    color: #ffffff !important;
+    font-size: 13.5px;
+    font-weight: 700;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: none;
+    flex: 1;
+  }
+  .dp-league-flag-img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .dp-league-flag-icon {
+    color: #ffffff;
+    font-size: 18px;
+  }
+  .dp-league-minus-btn {
+    display: none !important;
+  }
+  .dp-league-separator {
+    display: none;
+  }
+
+  /* Linhas de Partidas no Mobile */
+  .dp-match-item {
+    border-bottom: 1px solid #e2e8f0;
+    padding: 10px 4px;
+  }
+  [data-theme="dark"] .dp-match-item {
+    border-bottom-color: #152843;
+  }
+  .dp-match-item:last-child {
+    border-bottom: none;
+    padding-bottom: 2px;
+  }
+  .dp-match-row-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .dp-match-mobile-left {
+    flex: 1;
+    min-width: 0;
+    padding-right: 6px;
+    cursor: pointer;
+  }
+  .dp-team-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 3px;
+    overflow: hidden;
+  }
+  .dp-crest-img {
+    width: 20px;
+    height: 20px;
+    max-width: 20px;
+    max-height: 20px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+  .dp-team-name-text {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0b1e3a;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+  [data-theme="dark"] .dp-team-name-text {
+    color: #ffffff;
+  }
+  .dp-match-mobile-meta {
+    font-size: 11px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .dp-match-mobile-meta i {
+    font-size: 11px;
+    color: #94a3b8;
+  }
+  .dp-mobile-more-tag {
+    font-weight: 700;
+    color: #0b1e3a;
+    margin-left: 2px;
+  }
+  [data-theme="dark"] .dp-mobile-more-tag {
+    color: #ffffff;
+  }
+
+  /* Botões de Odds no Mobile */
+  .dp-odds-group {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+  .dp-odd-btn {
+    width: 52px;
+    height: 48px;
+    min-width: 52px;
+    background: #0b1e3a;
+    border-radius: 8px;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .dp-odd-btn:active {
+    transform: scale(0.96);
+  }
+  .dp-odd-btn.active {
+    background: #0066ff !important;
+  }
+  .dp-odd-btn .dp-odd-type {
+    font-size: 10px;
+    font-weight: 500;
+    color: #94a3b8;
+    text-transform: capitalize;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .dp-odd-btn .dp-odd-val {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1;
+  }
+}
+

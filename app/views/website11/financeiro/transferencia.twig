@@ -1,0 +1,158 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - FINANCEIRO / TRANSFERENCIA
+   ---------------------------------------------------------------------
+   Visual: design system do tema v4 (app.css + v4.css):
+     .account-form / .account-field / .account-label / .account-input
+     .account-check / .account-submit / .account-hint / .account-data
+     .deposit-amount / .deposit-currency / .deposit-input
+     .v4-saq-saldo / .bet24-card / .bet24-card-title
+
+   LOGICA: e a mesma do template base do sistema
+   (app/views/website/financeiro/transferencia.twig). Form .admpage-form
+   com os mesmos names (remetente, destinatario, valor), o checkbox
+   #autorizo e o JavaScript (adminPage com alertSuccess + reloadSuccess)
+   foram preservados. Apenas o HTML/CSS mudou.
+   ===================================================================== #}
+
+{% block main %}
+
+    <div class="bet24-page">
+
+        <div class="bet24-page-head">
+            <div>
+                <h1 class="bet24-page-title">Transferência</h1>
+                <p class="bet24-page-sub">Envie créditos do seu saldo para outro jogador da plataforma.</p>
+            </div>
+            <a class="bet24-voltar" href="{{ url('financeiro/extrato') }}">
+                <i class="fas fa-history"></i> Ver extrato
+            </a>
+        </div>
+
+        <div class="bet24-transfer-grid">
+
+            {# ---------------------------------------------
+                 Formulario de transferencia (AJAX)
+                 --------------------------------------------- #}
+            <form class="admpage-form bet24-card" onsubmit="return false;">
+                <h2 class="bet24-card-title">
+                    Transferir créditos
+                    <small>O valor sai do seu saldo na hora e entra no saldo do destinatário.</small>
+                </h2>
+
+                <div class="account-form">
+                    <label class="account-field">
+                        <span class="account-label">Login do remetente</span>
+                        <input type="text" name="remetente" placeholder="{{ user.getLogin() }}"
+                               value="{{ user.getLogin() }}" readonly class="account-input"/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Login do destinatário</span>
+                        <input type="text" name="destinatario" class="account-input"
+                               placeholder="Digite o usuário de destino" required/>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Valor a ser transferido (R$)</span>
+                        <div class="deposit-amount">
+                            <span class="deposit-currency">R$</span>
+                            <input type="text" name="valor" class="deposit-input mask-valor"
+                                   placeholder="0,00" required/>
+                        </div>
+                        <span class="account-hint">Valor mínimo: R$ 5,00.</span>
+                    </label>
+
+                    <label class="account-check">
+                        <input id="autorizo" type="checkbox" value="1" required/>
+                        <span>Autorizo o desconto automático do meu saldo para transferir créditos para
+                            terceiros.</span>
+                    </label>
+
+                    <button type="submit" class="account-submit">
+                        <i class="fas fa-exchange-alt"></i> Transferir
+                    </button>
+                </div>
+            </form>
+
+            {# ---------------------------------------------
+                 Coluna lateral: saldo + avisos
+                 --------------------------------------------- #}
+            <aside class="bet24-transfer-aside">
+
+                <div class="bet24-card">
+                    <h2 class="bet24-card-title">Seu saldo</h2>
+                    <div class="v4-saq-saldo">
+                        <span>Disponível</span>
+                        <b>R$ {{ user.getCredito(true) }}</b>
+                    </div>
+
+                    <dl class="account-data bet24-transfer-dados">
+                        <div class="account-data-row">
+                            <dt>Remetente</dt>
+                            <dd>{{ user.getLogin() }}</dd>
+                        </div>
+                        <div class="account-data-row">
+                            <dt>Valor mínimo</dt>
+                            <dd>R$ 5,00</dd>
+                        </div>
+                        {% if dados.getTaxaTransferencia() > 0 %}
+                            <div class="account-data-row">
+                                <dt>Taxa de transferência</dt>
+                                <dd>{{ dados.getTaxaTransferencia()|number_format(2, ',', '.') }}%</dd>
+                            </div>
+                        {% endif %}
+                    </dl>
+                </div>
+
+                <div class="bet24-card">
+                    <h2 class="bet24-card-title">Antes de transferir</h2>
+                    <ul class="bet24-lista-info">
+                        <li>
+                            <i class="fas fa-user-check"></i>
+                            <span>Confira o login do destinatário: a transferência não pode ser
+                                desfeita.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-wallet"></i>
+                            <span>O valor sai do seu saldo na hora e cai no saldo do outro jogador.</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-lock"></i>
+                            <span>Não informe dados de acesso a terceiros. O suporte nunca pede sua
+                                senha.</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </aside>
+
+        </div>
+
+        {% if pagina('transferencia').getTexto() %}
+            <div class="bet24-card bet24-transfer-texto">
+                {{ pagina('transferencia').getTexto()|raw }}
+            </div>
+        {% endif %}
+
+    </div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        /* Formulario de transferencia (AJAX / adminPage):
+           alerta de sucesso e recarrega a pagina ao concluir. */
+        $('.admpage-form')
+            .adminPage({
+                autoSearch: false,
+                alertSuccess: true,
+                reloadSuccess: true,
+            });
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,24 @@
+{
+    "name": "widepay/sdk-php",
+    "description": "Biblioteca de integração com o Wide Pay",
+    "homepage": "https://wwww.widepay.com",
+    "version": "1.0.0",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+        "name": "Claudio Almeida",
+        "email": "claudioalmeiida@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "WidePay": "src"
+        }
+    }
+}

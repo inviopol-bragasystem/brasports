@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+
+    {{ seo_header() }}
+
+    <title>Tabela de jogos</title>
+
+    <style>
+        @page {
+            padding: 0;
+            margin: 0;
+        }
+
+        #main{
+            width: 400px;
+        }
+
+        .brand {
+            height: 100px;
+            display: block;
+            margin: 1.5em auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            border: 1px solid black;
+            font-family: Tahoma;
+            -webkit-print-color-adjust: exact;
+        }
+
+        tr {
+            border-bottom: 1px solid black;
+        }
+
+        tr th {
+            line-height: 35px;
+            text-transform: uppercase;
+            background-color: #ededed;
+            padding: 0 3px;
+            font-size: 14px;
+        }
+
+        tr td {
+            padding: 3px;
+            font-size: 12px;
+        }
+
+        .cotacao {
+            display: block;
+            padding: 0;
+            text-align: center;
+            background-color: #000;
+            color: white;
+            font-weight: bold;
+            line-height: 30px;
+            width: 50px;
+        }
+    </style>
+
+</head>
+<body onload="javascript:window.print();">
+
+<div id="main">
+
+    <img src="{{ dados.imgCapa(true, 'logo').getSource(true) }}" class="brand"/>
+
+    {% for id, title in campeonatos %}
+        <table>
+            <thead>
+            <tr>
+                <th colspan="2" align="left">{{ title }}</th>
+                <th width="5">CASA</th>
+                <th width="5">EMP</th>
+                <th width="5">FORA</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for v in jogos %}
+                {% if v.getCampeonato() == id %}
+                    {% set cotacoes = v.getCotacoes(true) %}
+                    <tr>
+                        <td class="hora" width="10">{{ v.getHora() }}</td>
+                        <td>{{ v.getTimeCasaTitle() }} x {{ v.getTimeForaTitle() }}</td>
+                        <td>
+                            <div class="cotacao">
+                                {{ cotacoes['90'].casa }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cotacao">
+                                {{ cotacoes['90'].empate }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cotacao">
+                                {{ cotacoes['90'].fora }}
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+
+</div>
+
+</body>
+</html>

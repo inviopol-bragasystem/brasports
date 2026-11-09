@@ -1,0 +1,429 @@
+{% extends layout %}
+
+{% block links %}
+    <a href="{{ url('jogos/adicionar/novo') }}" class="btn btn-success">
+        <i class="fa fa-plus"></i> Novo Jogo
+    </a>
+    <a href="{{ url('importar/importarjogos') }}" class="btn btn-primary">
+        <i class="fa fa-upload"></i> Importar Jogos
+    </a>
+{% endblock %}
+
+{% block main %}
+
+    <style>
+        .limpeza-cards .card-info {
+            border-radius: 4px; padding: 12px 14px; margin-bottom: 12px; color: #fff;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .limpeza-cards .card-info .num { font-size: 26px; font-weight: 700; line-height: 1; }
+        .limpeza-cards .card-info .lbl { font-size: 12px; text-transform: uppercase; opacity: .9; }
+        .limpeza-cards .c-total { background: #34495e; }
+        .limpeza-cards .c-aberto { background: #27ae60; }
+        .limpeza-cards .c-iniciado { background: #e67e22; }
+        .limpeza-cards .c-encerrado { background: #2980b9; }
+        .limpeza-cards .c-cancelado { background: #7f8c8d; }
+        .limpeza-cards .c-apostas { background: #8e44ad; }
+        .limpeza-toolbar { margin-bottom: 15px; }
+        .limpeza-toolbar .checkbox { display: inline-block; margin: 0 10px 0 0; }
+        #modal-odds .odds-group-title {
+            background: #34495e; color: #fff; font-weight: 700; font-size: 12px;
+            text-transform: uppercase; padding: 6px 10px; margin-top: 10px;
+        }
+        #modal-odds .odds-item { padding: 6px 4px; }
+        #modal-odds .odds-item label { font-weight: 600; font-size: 12px; margin-bottom: 2px; }
+    </style>
+
+    <div class="row limpeza-cards">
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="card-info c-total"><div><div class="num" data-resumo="total">{{ resumo.total }}</div><div class="lbl">Total</div></div><i class="fa fa-futbol-o fa-2x"></i></div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="card-info c-aberto"><div><div class="num" data-resumo="abertos">{{ resumo.abertos }}</div><div class="lbl">Abertos</div></div><i class="fa fa-unlock fa-2x"></i></div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="card-info c-iniciado"><div><div class="num" data-resumo="iniciados">{{ resumo.iniciados }}</div><div class="lbl">Iniciados</div></div><i class="fa fa-play fa-2x"></i></div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="card-info c-encerrado"><div><div class="num" data-resumo="encerrados">{{ resumo.encerrados }}</div><div class="lbl">Encerrados</div></div><i class="fa fa-flag-checkered fa-2x"></i></div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="card-info c-cancelado"><div><div class="num" data-resumo="cancelados">{{ resumo.cancelados }}</div><div class="lbl">Cancelados</div></div><i class="fa fa-ban fa-2x"></i></div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="card-info c-apostas"><div><div class="num" data-resumo="comapostas">{{ resumo.comapostas }}</div><div class="lbl">Com apostas</div></div><i class="fa fa-ticket fa-2x"></i></div>
+        </div>
+    </div>
+
+    <form class="admpage-form-search panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-2 col-sm-6 col-xs-12 form-group">
+                    <label><b>ID</b></label>
+                    <input type="number" name="id" class="form-control"/>
+                </div>
+                <div class="col-md-4 col-sm-6 col-xs-12 form-group">
+                    <label><b>Time ou campeonato</b></label>
+                    <input type="text" name="search" class="form-control" placeholder="Digite o nome..."/>
+                </div>
+                <div class="col-md-3 col-sm-6 col-xs-12 form-group">
+                    <label><b>Data do jogo</b></label>
+                    <input type="date" name="data" class="form-control"/>
+                </div>
+                <div class="col-md-3 col-sm-6 col-xs-12 form-group">
+                    <label><b>Situação</b></label>
+                    <select name="situacao" class="form-control">
+                        <option value="">Todas</option>
+                        <option value="aberto">Abertos (recebendo apostas)</option>
+                        <option value="iniciado">Iniciados (aguardando placar)</option>
+                        <option value="encerrado">Encerrados</option>
+                        <option value="cancelado">Cancelados</option>
+                    </select>
+                </div>
+                <div class="col-md-12 col-xs-12 form-group">
+                    <label><b>Campeonato</b></label>
+                    <select name="campeonato" class="form-control" data-options="admin/cadastros/campeonatos/options">
+                        <option value=""> -- Todos --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer text-right">
+            <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+        </div>
+    </form>
+
+    <div class="limpeza-toolbar panel panel-default">
+        <div class="panel-body">
+            <label class="checkbox">
+                <input type="checkbox" id="chk-com-apostas"/>
+                <b>Incluir jogos com apostas</b> <small class="text-muted">(cancela e exclui definitivamente mesmo com apostas)</small>
+            </label>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-danger" id="btn-excluir-selecionados">
+                    <i class="fa fa-trash"></i> Excluir selecionados
+                </button>
+                <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="javascript:;" data-limpar="iniciados"><i class="fa fa-play"></i> Limpar jogos já iniciados</a></li>
+                    <li><a href="javascript:;" data-limpar="encerrados"><i class="fa fa-flag-checkered"></i> Limpar jogos encerrados</a></li>
+                    <li><a href="javascript:;" data-limpar="cancelados"><i class="fa fa-ban"></i> Limpar jogos cancelados</a></li>
+                    <li class="divider"></li>
+                    <li><a href="javascript:;" data-limpar="todos" class="text-danger"><b><i class="fa fa-warning"></i> LIMPAR TODOS OS JOGOS</b></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="admpage-container"></div>
+
+    <div class="modal fade" id="modal-odds" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-sliders"></i> Editar odds <small class="odds-jogo"></small></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label><b>Tempo do jogo</b></label>
+                        <select class="form-control" id="odds-tempo">
+                            {% for t in tempos %}
+                                <option value="{{ t.key }}">{{ t.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div id="odds-campos">
+                        {% for id, title in grupos %}
+                            <div class="odds-group-title">{{ title }}</div>
+                            <div class="row">
+                                {% for c in cotacoes %}
+                                    {% if c.getGrupo() == id %}
+                                        <div class="col-md-3 col-sm-4 col-xs-6 odds-item">
+                                            <label>{{ c.getTitulo() }}</label>
+                                            <input type="text" class="form-control input-sm odds-input"
+                                                   data-campo="{{ c.getCampo() }}" placeholder="0,00"/>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" id="btn-salvar-odds">
+                        <i class="fa fa-save"></i> Salvar odds
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block list %}
+    {% if busca.getCount() %}
+        <div class="panel">
+            <div class="panel-body p-0">
+                <form class="form-list">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-bordered table-minified list-table m-0">
+                            <thead>
+                            <tr>
+                                <th width="40" class="text-center">
+                                    <input onchange="$('.group').prop('checked', $(this).prop('checked'));" type="checkbox"/>
+                                </th>
+                                <th width="60" class="text-center">ID</th>
+                                <th width="120" class="text-center">Data/Hora</th>
+                                <th>Campeonato / Times</th>
+                                <th width="110" class="text-center">Situação</th>
+                                <th width="90" class="text-center">Apostas</th>
+                                <th width="150" class="text-center">Ações</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for v in busca.getRegistros() %}
+                                <tr>
+                                    <td class="text-center">
+                                        <input type="checkbox" name="ids[]" class="group" value="{{ v.getId() }}"/>
+                                    </td>
+                                    <td class="text-center">{{ v.getId() }}</td>
+                                    <td class="text-center">
+                                        <div>{{ v.getData(true) }}</div>
+                                        <div>{{ v.getHora() }}</div>
+                                    </td>
+                                    <td>
+                                        <div><small class="text-muted">{{ v.getCampeonatoTitle() }}</small></div>
+                                        <div><b>{{ v.getTimeCasaTitle() }}</b> x <b>{{ v.getTimeForaTitle() }}</b></div>
+                                    </td>
+                                    <td class="text-center">
+                                        {% if v.getStatus() == 2 %}
+                                            <span class="label label-info">Encerrado</span>
+                                        {% elseif v.getStatus() == 0 %}
+                                            <span class="label label-default">Cancelado</span>
+                                        {% elseif v.jaComecou() %}
+                                            <span class="label label-warning">Iniciado</span>
+                                        {% else %}
+                                            <span class="label label-success">Aberto</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">{{ v.getApostas() }}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a class="btn btn-default" title="Editar jogo completo"
+                                               href="{{ url('jogos/adicionar/editar', [v.getToken()]) }}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            {% if v.getStatus() == 1 %}
+                                                <div class="btn btn-primary" title="Editar odds"
+                                                     data-odds-token="{{ v.getToken() }}"
+                                                     data-odds-titulo="{{ v.getTimeCasaTitle() }} x {{ v.getTimeForaTitle() }}"
+                                                     data-odds="{{ v.getCotacoes(true)|json_encode }}">
+                                                    <i class="fa fa-sliders"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div class="btn btn-danger" title="Excluir" data-excluir="{{ v.getToken() }}">
+                                                <i class="fa fa-trash"></i>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+            <div class="panel-footer text-right">{{ busca|raw }}</div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning no-margin">
+            <i class="fa fa-warning"></i> Nenhum jogo encontrado
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        $(function () {
+
+            var page = $('<div />').adminPage({
+                formSearch: '.admpage-form-search',
+                container: '.admpage-container',
+                deleteAction: url('jogos/limpeza/excluir'),
+            });
+
+            var oddsAtual = {};
+            var oddsToken = null;
+
+            function atualizaResumo(e) {
+                $.each(['total', 'abertos', 'iniciados', 'encerrados', 'cancelados', 'comapostas'], function (i, k) {
+                    if (typeof e[k] !== 'undefined') {
+                        $('[data-resumo="' + k + '"]').text(e[k]);
+                    }
+                });
+            }
+
+            function recarrega() {
+                page.reloadSearch(false);
+                $.post(url('jogos/limpeza/resumo'), {}, atualizaResumo, 'json');
+            }
+
+            function limpar(escopo, extra, textoConfirmacao) {
+
+                if (!confirm(textoConfirmacao)) {
+                    return;
+                }
+
+                var dados = $.extend({
+                    escopo: escopo,
+                    comApostas: $('#chk-com-apostas').prop('checked') ? 1 : 0
+                }, extra || {});
+
+                $('html').addClass('page-loading');
+
+                $.post(url('jogos/limpeza/limpar'), dados, function (e) {
+                    alert(e.message);
+                    if (e.result == 1) {
+                        atualizaResumo(e);
+                        page.reloadSearch(false);
+                    }
+                }, 'json')
+                    .fail(function () {
+                        alert('Falha de comunicação com o servidor.');
+                    })
+                    .always(function () {
+                        $('html').removeClass('page-loading');
+                    });
+            }
+
+            // Excluir selecionados
+            $('#btn-excluir-selecionados').on('click', function () {
+                var ids = $('.form-list').length ? $('.form-list').getValues().ids : null;
+                if (!ids || !ids.length) {
+                    alert('Selecione ao menos um jogo na lista.');
+                    return;
+                }
+                if (!$.isArray(ids)) {
+                    ids = [ids];
+                }
+                limpar('selecionados', {ids: ids},
+                    'Excluir ' + ids.length + ' jogo(s) selecionado(s)?\n\nJogos sem apostas serão apagados definitivamente.'
+                    + ($('#chk-com-apostas').prop('checked') ? '\nJogos COM apostas serão cancelados e excluídos definitivamente.' : ''));
+            });
+
+            // Limpezas em massa
+            $(document).on('click', '[data-limpar]', function () {
+                var escopo = $(this).data('limpar');
+                var nomes = {
+                    iniciados: 'todos os jogos já iniciados (sem placar)',
+                    encerrados: 'todos os jogos encerrados',
+                    cancelados: 'todos os jogos cancelados',
+                    todos: 'TODOS OS JOGOS do sistema'
+                };
+
+                var extra = {};
+                if (escopo === 'todos') {
+                    var txt = prompt('ATENÇÃO: Isso removerá TODOS OS JOGOS do sistema, SEM EXCEÇÃO (mesmo com apostas já liquidadas ou abertas).\n\nDigite LIMPAR para confirmar:');
+                    if (txt === null) {
+                        return;
+                    }
+                    if (txt.trim().toUpperCase() !== 'LIMPAR') {
+                        alert('Confirmação incorreta. A limpeza de todos os jogos foi cancelada.');
+                        return;
+                    }
+                    extra.confirmacao = txt.trim().toUpperCase();
+                    extra.comApostas = 1;
+
+                    limpar(escopo, extra, 'Confirmação final: Deseja realmente EXCLUIR DEFINITIVAMENTE TODOS OS JOGOS do sistema, sem exceção?');
+                    return;
+                }
+
+                limpar(escopo, extra,
+                    'Limpar ' + nomes[escopo] + '?\n\nJogos sem apostas serão apagados definitivamente.'
+                    + ($('#chk-com-apostas').prop('checked') ? '\nJogos COM apostas serão cancelados e excluídos definitivamente.' : '\nJogos com apostas serão mantidos.'));
+            });
+
+            // ---------- Editor rápido de odds ----------
+
+            function renderOdds() {
+                var tempo = $('#odds-tempo').val();
+                var valores = oddsAtual[tempo] || {};
+                $('#odds-campos .odds-input').each(function () {
+                    var campo = $(this).data('campo');
+                    var v = parseFloat(valores[campo]);
+                    $(this).val(v > 0 ? v.toFixed(2).replace('.', ',') : '');
+                });
+            }
+
+            function guardaTempoAtual(tempo) {
+                oddsAtual[tempo] = oddsAtual[tempo] || {};
+                $('#odds-campos .odds-input').each(function () {
+                    oddsAtual[tempo][$(this).data('campo')] = $(this).val();
+                });
+            }
+
+            var tempoAnterior = '90';
+
+            $('#odds-tempo').on('focus', function () {
+                tempoAnterior = $(this).val();
+            }).on('change', function () {
+                guardaTempoAtual(tempoAnterior);
+                tempoAnterior = $(this).val();
+                renderOdds();
+            });
+
+            $(document).on('click', '[data-odds-token]', function () {
+                var el = $(this);
+                oddsToken = el.data('odds-token');
+                oddsAtual = $.extend(true, {}, el.data('odds') || {});
+                $('#modal-odds .odds-jogo').text(el.data('odds-titulo'));
+                $('#odds-tempo').val('90');
+                tempoAnterior = '90';
+                renderOdds();
+                $('#modal-odds').modal('show');
+            });
+
+            $('#btn-salvar-odds').on('click', function () {
+
+                guardaTempoAtual($('#odds-tempo').val());
+
+                // Normaliza para o servidor (mantém só o que foi preenchido/alterado)
+                var payload = {};
+                $.each(oddsAtual, function (tempo, campos) {
+                    payload[tempo] = {};
+                    $.each(campos, function (campo, valor) {
+                        payload[tempo][campo] = valor === null || typeof valor === 'undefined' ? '' : String(valor);
+                    });
+                });
+
+                var btn = $(this).prop('disabled', true);
+
+                $.post(url('jogos/limpeza/odds'), {token: oddsToken, cotacoes: payload}, function (e) {
+                    alert(e.message);
+                    if (e.result == 1) {
+                        $('#modal-odds').modal('hide');
+                        page.reloadSearch(false);
+                    }
+                }, 'json')
+                    .fail(function () {
+                        alert('Falha de comunicação com o servidor.');
+                    })
+                    .always(function () {
+                        btn.prop('disabled', false);
+                    });
+            });
+
+            $('.admpage-form-search').submit();
+
+        });
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - TABELA DE COTAÇÕES
+   Visual: v4 (cartoes .bet24-card em grade responsiva).
+
+   LOGICA PRESERVADA DO TEMPLATE BASE (website/page/cotacoes.twig):
+     - for id, g in grupos   (CotacoesModel::GRUPOS)
+     - for c in cotacoes     (CotacoesModel::getCotacoesAtivas())
+       exibindo c.getSigla(), c.getTitulo() e c.getDescricao()|raw
+
+   Observacao: no Twig 2.4 a variavel `loop` nao existe em laco com
+   condicao (`{% for c in cotacoes if ... %}`), por isso os cartoes do
+   grupo sao capturados em `cartoes` e o cabecalho so aparece quando o
+   grupo tem cotacoes ativas.
+   ===================================================================== #}
+
+{% block main %}
+
+    <div class="bet24-page-wide contas-cotacoes">
+
+        <div class="bet24-page-head">
+            <div>
+                <h1 class="bet24-page-title">Tabela de cotações</h1>
+                <p class="bet24-page-sub">
+                    Entenda o significado de cada tipo de aposta e das siglas usadas no site.
+                </p>
+            </div>
+            <a class="bet24-voltar" href="{{ url('apostar') }}">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 5l-7 7 7 7"/>
+                </svg>
+                Voltar aos jogos
+            </a>
+        </div>
+
+        {% for id, g in grupos %}
+
+            {% set cartoes %}
+                {% for c in cotacoes %}
+                    {% if c.getGrupo() == id %}
+                        <article class="bet24-card contas-cotacao">
+                            <header class="contas-cotacao-topo">
+                                <span class="contas-cotacao-sigla">{{ c.getSigla() }}</span>
+                                <h3 class="contas-cotacao-titulo">{{ c.getTitulo() }}</h3>
+                            </header>
+                            <div class="contas-cotacao-desc">{{ c.getDescricao()|raw }}</div>
+                        </article>
+                    {% endif %}
+                {% endfor %}
+            {% endset %}
+
+            {% if cartoes|trim %}
+                <section class="contas-cotacoes-grupo">
+                    <h2 class="contas-grupo-titulo">{{ g }}</h2>
+                    <div class="contas-cotacoes-grid">{{ cartoes }}</div>
+                </section>
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

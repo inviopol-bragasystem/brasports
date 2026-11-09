@@ -1,0 +1,72 @@
+<!--
+  TEMA BET24 (site11) - REFERENCIA v4
+  Arquivo: 13 - Estrutura de uma pagina de lista (modelo: Ao Vivo)
+  Origem: pages/aovivo.html linhas 452-456 (esqueleto) e 2065-2090 (conteudo principal)
+  Obs.: Este e o modelo de TODAS as paginas internas (ao vivo, proximos, amanha,
+        esporte, campeonato, acumuladao, longo prazo, minhas apostas):
+        .content > .list-layout (230px | 1fr | 280px) com
+        .home-side (menu) + .list-page (conteudo) + .home-aside (coluna direita).
+
+        O container .v4-ligas e preenchido por JS a cada 20 s a partir de
+        /api/partidas_aovivo (no pre-jogo ele ja vem renderizado do servidor,
+        como em pages/amanha.html).
+
+  Recorte REAL do site antigo bet24hs.site/v4 (classes e estrutura preservadas).
+  Os blocos completos do menu lateral estao em 03-sidebar-esportes.html e o
+  bilhete/cupom em 05-bilhete-cupom.html.
+-->
+<main class="content">
+    <div class="list-layout">
+
+        <!-- ===== coluna 1: menu lateral (230px) - recorte completo em 03-sidebar-esportes.html ===== -->
+        <nav class="home-side" aria-label="Navegação">
+            <a class="side-link active" href="/v4/aovivo">
+                <span class="side-link-dot" aria-hidden="true"></span>Ao vivo agora
+            </a>
+            <a class="side-link" href="/v4/">Jogos de hoje</a>
+            <a class="side-link" href="/v4/proximos">Próximos jogos</a>
+            <!-- dias, importar jogo, esportes e principais ligas (ver 03) -->
+        </nav>
+
+        <!-- ===== coluna 2: conteudo principal ===== -->
+        <section class="list-page">
+            <div class="page-head">
+                <h1 class="page-title">Jogos ao vivo <span class="page-count">(<span id="label-qty-football">0</span>)</span></h1>
+                <span class="updated"><span class="updated-time" id="v4Atualizado"></span></span>
+            </div>
+
+            <nav class="sport-bar" aria-label="Esportes">
+                <button type="button" class="sport-tab sport-tab-active" aria-pressed="true">
+                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.63a9.38 9.38 0 1 0 0 18.75 9.38 9.38 0 0 0 0-18.75z"/><path d="M15.58 3.33 12 5.75 8.42 3.33M14.17 21.12l1.78-3.64 4.07-.62M12 5.75v2.26M2.66 12.76l2.85-2.85-.61-4.03M7.82 11.05 5.51 9.91M14.59 15.96l1.59-4.92L12 8.01l-4.18 3.04 1.59 4.92h5.18zM14.59 15.96l1.36 1.53M21.35 12.76l-2.86-2.85.61-4.03M16.18 11.05l2.31-1.14M9.83 21.12l-1.78-3.64-4.07-.62M9.42 15.96l-1.37 1.53"/></svg>Futebol<span class="sport-count" id="v4QtdFutebol">0</span>
+                </button>
+                <button type="button" class="sport-tab" disabled><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6c3.2 2.6 3.2 10.2 0 12.8M18.4 5.6c-3.2 2.6-3.2 10.2 0 12.8"/></svg>Basquete<span class="sport-count">0</span></button>
+                <button type="button" class="sport-tab" disabled><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16.5V20h8v-3.5a4 4 0 0 0 2-3.5V7a4 4 0 0 0-4-4h-3a4 4 0 0 0-4 4v3a2 2 0 0 0-1 1.7V13a4 4 0 0 0 2 3.5z"/><path d="M7 10h3.5a2 2 0 0 1 0 4H8M8 17.5h8M11 3v4"/></svg>Lutas<span class="sport-count">0</span></button>
+                <button type="button" class="sport-tab" disabled><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3c-2.2 3-2.4 6.2-.4 9M20.6 9.4c-3.6-1-6.8-.2-9 2.6M16.4 19.8c.8-3.6-.3-6.6-4.8-7.8M3.4 9.6c2.2 1.4 4.6 2 8.2 2.4M5.4 18.2c2-2.6 3.6-4.2 6.2-6.2"/></svg>Vôlei<span class="sport-count">0</span></button>
+                <button type="button" class="sport-tab" disabled><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.2 5.8c3.6 3.2 3.6 9.2 0 12.4M18.8 5.8c-3.6 3.2-3.6 9.2 0 12.4"/></svg>Tênis<span class="sport-count">0</span></button>
+                <button type="button" class="sport-tab" disabled><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 19.5C3 13 6 6 13 4.4c2.4-.5 4.8-.5 6.5.1.6 1.700.6 4.100.1 6.500C18 18 11 21 4.500 19.500z"/><path d="M9 15l6-6M10.500 11l2.500 2.500M12.500 9l2.500 2.500"/></svg>Futebol Americano<span class="sport-count">0</span></button>
+            </nav>
+
+            <!-- Preenchido pelo JavaScript a partir de /api/partidas_aovivo.
+                 Cada .v4-ligas contem .league > .league-head + .league-body > .match-row -->
+            <div class="v4-ligas" id="live-container">
+                <div class="empty">
+                    <div class="empty-state"><span class="spinner"></span>
+                        <p class="empty-text">Carregando jogos ao vivo...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== bilhete flutuante e fundo escuro (recorte completo em 05-bilhete-cupom.html) ===== -->
+        <div class="v4-scrim" data-v4-bilhete-fechar></div>
+        <section class="v4-cupom" id="v4Cupom" aria-label="Bilhete" data-qtd="0">
+            <!-- barra + corpo do bilhete: ver 05-bilhete-cupom.html -->
+        </section>
+
+        <!-- ===== coluna 3: coluna direita (280px) =====
+             Nesta pagina ela fica VAZIA: .v4-aside-vazio esconde no desktop e
+             evita reservar a coluna. No celular vira gaveta. -->
+        <aside class="home-aside v4-aside v4-aside-vazio" id="v4Aside" aria-label="Coluna lateral"></aside>
+
+    </div>
+</main>

@@ -1,0 +1,48 @@
+<!--
+  TEMA BET24 (site11) - REFERENCIA v4
+  Arquivo: 08 - Modal Entrar (.v4-sheet + .v4-entrar-dialog)
+  Origem: pages/home.html linhas 178-215
+  Obs.: Modal "bottom sheet" no celular (<=560px sobe de baixo). Form action /hub/entrar do v4 - no tema novo aponta para o login do sistema atual. Campos: usuario, senha, erro (role=alert) e links de recuperar/cadastro.
+
+  Recorte REAL do site antigo bet24hs.site/v4 (classes e estrutura preservadas).
+  Os links /v4/..., as imagens do CDN e os ids/onclick do backend v4 sao apenas
+  referencia: no tema novo troque por rotas Twig e dados do sistema atual.
+-->
+    <div class="modal fade v4-sheet" id="v4EntrarModal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="v4EntrarTitulo" aria-hidden="true">
+    <div class="modal-dialog v4-entrar-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="dialog-title" id="v4EntrarTitulo">Entrar</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form class="account-form v4-entrar-form" action="/hub/entrar?red=%2Fv4%2F" method="post">
+                    <input type="hidden" name="redirect" value="/v4/">
+
+                    <label class="account-field">
+                        <span class="account-label">Usuário, e-mail ou CPF</span>
+                        <input class="account-input" type="text" name="usuario" id="v4EntrarUsuario" autocomplete="username" autocapitalize="off" required>
+                    </label>
+
+                    <label class="account-field">
+                        <span class="account-label">Senha</span>
+                        <input class="account-input" type="password" name="senha" autocomplete="current-password" required>
+                    </label>
+
+                    <p class="v4-cadastro-erro" id="v4EntrarErro" role="alert" hidden></p>
+
+                    <button type="submit" name="login" class="account-submit">Entrar</button>
+
+                    <div class="v4-entrar-links">
+                        <a href="/v4/?recuperar=1" data-v4-recuperar>Esqueci a senha</a>
+
+                                                    <span>Não tem conta? <a href="/v4/cadastro" data-v4-cadastro>Cadastre-se</a></span>
+                                            </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

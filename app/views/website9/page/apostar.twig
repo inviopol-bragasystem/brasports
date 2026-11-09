@@ -1,0 +1,773 @@
+{% extends layout %}
+
+{% block main %}
+    <!-- ============================================================
+         HERO SHOWCASE CAROUSEL (PERSONALIZÁVEL PELO ADMIN)
+         ============================================================ -->
+    {% set slideMode = dados.getTipoSlidesHome()|default('mesclado') %}
+    {% set adminBanners = banners('site-slideshow', null, null, 10) %}
+    {% set sportsGames = destaquesJogosHome(3) %}
+    {% set casinoGames = dados.getExibirCassino() ? destaquesCassinoHome(3) : [] %}
+
+    {# 1. Lista com todos os jogos (intercalando esportes e cassino) #}
+    {% set allHeroGames = [] %}
+    {% set maxG = max(sportsGames|length, casinoGames|length) %}
+    {% if maxG > 0 %}
+        {% for gi in 0..(maxG - 1) %}
+            {% if sportsGames[gi] is defined %}
+                {% set allHeroGames = allHeroGames|merge([{ 'type': 'sports', 'game': sportsGames[gi] }]) %}
+            {% endif %}
+            {% if casinoGames[gi] is defined %}
+                {% set allHeroGames = allHeroGames|merge([{ 'type': 'casino', 'game': casinoGames[gi] }]) %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    {# 2. Monta os slides conforme o modo configurado na Personalização do Admin #}
+    {% set blendedHomeSlides = [] %}
+
+    {% if slideMode == 'banners' %}
+        {# Modo Apenas Banners / Imagens Promocionais do Admin #}
+        {% for b in adminBanners %}
+            {% set blendedHomeSlides = blendedHomeSlides|merge([{ 'type': 'banner', 'banner': b }]) %}
+        {% endfor %}
+
+    {% elseif slideMode == 'jogos' %}
+        {# Modo Apenas Jogos (Futebol e Cassino) #}
+        {% set blendedHomeSlides = allHeroGames %}
+
+    {% elseif slideMode == 'futebol_banners' %}
+        {# Modo Apenas Jogos de Futebol + Banners (1-a-1) #}
+        {% if sportsGames|length > 0 and adminBanners|length > 0 %}
+            {% for i in 0..(sportsGames|length - 1) %}
+                {% set blendedHomeSlides = blendedHomeSlides|merge([{ 'type': 'sports', 'game': sportsGames[i] }]) %}
+                {% set bIdx = i % adminBanners|length %}
+                {% set blendedHomeSlides = blendedHomeSlides|merge([{ 'type': 'banner', 'banner': adminBanners[bIdx] }]) %}
+            {% endfor %}
+        {% elseif sportsGames|length > 0 %}
+            {% for sg in sportsGames %}
+                {% set blendedHomeSlides = blendedHomeSlides|merge([{ 'type': 'sports', 'game': sg }]) %}
+            {% endfor %}
+        {% else %}
+            {% for b in adminBanners %}
+                {% set blendedHomeSlides = blendedHomeSlides|merge([{ 'type': 'banner', 'banner': b }]) %}
+            {% endfor %}
+        {% endif %}
+
+    {% elseif slideMode == 'cassino_banners' %}
+        {# Modo Apenas Jogos de Cassino + Banners (1-a-1) #}
+        {% if casinoGames|length > 0 and adminBanners|length > 0 %}
+            {% for i in 0..(casinoGames|length - 1) %}
+                {% set blendedHomeSlides = blendedHomeSlides|merge([{ 'type': 'casino', 'game': casinoGames[i] }]) %}
+                {% set bIdx = i % adminBanners|length %}
+                {% set blendedHomeSlides = blendedHomeSlides|merge([{ 'type': 'banner', 'banner': adminBanners[bIdx] }]) %}
+            {% endfor %}
+        {% elseif casinoGames|length > 0 %}
+            {% for cg in casinoGames %}
+                {% set blendedHomeSlides = blendedHomeSlides|merge([{ 'type': 'casino', 'game': cg }]) %}
+            {% endfor %}
+        {% else %}
+            {% for b in adminBanners %}
+                {% set blendedHomeSlides = blendedHomeSlides|merge([{ 'type': 'banner', 'banner': b }]) %}
+            {% endfor %}
+        {% endif %}
+
+    {% elseif slideMode != 'desativado' %}
+        {# Modo Padrão: Mesclado 1-a-1 (Jogos de Futebol e Cassino alternados com Banners) #}
+        {% set totalGames = allHeroGames|length %}
+        {% set totalBanners = adminBanners|length %}
+
+        {% if totalGames > 0 and totalBanners > 0 %}
+            {% for i in 0..(totalGames - 1) %}
+                {% set blendedHomeSlides = blendedHomeSlides|merge([allHeroGames[i]]) %}
+                {% set bIdx = i % totalBanners %}
+                {% set blendedHomeSlides = blendedHomeSlides|merge([{
+                    'type': 'banner',
+                    'banner': adminBanners[bIdx]
+                }]) %}
+            {% endfor %}
+        {% elseif totalGames > 0 %}
+            {% set blendedHomeSlides = allHeroGames %}
+        {% else %}
+            {% for b in adminBanners %}
+                {% set blendedHomeSlides = blendedHomeSlides|merge([{
+                    'type': 'banner',
+                    'banner': b
+                }]) %}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+
+    {% if slideMode != 'desativado' and blendedHomeSlides|length > 0 %}
+    <div class="leon-hero-wrapper" id="homeHeroCarousel"
+         onmouseenter="pauseHomeHero(true)" onmouseleave="pauseHomeHero(false)">
+        
+        <!-- Slides -->
+        {% for idx, slide in blendedHomeSlides %}
+            {% if slide.type == 'sports' %}
+                {% set g = slide.game %}
+                <div class="leon-hero-slide{{ idx == 0 ? ' active' : '' }}" data-slide-index="{{ idx }}">
+                    <div class="leon-hero-banner">
+                        <div class="leon-hero-top-row">
+                            <div>
+                                <span class="leon-hero-tag-futebol">{{ g.campeonato ?: 'Futebol' }}</span>
+                                <div class="leon-hero-teams-box" 
+                                     onclick="window.app && app.maisCotacoes ? app.maisCotacoes({{ g|json_encode|e('html_attr') }}) : null" 
+                                     style="cursor: pointer;" title="Ver todas cotações">
+                                    <div class="leon-hero-team-item">
+                                        {% if g.imgCasa %}
+                                            <img src="{{ g.imgCasa }}" class="leon-hero-crest" alt="{{ g.casa }}" onerror="this.style.display='none'"/>
+                                        {% else %}
+                                            <i class="fa fa-shield" style="font-size: 20px; color: var(--leon-green);"></i>
+                                        {% endif %}
+                                        <span class="leon-hero-team-name">{{ g.casa }}</span>
+                                    </div>
+                                    <div class="leon-hero-team-item">
+                                        {% if g.imgFora %}
+                                            <img src="{{ g.imgFora }}" class="leon-hero-crest" alt="{{ g.fora }}" onerror="this.style.display='none'"/>
+                                        {% else %}
+                                            <i class="fa fa-shield" style="font-size: 20px; color: var(--leon-green);"></i>
+                                        {% endif %}
+                                        <span class="leon-hero-team-name">{{ g.fora }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Data e Horário da Partida -->
+                            <div class="leon-countdown-row d-none d-sm-flex">
+                                <div class="leon-countdown-item">
+                                    <span class="leon-countdown-val">{{ g.data|date('d/m') }}</span>
+                                    <span class="leon-countdown-lbl">Data</span>
+                                </div>
+                                <span class="leon-countdown-sep">:</span>
+                                <div class="leon-countdown-item">
+                                    <span class="leon-countdown-val">{{ g.hora|slice(0, 5) }}</span>
+                                    <span class="leon-countdown-lbl">Horário</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Odds Turbinadas da Partida -->
+                        <div class="leon-hero-odds-area">
+                            <div class="leon-turbinadas-header">
+                                <i class="fa fa-arrow-up"></i> Odds Turbinadas
+                            </div>
+                            <div class="leon-hero-odds-grid">
+                                <button type="button" class="leon-hero-odd-btn"
+                                        onclick="if(window.app && app.apostar){ app.apostar({{ g|json_encode|e('html_attr') }}, '90', {campo: 'casa', principal: '1', sigla: '1'}); }">
+                                    <span class="leon-hero-odd-type">1</span>
+                                    <span class="leon-hero-odd-val">{{ g.oddCasa }}</span>
+                                </button>
+                                <button type="button" class="leon-hero-odd-btn"
+                                        onclick="if(window.app && app.apostar){ app.apostar({{ g|json_encode|e('html_attr') }}, '90', {campo: 'empate', principal: '1', sigla: 'X'}); }">
+                                    <span class="leon-hero-odd-type">X</span>
+                                    <span class="leon-hero-odd-val">{{ g.oddEmpate }}</span>
+                                </button>
+                                <button type="button" class="leon-hero-odd-btn"
+                                        onclick="if(window.app && app.apostar){ app.apostar({{ g|json_encode|e('html_attr') }}, '90', {campo: 'fora', principal: '1', sigla: '2'}); }">
+                                    <span class="leon-hero-odd-type">2</span>
+                                    <span class="leon-hero-odd-val">{{ g.oddFora }}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% elseif slide.type == 'casino' %}
+                {% set c = slide.game %}
+                <div class="leon-hero-slide{{ idx == 0 ? ' active' : '' }}" data-slide-index="{{ idx }}">
+                    <div class="leon-hero-casino" 
+                         style="background: {% if 'tiger' in c.game_code %}linear-gradient(135deg, #181205 0%, #2b1d06 50%, #0d1217 100%){% elseif 'ox' in c.game_code %}linear-gradient(135deg, #200d0d 0%, #301414 50%, #0d1217 100%){% elseif 'rabbit' in c.game_code %}linear-gradient(135deg, #1c0f24 0%, #291238 50%, #0d1217 100%){% elseif 'mouse' in c.game_code %}linear-gradient(135deg, #1e1307 0%, #2d1c08 50%, #0d1217 100%){% else %}linear-gradient(135deg, #091a13 0%, #10261d 50%, #0d1217 100%){% endif %};">
+                        
+                        <div class="casino-hero-slide-content">
+                            <div class="casino-hero-slide-badges">
+                                <span class="badge" style="background: rgba(0, 230, 118, 0.2); color: var(--leon-green); font-weight: 800; border: 1px solid var(--leon-green); font-size: 11px;">
+                                    <i class="fa fa-bolt mr-1"></i> PG SOFT
+                                </span>
+                                <span class="badge" style="background: rgba(255, 179, 0, 0.2); color: #ffb300; font-weight: 800; border: 1px solid #ffb300; font-size: 11px;">
+                                    <i class="fa fa-star mr-1"></i> POPULAR
+                                </span>
+                                <span class="badge badge-secondary" style="font-size: 11px; opacity: 0.85;">
+                                    RTP {{ c.rtp }}%
+                                </span>
+                            </div>
+
+                            <div class="casino-hero-slide-title">
+                                {{ c.name }}
+                            </div>
+
+                            <div class="casino-hero-slide-desc">
+                                {% if 'tiger' in c.game_code %}
+                                    O lendário Jogo do Tigrinho com multiplicadores de até 2.500x e bônus da sorte!
+                                {% elseif 'ox' in c.game_code %}
+                                    O Touro da Fortuna com rodadas extras e multiplicadores de até 2.000x!
+                                {% elseif 'rabbit' in c.game_code %}
+                                    O Coelho da Fortuna com giros explosivos e grandes prêmios!
+                                {% elseif 'mouse' in c.game_code %}
+                                    O Ratinho da Fortuna com rodadas extras e ganhos acelerados!
+                                {% else %}
+                                    Slot PG Soft de alta volatilidade com gráficos incríveis e rodadas bônus!
+                                {% endif %}
+                            </div>
+
+                            <div class="casino-hero-slide-actions">
+                                <a href="{{ url('cassino') }}" class="btn font-weight-bold d-inline-flex align-items-center"
+                                   style="background: var(--leon-green); color: #000; border-radius: 8px; padding: 8px 20px; font-size: 13px; box-shadow: 0 4px 15px rgba(0,230,118,0.4); text-decoration: none;">
+                                    <i class="fa fa-play mr-2"></i> JOGAR AGORA
+                                </a>
+                                <a href="{{ url('cassino') }}" class="btn btn-outline-light font-weight-bold d-inline-flex align-items-center"
+                                   style="border-radius: 8px; padding: 8px 16px; font-size: 13px; background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.2); text-decoration: none;">
+                                    <i class="fa fa-gamepad mr-2"></i> TESTAR DEMO
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="casino-hero-slide-thumb-wrap">
+                            <img src="{{ c.image }}" alt="{{ c.name }}" class="casino-hero-slide-thumb" onerror="this.src='{{ url('imagens/sem-imagem.png') }}'">
+                        </div>
+
+                    </div>
+                </div>
+
+            {% elseif slide.type == 'banner' %}
+                {% set b = slide.banner %}
+                <div class="leon-hero-slide{{ idx == 0 ? ' active' : '' }}" data-slide-index="{{ idx }}">
+                    <a href="{{ b.getLink() ?: 'javascript:;' }}" target="{{ b.getLinktarget() ?: '_self' }}"
+                       class="leon-hero-banner-admin">
+                        <picture>
+                            <source srcset="{{ b.imgCapa(true, 'mobile').getSource(true) }}" media="(max-width: 768px)">
+                            <img src="{{ b.imgCapa(true, 'desktop').getSource(true) }}" alt="{{ b.getTitle() }}">
+                        </picture>
+                    </a>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {% if blendedHomeSlides|length > 1 %}
+            <!-- Botões de Navegação Anterior / Próximo -->
+            <button type="button" class="leon-carousel-arrow prev" onclick="homePrevSlide()" aria-label="Anterior">
+                <i class="fa fa-chevron-left"></i>
+            </button>
+            <button type="button" class="leon-carousel-arrow next" onclick="homeNextSlide()" aria-label="Próximo">
+                <i class="fa fa-chevron-right"></i>
+            </button>
+
+            <!-- Indicadores de Slide (Dots) -->
+            <div class="leon-carousel-dots" id="homeDots">
+                {% for i in 0..(blendedHomeSlides|length - 1) %}
+                    <button type="button" class="leon-carousel-dot{{ i == 0 ? ' active' : '' }}"
+                            onclick="homeGoToSlide({{ i }})" aria-label="Slide {{ i + 1 }}">
+                    </button>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+    {% endif %}
+
+    <!-- ============================================================
+         STRIP DE ÍCONES DE CATEGORIAS RÁPIDAS (1:1 Oficial leon824.bet)
+         ============================================================ -->
+    <div class="leon-quick-strip" v-cloak>
+        <div class="leon-quick-card active" v-on:click="setCampeonato()">
+            <span class="leon-quick-icon" style="color: var(--leon-green);"><i class="fa fa-play-circle"></i></span>
+            <span class="leon-quick-name">Ao vivo</span>
+        </div>
+        {% if dados.getExibirCassino() %}
+        <a href="{{ url('cassino') }}" class="leon-quick-card" style="text-decoration: none; color: inherit;">
+            <span class="leon-quick-icon" style="color: var(--leon-red);"><i class="fa fa-circle-o-notch"></i></span>
+            <span class="leon-quick-name">Cassino</span>
+        </a>
+        <a href="{{ url('cassino') }}" class="leon-quick-card" style="text-decoration: none; color: inherit;">
+            <span class="leon-quick-icon" style="color: #f59e0b;"><i class="fa fa-sun-o"></i></span>
+            <span class="leon-quick-name">Cassino AO...</span>
+        </a>
+        {% else %}
+        <div class="leon-quick-card" onclick="swal('Cassino', 'Centenas de slots e roletas em breve!', 'info');">
+            <span class="leon-quick-icon" style="color: var(--leon-red);"><i class="fa fa-circle-o-notch"></i></span>
+            <span class="leon-quick-name">Cassino</span>
+        </div>
+        <div class="leon-quick-card" onclick="swal('Cassino Ao Vivo', 'Mesas com dealers ao vivo em breve!', 'info');">
+            <span class="leon-quick-icon" style="color: #f59e0b;"><i class="fa fa-sun-o"></i></span>
+            <span class="leon-quick-name">Cassino AO...</span>
+        </div>
+        {% endif %}
+        <div class="leon-quick-card" onclick="swal('Poker', 'Torneios de poker esportivo!', 'info');">
+            <span class="leon-quick-icon" style="color: #3b82f6;"><i class="fa fa-diamond"></i></span>
+            <span class="leon-quick-name">Poker</span>
+        </div>
+        <div class="leon-quick-card">
+            <span class="leon-quick-icon" style="color: #ffffff;"><i class="fa fa-bookmark"></i></span>
+            <span class="leon-quick-name">Playbook</span>
+        </div>
+        <div class="leon-quick-card">
+            <span class="leon-quick-icon" style="color: #06b6d4;"><i class="fa fa-tv"></i></span>
+            <span class="leon-quick-name">V-Sport</span>
+        </div>
+        <div class="leon-quick-card">
+            <span class="leon-quick-icon" style="color: #a855f7;"><i class="fa fa-gamepad"></i></span>
+            <span class="leon-quick-name">e-Sports</span>
+        </div>
+        <div class="leon-quick-card">
+            <span class="leon-quick-icon" style="color: #f59e0b;"><i class="fa fa-rocket"></i></span>
+            <span class="leon-quick-name">Apostas Rápi...</span>
+        </div>
+        <div class="leon-quick-card" onclick="swal('Promoções', 'Confira nossas promoções e bônus especiais!', 'info');">
+            <span class="leon-quick-icon" style="color: #ec4899;"><i class="fa fa-gift"></i></span>
+            <span class="leon-quick-name">Promoções</span>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         GRID PRINCIPAL LEON BET (Sidebar | Jogos | Cupom)
+         ============================================================ -->
+    <div class="leon-main-wrap" v-cloak>
+        <div class="leon-grid">
+            
+            <!-- COLUNA 1: SIDEBAR DE COMPETIÇÕES (Desktop) -->
+            <aside class="leon-col-left">
+                
+                <!-- Competições Reais Disponíveis -->
+                <div class="leon-sidebar-block">
+                    <div class="leon-sidebar-header">
+                        <span><i class="fa fa-trophy mr-1 text-warning"></i> Competições</span>
+                        <span class="leon-side-badge">${getCampeonatos(null, false).length}</span>
+                    </div>
+                    <div style="max-height: 480px; overflow-y: auto;">
+                        <a href="javascript:;" 
+                           v-on:click="setCampeonato()" 
+                           class="leon-side-item"
+                           v-bind:class="{ active: !findCampeonato || findCampeonato == '*' }">
+                            <span><i class="fa fa-futbol-o mr-2" style="color: var(--leon-green);"></i> Todos os Jogos</span>
+                            <span class="leon-side-badge">${getCampeonatos(null, false).length}</span>
+                        </a>
+                        <a href="javascript:;" 
+                           v-for="c in getCampeonatos(null, false)" 
+                           :key="'side-' + c.id"
+                           v-on:click="setCampeonato(c)" 
+                           class="leon-side-item"
+                           v-bind:class="{ active: findCampeonato == c.id }">
+                            <span class="text-truncate mr-2"><i class="fa fa-angle-right mr-2 text-muted"></i> ${c.title}</span>
+                            <span class="leon-side-badge">${c.jogos ? c.jogos.length : 0}</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Atalhos Extras -->
+                <div class="leon-sidebar-block">
+                    <div class="leon-sidebar-header">
+                        <span>Extras</span>
+                    </div>
+                    <div>
+                        <a href="{{ url('bilhete') }}" class="leon-side-item">
+                            <span><i class="fa fa-ticket mr-2 text-info"></i> Consultar Bilhete</span>
+                        </a>
+                        {% if dados.getExibirRegras() %}
+                            <a href="{{ url('regras') }}" class="leon-side-item">
+                                <span><i class="fa fa-file-text-o mr-2 text-muted"></i> Regulamento</span>
+                            </a>
+                        {% endif %}
+                        <a href="{{ url('termos-uso') }}" class="leon-side-item">
+                            <span><i class="fa fa-shield mr-2 text-muted"></i> Jogo Responsável</span>
+                        </a>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- COLUNA 2: JOGOS E MERCADOS (Centro) -->
+            <section class="leon-col-center">
+
+                <!-- Filtro de Datas em Chips (Hoje, Amanhã, etc.) -->
+                <div class="leon-date-chips-row">
+                    <button type="button" 
+                            class="leon-day-chip" 
+                            v-bind:class="{ active: findData == '{{ hoje }}' }" 
+                            v-on:click="setData('{{ hoje }}')">
+                        Hoje ({{ hoje|split('-')|reverse|join('/') }})
+                    </button>
+                    <button type="button" 
+                            class="leon-day-chip" 
+                            v-bind:class="{ active: findData == '{{ amanha }}' }" 
+                            v-on:click="setData('{{ amanha }}')">
+                        Amanhã ({{ amanha|split('-')|reverse|join('/') }})
+                    </button>
+                    <button type="button" 
+                            v-for="d in datas" 
+                            :key="d.data"
+                            v-if="d.data != '{{ hoje }}' && d.data != '{{ amanha }}' && d.data >= '{{ hoje }}'"
+                            class="leon-day-chip" 
+                            v-bind:class="{ active: findData == d.data }" 
+                            v-on:click="setData(d.data)">
+                        ${d.data.split('-').reverse().join('/')}
+                    </button>
+                </div>
+
+                <!-- Título da Seção: Futebol ⌃ + Dropdown Vencedor ⬍ -->
+                <div class="leon-section-bar">
+                    <div class="leon-section-title-wrap" onclick="$('.leon-league-card').slideToggle();">
+                        <span>⚽ Futebol</span>
+                        <i class="fa fa-angle-down"></i>
+                    </div>
+
+                    <div class="leon-market-dropdown">
+                        <span>Vencedor</span>
+                        <i class="fa fa-sort"></i>
+                    </div>
+                </div>
+
+                <!-- Campo de Pesquisa Rápida -->
+                <div class="leon-search-row mb-3" style="display: none;">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" style="background: var(--leon-inner); border-color: var(--leon-border); color: var(--leon-green);"><i class="fa fa-search"></i></span>
+                        </div>
+                        <input type="text" id="dpSearchInput" v-model="search" class="form-control" style="background: var(--leon-inner); border-color: var(--leon-border); color: #fff;" placeholder="Buscar clube, seleção ou torneio..."/>
+                    </div>
+                </div>
+
+                <!-- Lista de Partidas por Liga (Layout 1:1 Leon Bet) -->
+                <div>
+                    <div v-if="getCampeonatos().length == 0" class="text-center py-5 text-muted">
+                        <i class="fa fa-futbol-o fa-3x mb-3 text-secondary"></i>
+                        <p class="font-weight-bold">Nenhum jogo disponível para esta seleção.</p>
+                    </div>
+
+                    <div v-for="campeonato in getCampeonatos(null, true)" :key="campeonato.id" class="leon-league-card">
+                        
+                        <!-- Cabeçalho da Liga -->
+                        <div class="leon-league-header">
+                            <div class="leon-league-title-box">
+                                <img v-if="campeonato.paisImg" v-bind:src="campeonato.paisImg" class="leon-league-flag" onerror="this.style.display='none'"/>
+                                <i v-else class="fa fa-globe text-muted mr-1"></i>
+                                <span class="leon-league-name">${campeonato.title}</span>
+                            </div>
+                            <div class="leon-league-odds-header">
+                                <span>1</span>
+                                <span>X</span>
+                                <span>2</span>
+                            </div>
+                        </div>
+
+                        <!-- Lista de Partidas da Liga -->
+                        <div class="leon-matches-container">
+                            <div v-for="jogo in getJogos(campeonato)" :key="jogo.id" class="leon-match-row">
+                                
+                                <!-- Informações do Jogo (Times + Data/Hora) -->
+                                <div class="leon-match-info" v-on:click="maisCotacoes(jogo)">
+                                    <div class="leon-times-box text-nowrap" style="display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; white-space: nowrap !important; align-items: center !important;">
+                                        <span class="leon-time-casa text-nowrap" style="display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; white-space: nowrap !important; align-items: center !important;">
+                                            <img v-if="jogo.imgCasa" v-bind:src="jogo.imgCasa" class="leon-team-crest mr-1" v-bind:alt="jogo.casa" loading="lazy" onerror="this.style.display='none'"/>
+                                            <i v-else class="fa fa-shield mr-1" style="color: #64748b; font-size: 13px;"></i>
+                                            <span class="leon-team-name text-nowrap" style="white-space: nowrap !important;">${jogo.casa}</span>
+                                        </span>
+                                        <span class="leon-versus" style="white-space: nowrap !important; display: inline-block !important; padding: 0 5px; font-weight: 700; color: #94a3b8; font-size: 12px;">x</span>
+                                        <span class="leon-time-fora text-nowrap" style="display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; white-space: nowrap !important; align-items: center !important;">
+                                            <img v-if="jogo.imgFora" v-bind:src="jogo.imgFora" class="leon-team-crest mr-1" v-bind:alt="jogo.fora" loading="lazy" onerror="this.style.display='none'"/>
+                                            <i v-else class="fa fa-shield mr-1" style="color: #64748b; font-size: 13px;"></i>
+                                            <span class="leon-team-name text-nowrap" style="white-space: nowrap !important;">${jogo.fora}</span>
+                                        </span>
+                                    </div>
+                                    <div class="leon-match-meta">
+                                        <span>${jogo.data.split('-').reverse().join('/')} às ${jogo.hora.replace(/:00$/, '')}</span>
+                                        <span>•</span>
+                                        <span class="leon-more-markets-tag">+${Math.max(0, totalCotacoes(jogo.cotacoes) - getCotacoesPrincipais().length)}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Botões de Cotações 1, X, 2 -->
+                                <div class="leon-odds-group">
+                                    <div class="leon-odds-buttons">
+                                        <button type="button" 
+                                                v-for="c in getCotacoesPrincipais()" 
+                                                :key="c.campo"
+                                                class="leon-odd-btn"
+                                                v-bind:class="{ active: jogo.apostaEm == '90' + c.campo }"
+                                                v-on:click="apostar(jogo, '90', c)">
+                                            <span class="leon-odd-val">${(jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo]) ? maskReal(jogo.cotacoes['90'][c.campo]) : '-'}</span>
+                                        </button>
+                                    </div>
+                                    <div class="leon-turbinada-badge" v-if="jogo.cotacoes && Math.random() > 0.4">
+                                        <i class="fa fa-arrow-up"></i> Odds Turbinadas
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- COLUNA 3: BOLETIM DE APOSTAS (Desktop) -->
+            <aside class="leon-col-right">
+                {{ block('cupom') }}
+            </aside>
+
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL / BOTTOM SHEET DO BOLETIM (Mobile)
+         ============================================================ -->
+    <div class="leon-mobile-betslip-modal d-lg-none" id="leonMobileBetslipModal" v-cloak>
+        <div class="leon-mobile-betslip-sheet">
+            <div class="leon-mobile-betslip-top">
+                <span class="leon-betslip-title">BOLETIM DE APOSTAS</span>
+                <button type="button" class="close text-white" onclick="$('#leonMobileBetslipModal').removeClass('open');" style="font-size: 24px;">&times;</button>
+            </div>
+            <div>
+                {{ block('cupom') }}
+            </div>
+        </div>
+    </div>
+
+    {{ block('modalCotacoes') }}
+{% endblock %}
+
+{% block cupom %}
+    <div class="leon-betslip-card">
+        
+        <!-- Header Oficial Leon Bet: BOLETIM -->
+        <div class="leon-betslip-header">
+            <span class="leon-betslip-title">BOLETIM</span>
+            <span class="leon-betslip-badge">${aposta.jogos.length}</span>
+        </div>
+
+        <!-- Conteúdo do Cupom -->
+        <div class="leon-betslip-body">
+            
+            <!-- Lista de Seleções -->
+            <div v-if="aposta.jogos.length > 0">
+                <div v-for="(v, i) in aposta.jogos" :key="i" class="leon-bet-card">
+                    <div class="leon-bet-card-top">
+                        <span class="leon-bet-teams">${v.jogo.casa} x ${v.jogo.fora}</span>
+                        <button type="button" class="leon-bet-remove" v-on:click="rmAposta(i)" title="Remover seleção">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="leon-bet-card-bottom">
+                        <span class="leon-bet-market">
+                            <b>${v.cotacao.sigla || v.cotacao.title}</b>
+                            <span class="badge badge-secondary ml-1" v-if="v.tempo != '90'">
+                                ${v.tempo == 'pt' ? '1ºT' : '2ºT'}
+                            </span>
+                        </span>
+                        <span class="leon-bet-odd">
+                            ${(v && v.jogo && v.jogo.cotacoes && v.jogo.cotacoes[v.tempo] && v.cotacao && v.jogo.cotacoes[v.tempo][v.cotacao.campo]) ? maskReal(v.jogo.cotacoes[v.tempo][v.cotacao.campo]) : '-'}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cupom Vazio -->
+            <div v-else class="leon-empty-betslip">
+                <i class="fa fa-ticket"></i>
+                <div style="font-weight: 700; color: #fff; margin-bottom: 4px;">Seu boletim está vazio</div>
+                <div class="small">Selecione as cotações dos jogos para adicionar apostas.</div>
+            </div>
+
+        </div>
+
+        <!-- Resumo Financeiro & Ação -->
+        <div class="leon-betslip-footer">
+            <div class="leon-summary-line">
+                <span>Cotação Total:</span>
+                <b class="text-white">${valorCotacao || '-'}</b>
+            </div>
+
+            <!-- Input de Valor da Aposta -->
+            <div class="leon-stake-input-wrap">
+                <span class="leon-stake-prefix">R$</span>
+                <input type="number" 
+                       v-model="valorAposta" 
+                       v-bind:min="apostaMinima" 
+                       v-bind:max="apostaMaxima" 
+                       step="1.00" 
+                       class="leon-stake-input" 
+                       placeholder="Valor"/>
+            </div>
+
+            <div class="leon-summary-line total-return">
+                <span>Possível Retorno:</span>
+                <span class="val">R$ ${premio || '0,00'}</span>
+            </div>
+
+            <button type="button" 
+                    class="leon-btn-apostar" 
+                    v-bind:disabled="!apostaValida" 
+                    v-on:click="finalizarAposta">
+                {{ user ? 'Fazer Aposta' : 'Criar Pré-bilhete' }}
+            </button>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block modalCotacoes %}
+    <!-- Modal Mais Cotações Estilo Leon Bet -->
+    <div class="modal fade" id="modal-cotacoes" tabindex="-1" role="dialog" aria-hidden="true" v-cloak>
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content" style="background-color: var(--leon-header); border: 1px solid var(--leon-border); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8);" v-if="mJogo && mJogo.jogo">
+                
+                <!-- Header do Modal -->
+                <div class="modal-header" style="background: #141719; border-bottom: 1px solid var(--leon-border); padding: 14px 20px;">
+                    <div>
+                        <div class="font-weight-bold text-white d-flex align-items-center" style="font-size: 16px;">
+                            <img v-if="mJogo.jogo.imgCasa" :src="mJogo.jogo.imgCasa" class="leon-team-crest mr-1" onerror="this.style.display='none'"/>
+                            <i v-else class="fa fa-shield mr-1" style="color: #64748b; font-size: 14px;"></i>
+                            <span>${mJogo.jogo.casa}</span>
+                            <span class="mx-2 text-muted font-weight-bold">x</span>
+                            <img v-if="mJogo.jogo.imgFora" :src="mJogo.jogo.imgFora" class="leon-team-crest mr-1" onerror="this.style.display='none'"/>
+                            <i v-else class="fa fa-shield mr-1" style="color: #64748b; font-size: 14px;"></i>
+                            <span>${mJogo.jogo.fora}</span>
+                        </div>
+                        <div class="small text-muted mt-1">
+                            <i class="fa fa-clock-o mr-1"></i> ${mJogo.jogo.data.split('-').reverse().join('/')} às ${mJogo.jogo.hora.replace(/:00$/, '')}
+                        </div>
+                    </div>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fechar" style="opacity: 0.7;">&times;</button>
+                </div>
+
+                <!-- Tabs de Tempo (Jogo Completo / 1º Tempo / 2º Tempo) -->
+                <div style="background: var(--leon-inner); padding: 8px 16px; border-bottom: 1px solid var(--leon-border); display: flex; gap: 8px;">
+                    <button type="button" 
+                            class="leon-day-chip" 
+                            v-bind:class="{ active: mJogo.tempo == 90 }" 
+                            v-on:click="mJogo.tempo = 90">
+                        Jogo Completo
+                    </button>
+                    <button type="button" 
+                            class="leon-day-chip" 
+                            v-bind:class="{ active: mJogo.tempo == 'pt' }" 
+                            v-on:click="mJogo.tempo = 'pt'">
+                        1º Tempo
+                    </button>
+                    <button type="button" 
+                            class="leon-day-chip" 
+                            v-bind:class="{ active: mJogo.tempo == 'st' }" 
+                            v-on:click="mJogo.tempo = 'st'">
+                        2º Tempo
+                    </button>
+                </div>
+
+                <!-- Mercados Agrupados -->
+                <div class="modal-body p-3" style="max-height: 65vh; overflow-y: auto;">
+                    <div v-for="grupo in cotacoesGrupos" :key="grupo.id" class="mb-3" v-if="getCotacoesByGrupo(grupo, mJogo.tempo).length > 0">
+                        <div class="font-weight-bold text-white small text-uppercase mb-2" style="letter-spacing: 0.5px; color: var(--leon-green) !important;">
+                            ${grupo.title}
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px;">
+                            <div v-for="c in getCotacoesByGrupo(grupo, mJogo.tempo)" 
+                                 :key="c.campo"
+                                 class="leon-odd-btn py-2 px-2"
+                                 style="height: auto; min-height: 44px;"
+                                 v-bind:class="{ active: mJogo.jogo.apostaEm == mJogo.tempo + c.campo }"
+                                 v-on:click="apostar(mJogo.jogo, mJogo.tempo, c)">
+                                <div class="small" style="color: var(--leon-text-muted); font-size: 11px;">${c.title}</div>
+                                <div class="leon-odd-val mt-1">${maskReal(mJogo.jogo.cotacoes[mJogo.tempo][c.campo])}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    {% set selector = '#website' %}
+    {{ block('script', 'website/page/apostar.twig') }}
+
+    <script>
+        if (typeof app !== 'undefined') {
+            app.$watch('aposta.jogos.length', function(newVal) {
+                var badge = document.getElementById('leonMobileBadge');
+                if (badge) {
+                    badge.innerText = newVal;
+                    badge.style.display = newVal > 0 ? 'flex' : 'none';
+                }
+            });
+        }
+
+        // =====================================================================
+        // CARROSSEL HERO PRINCIPAL (JOGOS E IMAGENS MESCLADOS 1-A-1)
+        // =====================================================================
+        var homeSlideIdx = 0;
+        var homeIsPaused = false;
+        var homeCarouselTimer = null;
+
+        function getHomeSlides() {
+            return $('#homeHeroCarousel .leon-hero-slide');
+        }
+
+        function homeShowSlide(idx) {
+            var $slides = getHomeSlides();
+            var total = $slides.length;
+            if (total <= 0) return;
+            
+            if (idx >= total) homeSlideIdx = 0;
+            else if (idx < 0) homeSlideIdx = total - 1;
+            else homeSlideIdx = idx;
+
+            $slides.removeClass('active').eq(homeSlideIdx).addClass('active');
+            $('#homeDots .leon-carousel-dot').removeClass('active').eq(homeSlideIdx).addClass('active');
+        }
+
+        function homeNextSlide() {
+            homeShowSlide(homeSlideIdx + 1);
+        }
+
+        function homePrevSlide() {
+            homeShowSlide(homeSlideIdx - 1);
+        }
+
+        function homeGoToSlide(idx) {
+            homeShowSlide(idx);
+        }
+
+        function pauseHomeHero(state) {
+            homeIsPaused = state;
+        }
+
+        function startHomeCarousel() {
+            if (homeCarouselTimer) clearInterval(homeCarouselTimer);
+            var $slides = getHomeSlides();
+            if ($slides.length > 1) {
+                homeCarouselTimer = setInterval(function() {
+                    if (!homeIsPaused) {
+                        homeNextSlide();
+                    }
+                }, 5000);
+            }
+        }
+
+        $(document).ready(function() {
+            startHomeCarousel();
+
+            // Suporte a swipe em telas touch/mobile
+            var touchStartX = 0;
+            var touchEndX = 0;
+            var $carousel = $('#homeHeroCarousel');
+            if ($carousel.length) {
+                $carousel.on('touchstart', function(e) {
+                    if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches[0]) {
+                        touchStartX = e.originalEvent.touches[0].clientX;
+                    }
+                });
+                $carousel.on('touchend', function(e) {
+                    if (e.originalEvent && e.originalEvent.changedTouches && e.originalEvent.changedTouches[0]) {
+                        touchEndX = e.originalEvent.changedTouches[0].clientX;
+                        if (touchStartX - touchEndX > 45) {
+                            homeNextSlide();
+                        } else if (touchEndX - touchStartX > 45) {
+                            homePrevSlide();
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}

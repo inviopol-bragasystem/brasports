@@ -1,0 +1,60 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div style="background:var(--theme-card-2);border:1px solid var(--theme-card-border);border-radius:16px;padding:24px;margin-bottom:24px;">
+        <h4 class="font-weight-bold text-white mb-2">
+            <i class="fa fa-ticket mr-2" style="color:var(--theme-primary);"></i> Minhas Apostas
+        </h4>
+        <p style="color:var(--theme-text-muted);font-size:13px;" class="mb-4">
+            Histórico das suas apostas realizadas e situação em tempo real.
+        </p>
+
+        <div class="admpage-container">
+            <div class="table-responsive m-0">
+                {% if busca.getCount() %}
+                    <table class="table table-bordered table-hover mb-0" style="font-size: 13px; color:#fff; background:var(--theme-card-1);">
+                        <thead>
+                        <tr style="background: var(--theme-card-3); color: #fff;">
+                            <th>Código</th>
+                            <th>Cliente</th>
+                            <th>Jogos</th>
+                            <th>Valor</th>
+                            <th>Retorno</th>
+                            <th>Data</th>
+                            <th>Situação</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for v in busca.getRegistros() %}
+                            <tr>
+                                <td><a href="{{ url('bilhete', null, null, {'codigo': v.getCodigo()}) }}" style="color:var(--theme-primary);font-weight:700;">{{ v.getCodigo() }}</a></td>
+                                <td>{{ v.getCliente()|default(user.getNome()) }}</td>
+                                <td>{{ v.getJogos()|length }}</td>
+                                <td>R$ {{ v.getValor(true) }}</td>
+                                <td style="color:var(--theme-accent);font-weight:700;">R$ {{ v.getRetornoValido(true) }}</td>
+                                <td>{{ v.getData() }}</td>
+                                <td>
+                                    <span class="badge badge-{{ v.getStatusClass() }}">{{ v.getStatusTitle() }}</span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="fa fa-ticket fa-3x mb-3 text-secondary"></i>
+                        <p>Nenhuma aposta encontrada no seu histórico.</p>
+                        <a href="{{ url('apostar') }}" class="btn-play-primary">Fazer uma Aposta</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    {{ block('script', 'website/page/apostas.twig') }}
+{% endblock %}
+

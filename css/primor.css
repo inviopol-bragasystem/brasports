@@ -1,0 +1,1028 @@
+/* ==========================================================================
+   TEMA 7: PRIMOR BET (primor.bet/esportes)
+   Estilo: Cyber Dark Navy, Neon Emerald (#00f59b) & Electric Cyan (#00d2ff)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --pri-neon-green: #00f59b;
+  --pri-neon-cyan: #00d2ff;
+  --pri-neon-glow: 0 0 16px rgba(0, 245, 155, 0.45);
+  --pri-cyan-glow: 0 0 16px rgba(0, 210, 255, 0.45);
+  --pri-bg-main: #0a0e17;
+  --pri-bg-header: #0e1422;
+  --pri-bg-subnav: #0d121f;
+  --pri-bg-card: #121826;
+  --pri-bg-card-alt: #172033;
+  --pri-bg-hover: #1e2940;
+  --pri-border: #1e293f;
+  --pri-border-light: #2a3854;
+  --pri-odd-bg: #151d2e;
+  --pri-odd-border: #23304a;
+  --pri-odd-hover: #22304c;
+  --pri-text-white: #ffffff;
+  --pri-text-gray: #94a3b8;
+  --pri-text-muted: #64748b;
+  --pri-gold: #fbbf24;
+}
+
+html, body {
+  background-color: var(--pri-bg-main) !important;
+  color: var(--pri-text-white);
+  font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--pri-text-white);
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: var(--pri-neon-green);
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   HEADER PRIMOR BET (vux-sports-header)
+   ========================================================================== */
+.pri-header {
+  background: var(--pri-bg-header);
+  border-bottom: 2px solid var(--pri-neon-green);
+  box-shadow: 0 4px 20px rgba(0, 245, 155, 0.12), 0 4px 15px rgba(0, 0, 0, 0.8);
+  position: relative;
+  z-index: 100;
+}
+
+.pri-header-top {
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pri-logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.pri-logo-container .brand-img {
+  max-height: 44px;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+.pri-logo {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pri-logo .neon-text {
+  color: var(--pri-neon-green);
+  text-shadow: var(--pri-neon-glow);
+}
+
+/* Category Switcher (Slots / Cassino / Esportes) */
+.pri-category-switcher {
+  display: flex;
+  align-items: center;
+  background: #0a0e17;
+  border: 1px solid var(--pri-border);
+  border-radius: 20px;
+  padding: 3px;
+  gap: 4px;
+}
+
+.pri-category-item {
+  padding: 5px 14px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pri-text-gray);
+  transition: all 0.2s ease;
+}
+
+.pri-category-item:hover {
+  color: #ffffff;
+}
+
+.pri-category-item.active {
+  background: linear-gradient(135deg, rgba(0, 245, 155, 0.2) 0%, rgba(0, 210, 255, 0.2) 100%);
+  color: var(--pri-neon-green);
+  border: 1px solid var(--pri-neon-green);
+  box-shadow: var(--pri-neon-glow);
+}
+
+.pri-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pri-top-nav li a {
+  color: var(--pri-text-gray);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pri-top-nav li a:hover {
+  color: #ffffff;
+  background-color: var(--pri-bg-hover);
+}
+
+.pri-btn-login {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid var(--pri-border-light) !important;
+  padding: 7px 16px !important;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+}
+
+.pri-btn-login:hover {
+  background-color: var(--pri-bg-hover) !important;
+  border-color: var(--pri-neon-green) !important;
+  color: var(--pri-neon-green) !important;
+}
+
+.pri-btn-register {
+  background: linear-gradient(135deg, var(--pri-neon-green) 0%, var(--pri-neon-cyan) 100%) !important;
+  color: #070a10 !important;
+  border: none !important;
+  padding: 7px 18px !important;
+  border-radius: 8px !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  box-shadow: var(--pri-neon-glow) !important;
+}
+
+.pri-btn-register:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(0, 245, 155, 0.7) !important;
+}
+
+.pri-user-balance {
+  background: #141d2e;
+  border: 1px solid var(--pri-border);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.pri-user-balance .val {
+  color: var(--pri-neon-green);
+  font-weight: 800;
+  margin-left: 4px;
+}
+
+/* Submenu Esportes com Pílulas Neon */
+.pri-subnav {
+  background-color: var(--pri-bg-subnav);
+  padding: 6px 0;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.pri-subnav ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 8px;
+}
+
+.pri-subnav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pri-text-gray);
+  background: #101624;
+  border: 1px solid var(--pri-border);
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.pri-subnav ul li a:hover,
+.pri-subnav ul li.active a {
+  color: #ffffff;
+  border-color: var(--pri-neon-green);
+  background: rgba(0, 245, 155, 0.1);
+  box-shadow: 0 0 10px rgba(0, 245, 155, 0.2);
+}
+
+.pri-subnav ul li.active a i {
+  color: var(--pri-neon-green);
+}
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL PRIMOR BET
+   ========================================================================== */
+.pri-main-wrapper {
+  padding: 20px 0 40px;
+}
+
+.pri-layout-grid {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.pri-col-left {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.pri-col-center {
+  flex: 1;
+  min-width: 0;
+}
+
+.pri-col-right {
+  width: 320px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1200px) {
+  .pri-col-left { width: 220px; }
+  .pri-col-right { width: 300px; }
+}
+
+@media (max-width: 991px) {
+  .pri-layout-grid { flex-direction: column; }
+  .pri-col-left, .pri-col-right { width: 100%; }
+}
+
+/* Cards & Sidebars */
+.pri-card {
+  background-color: var(--pri-bg-card);
+  border: 1px solid var(--pri-border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.pri-card-header {
+  background: linear-gradient(180deg, #182236 0%, #121826 100%);
+  border-bottom: 1px solid var(--pri-border);
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pri-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+
+.pri-menu-list li a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  color: var(--pri-text-gray);
+  font-size: 13px;
+  font-weight: 600;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.pri-menu-list li a:hover,
+.pri-menu-list li a.active {
+  color: #ffffff;
+  background-color: var(--pri-bg-hover);
+  border-left-color: var(--pri-neon-green);
+}
+
+.pri-menu-list li a i {
+  color: var(--pri-neon-green);
+  margin-right: 8px;
+}
+
+/* Toolbar de Filtros */
+.pri-toolbar {
+  background: var(--pri-bg-card);
+  border: 1px solid var(--pri-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.pri-toolbar input,
+.pri-toolbar select {
+  background-color: #0b0f19 !important;
+  border: 1px solid var(--pri-border) !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+}
+
+.pri-toolbar input:focus,
+.pri-toolbar select:focus {
+  border-color: var(--pri-neon-green) !important;
+  box-shadow: var(--pri-neon-glow) !important;
+}
+
+/* ==========================================================================
+   PARTIDAS CYBER (vux-api-match-card)
+   ========================================================================== */
+.pri-league-section {
+  background-color: var(--pri-bg-card);
+  border: 1px solid var(--pri-border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.pri-league-header {
+  background: linear-gradient(90deg, #182236 0%, #121826 100%);
+  border-bottom: 2px solid var(--pri-neon-green);
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pri-league-title {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pri-league-title i {
+  color: var(--pri-neon-green);
+}
+
+.pri-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.pri-table thead th {
+  background-color: #0b101c;
+  color: var(--pri-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--pri-border);
+  text-align: center;
+}
+
+.pri-match-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background-color 0.15s ease;
+}
+
+.pri-match-row:hover {
+  background-color: var(--pri-bg-hover);
+}
+
+.pri-teams {
+  padding: 10px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pri-times-box {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.35;
+  max-width: 100%;
+}
+
+.pri-time-casa,
+.pri-time-fora {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  gap: 5px;
+  color: #ffffff;
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 200px;
+}
+
+.pri-team-name {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.pri-versus {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--pri-neon-green);
+  font-weight: 700;
+  opacity: 0.95;
+  flex-shrink: 0;
+  padding: 0 4px;
+}
+
+.pri-team-flag {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 3px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+  vertical-align: middle;
+  background-color: rgba(255, 255, 255, 0.04);
+  padding: 1px;
+}
+
+.pri-league-flag {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  object-fit: contain;
+  border-radius: 2px;
+  vertical-align: middle;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.pri-match-time {
+  font-size: 11px;
+  color: var(--pri-text-muted);
+  font-weight: 500;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Botões de Cotação Neon (vux-api-odd-btn) */
+.pri-odd-btn {
+  background: var(--pri-odd-bg);
+  border: 1px solid var(--pri-odd-border);
+  border-radius: 8px;
+  padding: 8px 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 62px;
+  user-select: none;
+}
+
+.pri-odd-btn:hover {
+  background-color: var(--pri-odd-hover);
+  border-color: var(--pri-neon-green);
+  transform: translateY(-1px);
+}
+
+.pri-odd-btn.active {
+  background: linear-gradient(135deg, rgba(0, 245, 155, 0.25) 0%, rgba(0, 210, 255, 0.25) 100%) !important;
+  border-color: var(--pri-neon-green) !important;
+  box-shadow: var(--pri-neon-glow);
+}
+
+.pri-odd-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--pri-text-muted);
+  text-transform: uppercase;
+}
+
+.pri-odd-btn.active .pri-odd-label {
+  color: var(--pri-neon-cyan);
+}
+
+.pri-odd-val {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+.pri-odd-btn.active .pri-odd-val {
+  color: var(--pri-neon-green);
+}
+
+.pri-more-odds-btn {
+  background: transparent;
+  border: 1px solid var(--pri-border);
+  color: var(--pri-neon-cyan);
+  font-weight: 800;
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pri-more-odds-btn:hover,
+.pri-more-odds-btn.active {
+  background-color: var(--pri-bg-hover);
+  border-color: var(--pri-neon-cyan);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   CUPOM CYBER PRIMOR BET
+   ========================================================================== */
+.pri-betslip {
+  background-color: var(--pri-bg-card);
+  border: 1px solid var(--pri-border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.pri-betslip-header {
+  background: linear-gradient(135deg, #182236 0%, #101624 100%);
+  border-bottom: 2px solid var(--pri-neon-green);
+  padding: 14px 16px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pri-betslip-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pri-betslip-badge {
+  background: var(--pri-neon-green);
+  color: #070a10;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.pri-betslip-body {
+  padding: 16px;
+}
+
+.pri-selection-item {
+  background: #0d121f;
+  border: 1px solid var(--pri-border);
+  border-left: 3px solid var(--pri-neon-green);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.pri-selection-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--pri-text-muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.pri-selection-remove:hover {
+  color: #ef4444;
+}
+
+.pri-selection-teams {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  padding-right: 20px;
+}
+
+.pri-selection-market {
+  font-size: 11px;
+  color: var(--pri-text-muted);
+  margin: 3px 0;
+}
+
+.pri-selection-odd-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.pri-selection-odd-row .rate {
+  font-weight: 800;
+  color: var(--pri-neon-green);
+}
+
+/* Quick Stake Chips */
+.pri-quick-stakes {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.pri-chip-btn {
+  flex: 1;
+  background-color: #0d121f;
+  border: 1px solid var(--pri-border);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.pri-chip-btn:hover {
+  border-color: var(--pri-neon-green);
+  color: var(--pri-neon-green);
+}
+
+.pri-betslip-summary {
+  background: #0d121f;
+  border: 1px solid var(--pri-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.pri-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--pri-text-gray);
+  margin-bottom: 6px;
+}
+
+.pri-summary-row.total-return {
+  border-top: 1px dashed var(--pri-border);
+  padding-top: 8px;
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.pri-summary-row.total-return .val {
+  color: var(--pri-neon-green);
+  font-size: 17px;
+  font-weight: 900;
+  text-shadow: var(--pri-neon-glow);
+}
+
+.pri-btn-bet {
+  width: 100%;
+  background: linear-gradient(135deg, var(--pri-neon-green) 0%, var(--pri-neon-cyan) 100%);
+  color: #070a10;
+  border: none;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: var(--pri-neon-glow);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pri-btn-bet:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 0 24px rgba(0, 245, 155, 0.7);
+}
+
+.pri-btn-bet:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pri-btn-clear {
+  width: 100%;
+  background: transparent;
+  color: var(--pri-text-muted);
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px;
+  margin-top: 6px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.pri-btn-clear:hover {
+  color: #ef4444;
+}
+
+/* ==========================================================================
+   RODAPÉ PRIMOR BET
+   ========================================================================== */
+.pri-footer {
+  background-color: #070a10;
+  border-top: 1px solid var(--pri-border);
+  padding: 30px 0;
+  color: var(--pri-text-muted);
+  font-size: 12px;
+}
+
+.pri-footer a {
+  color: var(--pri-text-gray);
+  margin-right: 15px;
+}
+
+.pri-footer a:hover {
+  color: var(--pri-neon-green);
+}
+
+.pri-age-badge {
+  display: inline-block;
+  background: var(--pri-neon-green);
+  color: #070a10;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+/* Mobile Drawer */
+.pri-menu-mobile {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100vh;
+  background-color: #0e1422;
+  border-right: 2px solid var(--pri-neon-green);
+  z-index: 99999;
+  transition: left 0.3s ease;
+  padding: 20px 0;
+  overflow-y: auto;
+}
+
+html.show-menu .pri-menu-mobile {
+  left: 0;
+}
+
+.pri-menu-mobile-header {
+  padding: 0 20px 15px;
+  border-bottom: 1px solid var(--pri-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.pri-menu-mobile ul {
+  list-style: none;
+  margin: 15px 0 0;
+  padding: 0;
+}
+
+.pri-menu-mobile ul li a {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: var(--pri-text-gray);
+  font-size: 14px;
+  font-weight: 600;
+  border-left: 3px solid transparent;
+}
+
+.pri-menu-mobile ul li a:hover {
+  color: #ffffff;
+  background: var(--pri-bg-hover);
+  border-left-color: var(--pri-neon-green);
+}
+
+.pri-menu-mobile ul li a i {
+  color: var(--pri-neon-green);
+  margin-right: 12px;
+  width: 18px;
+  text-align: center;
+}
+
+/* Subpage Cards */
+.pri-page-card {
+  background-color: var(--pri-bg-card);
+  border: 1px solid var(--pri-border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.pri-page-title {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--pri-border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   AJUSTES RESPONSIVOS COMPACTOS (MOBILE JOGOS E ODDS)
+   ========================================================================= */
+@media (max-width: 768px) {
+  .pri-league-section {
+    margin-bottom: 8px !important;
+    border-radius: 4px !important;
+  }
+
+  .pri-league-header {
+    padding: 6px 10px !important;
+  }
+
+  .pri-league-title {
+    font-size: 12px !important;
+    gap: 5px !important;
+  }
+
+  .pri-table {
+    width: 100% !important;
+  }
+
+  .pri-table thead th {
+    padding: 4px 2px !important;
+    font-size: 9.5px !important;
+    letter-spacing: 0 !important;
+  }
+
+  .pri-table thead th:first-child,
+  .pri-table tbody td:first-child {
+    min-width: 0 !important;
+    width: auto !important;
+    padding-left: 6px !important;
+  }
+
+  .pri-table thead th:not(:first-child):not(:last-child) {
+    width: 46px !important;
+    min-width: 42px !important;
+    max-width: 48px !important;
+  }
+
+  .pri-table thead th:last-child {
+    width: 36px !important;
+    min-width: 32px !important;
+    max-width: 38px !important;
+  }
+
+  .pri-match-row td {
+    padding: 4px 2px !important;
+  }
+
+  .pri-teams {
+    padding: 2px 4px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+
+  .pri-times-box {
+    display: inline-flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    font-size: 11px !important;
+    gap: 3px !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+  }
+
+  .pri-time-casa,
+  .pri-time-fora {
+    display: inline-flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    max-width: 95px !important;
+    gap: 3px !important;
+  }
+
+  .pri-team-name {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .pri-team-flag {
+    width: 15px !important;
+    height: 15px !important;
+    min-width: 15px !important;
+  }
+
+  .pri-versus {
+    font-size: 10px !important;
+    padding: 0 1px !important;
+  }
+
+  .pri-match-time {
+    font-size: 9px !important;
+    margin-top: 1px !important;
+    gap: 3px !important;
+  }
+
+  .pri-odd-btn {
+    min-width: 40px !important;
+    width: 100% !important;
+    max-width: 48px !important;
+    padding: 3px 1px !important;
+    margin: 0 auto !important;
+    border-radius: 4px !important;
+  }
+
+  .pri-odd-label {
+    font-size: 8px !important;
+    margin-bottom: 1px !important;
+    line-height: 1 !important;
+  }
+
+  .pri-odd-val {
+    font-size: 11.5px !important;
+    line-height: 1.1 !important;
+    font-weight: 800 !important;
+  }
+
+  .pri-more-odds-btn {
+    min-width: 30px !important;
+    width: 100% !important;
+    max-width: 36px !important;
+    padding: 5px 1px !important;
+    font-size: 10px !important;
+    border-radius: 4px !important;
+  }
+
+  .pri-toolbar {
+    padding: 8px 10px !important;
+    margin-bottom: 10px !important;
+  }
+}

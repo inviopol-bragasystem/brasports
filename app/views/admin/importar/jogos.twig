@@ -1,0 +1,1134 @@
+{% extends layout %}
+
+{% block main %}
+    <style>
+        .import-header-card {
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-top: 4px solid #22baa0;
+        }
+        .import-title {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 19px;
+            font-weight: 600;
+            color: #2b3d51;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .import-toolbar {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .stats-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .stats-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .badge-live-pulse {
+            background: #e74c3c;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+            animation: pulse-live 1.8s infinite;
+        }
+        @keyframes pulse-live {
+            0% { opacity: 1; }
+            50% { opacity: 0.55; }
+            100% { opacity: 1; }
+        }
+        .form-jogos th, .form-jogos td {
+            vertical-align: middle !important;
+        }
+        .table-cotacoes td {
+            text-align: center;
+        }
+        .odd-badge {
+            display: inline-block;
+            min-width: 44px;
+            padding: 3px 6px;
+            background: #f1f3f5;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #212529;
+            border: 1px solid #dee2e6;
+            margin: 1px;
+            font-size: 12px;
+        }
+        .odd-badge.has-val {
+            background: #e8f4fd;
+            border-color: #b6d4fe;
+            color: #0d6efd;
+        }
+        .score-pill {
+            background: #2b3d51;
+            color: #fff;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        .panel-campeonato {
+            margin-bottom: 18px;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+        }
+        .panel-campeonato .panel-heading {
+            background: #2c3e50;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            user-select: none;
+        }
+
+        /* DESATIVA TOTALMENTE O PLUGIN UNIFORM NESTA PÁGINA */
+        .form-jogos .checker,
+        .panel-campeonato .checker,
+        .template-painel .checker,
+        #template-tr-jogo .checker,
+        .import-toolbar .checker,
+        .ajustar-horario-box .checker {
+            display: inline !important;
+            background: none !important;
+            width: auto !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .form-jogos .checker span,
+        .panel-campeonato .checker span,
+        .template-painel .checker span,
+        #template-tr-jogo .checker span,
+        .import-toolbar .checker span,
+        .ajustar-horario-box .checker span {
+            display: inline !important;
+            background: none !important;
+            width: auto !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* COMPONENTE EXCLUSIVO DE CHECKBOX MODERNO (SEM BUG DE CSS / UNIFORM) */
+        .custom-control-cb {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: relative !important;
+            cursor: pointer !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            user-select: none !important;
+            vertical-align: middle !important;
+        }
+        .custom-control-cb input[type="checkbox"] {
+            position: absolute !important;
+            opacity: 0 !important;
+            width: 0 !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            pointer-events: none !important;
+        }
+        .custom-control-cb .cb-indicator {
+            width: 22px !important;
+            height: 22px !important;
+            border-radius: 4px !important;
+            border: 2px solid #b0bec5 !important;
+            background-color: #ffffff !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.15s ease-in-out !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+        }
+        .custom-control-cb:hover .cb-indicator {
+            border-color: #22baa0 !important;
+            box-shadow: 0 0 0 3px rgba(34, 186, 160, 0.2) !important;
+        }
+        /* MARCADO (CHECKED): FUNDO VERDE TEAL COM ÍCONE BRANCO NÍTIDO */
+        .custom-control-cb input[type="checkbox"]:checked + .cb-indicator {
+            background-color: #22baa0 !important;
+            border-color: #22baa0 !important;
+            box-shadow: 0 1px 4px rgba(34, 186, 160, 0.4) !important;
+        }
+        .custom-control-cb input[type="checkbox"]:checked + .cb-indicator::after {
+            content: "\f00c" !important;
+            font-family: FontAwesome !important;
+            font-size: 13px !important;
+            color: #ffffff !important;
+            font-weight: 900 !important;
+            display: block !important;
+            line-height: 1 !important;
+        }
+        /* INDETERMINADO: FUNDO VERDE COM TRAÇO (MENOS) */
+        .custom-control-cb input[type="checkbox"]:indeterminate + .cb-indicator {
+            background-color: #22baa0 !important;
+            border-color: #22baa0 !important;
+        }
+        .custom-control-cb input[type="checkbox"]:indeterminate + .cb-indicator::after {
+            content: "\f068" !important;
+            font-family: FontAwesome !important;
+            font-size: 12px !important;
+            color: #ffffff !important;
+            font-weight: 900 !important;
+            display: block !important;
+            line-height: 1 !important;
+        }
+
+        /* EFEITO VISUAL NAS LINHAS DA TABELA */
+        .tr-jogo {
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        .tr-jogo:hover {
+            background-color: #f0f7ff !important;
+        }
+        .tr-jogo.row-selected {
+            background-color: #eafbf0 !important;
+        }
+        .tr-jogo.row-selected td {
+            background-color: #eafbf0 !important;
+            border-top-color: #c7eed5 !important;
+        }
+        .tr-jogo.row-selected td:first-child {
+            border-left: 4px solid #22baa0;
+        }
+
+        .btn-select-group .btn {
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .ajustar-horario-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            box-shadow: 0 2px 6px rgba(34,186,160,0.08);
+        }
+    </style>
+
+    <!-- PAINEL DE CONTROLE DE APIS -->
+    <div class="import-header-card">
+        <h3 class="import-title">
+            <i class="fa fa-cloud-download text-primary"></i> 
+            Central de Importação de Jogos e Cotações
+        </h3>
+
+        <form id="form-filtros-api" class="form-horizontal" onsubmit="return false;">
+            <div class="row">
+                <!-- Fonte da API -->
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-group p-h-xs">
+                        <label class="control-label font-bold">Fonte de Dados / API:</label>
+                        <select name="source" id="select-source" class="form-control">
+                            <option value="node" selected>⚡ Sportsbook Multi-fonte (Node.js - Recomendado)</option>
+                            <option value="theodds">🌐 The Odds API v4 (Externa)</option>
+                            <option value="betby">🏟️ Betby (API local)</option>
+                            <option value="betano">🇧🇷 Betano BR (PHP Local)</option>
+                        </select>
+                        <small class="text-muted">Para Betby, mantenha o servidor em <code>apifutebol/betby</code> iniciado.</small>
+                    </div>
+                </div>
+
+                <!-- Tipo de Jogos -->
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-group p-h-xs">
+                        <label class="control-label font-bold">Modalidade / Tipo:</label>
+                        <select name="mode" id="select-mode" class="form-control">
+                            <option value="today" selected>📅 Jogos de Hoje e Próximos</option>
+                            <option value="upcoming">⏳ Próximos / Agenda Completa</option>
+                            <option value="live">🔴 Jogos Ao Vivo (In-Play)</option>
+                            <option value="top">⭐ Destaques da Rodada</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Sub-fonte para Node.js -->
+                <div class="col-md-3 col-sm-6 group-node-opts" style="display: none;">
+                    <div class="form-group p-h-xs">
+                        <label class="control-label font-bold">Sub-fonte Node:</label>
+                        <select name="subsource" id="select-subsource" class="form-control">
+                            <option value="vaidebet" selected>Vai de Bet (Altenar - Agenda Completa + Odds)</option>
+                            <option value="all">Todas as Fontes Mescladas</option>
+                            <option value="sofascore">SofaScore</option>
+                            <option value="pixbet">Pixbet (FSSB)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Seletor de Liga para The Odds API -->
+                <div class="col-md-3 col-sm-6 group-theodds-opts" style="display: none;">
+                    <div class="form-group p-h-xs">
+                        <label class="control-label font-bold">Campeonato (The Odds API):</label>
+                        <select name="sport" id="select-sport" class="form-control">
+                            {% for sp in theOddsSports %}
+                                <option value="{{ sp.key }}">{{ sp.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Botão de Carregar -->
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-group p-h-xs">
+                        <label class="control-label" style="visibility: hidden;">Ação</label>
+                        <div>
+                            <button type="button" class="btn btn-primary btn-block btn-carregar-api" style="font-weight: 600; height: 35px;">
+                                <i class="fa fa-refresh"></i> CARREGAR JOGOS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chave The Odds API (Visível apenas se The Odds selecionado) -->
+            <div class="row group-theodds-opts" style="display: none; margin-top: 10px; border-top: 1px dashed #eee; padding-top: 12px;">
+                <div class="col-md-8 col-sm-12">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-key"></i> Chave API:</span>
+                        <input type="text" id="input-api-key" name="apiKey" class="form-control" 
+                               value="{{ theOddsApiKey }}" placeholder="Insira sua API Key obtida em https://the-odds-api.com"/>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-info btn-salvar-chave">
+                                <i class="fa fa-save"></i> Salvar Chave
+                            </button>
+                        </span>
+                    </div>
+                    <small class="text-muted">A chave fica gravada no sistema para as próximas importações.</small>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- BARRA DE GESTÃO EM LOTE E ESTATÍSTICAS -->
+    <div class="import-toolbar">
+        <div class="row" style="align-items: center;">
+            <!-- Estatísticas -->
+            <div class="col-md-6 col-sm-12">
+                <div class="stats-area">
+                    <span class="stats-badge bg-primary"><i class="fa fa-trophy"></i> <span id="stat-campeonatos">0</span> Ligas</span>
+                    <span class="stats-badge bg-success"><i class="fa fa-futbol-o"></i> <span id="stat-jogos">0</span> Partidas</span>
+                    <span class="stats-badge bg-danger"><i class="fa fa-bolt"></i> <span id="stat-live">0</span> Ao Vivo</span>
+                    <span class="stats-badge bg-info"><i class="fa fa-check-square-o"></i> <span id="stat-selecionados">0</span> Selecionados</span>
+                </div>
+            </div>
+
+            <!-- Ações rápidas de seleção -->
+            <div class="col-md-6 col-sm-12 text-right">
+                <div class="btn-group btn-select-group m-r-sm">
+                    <button type="button" class="btn btn-default btn-sm btn-select-all" title="Marcar todos os jogos visíveis">
+                        <i class="fa fa-check-square text-success"></i> Todos Visíveis
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm btn-select-future" title="Marcar apenas jogos futuros (abertos no site)">
+                        <i class="fa fa-clock-o text-primary"></i> Apenas Futuros
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm btn-unselect-all" title="Desmarcar todos os jogos">
+                        <i class="fa fa-square-o text-danger"></i> Desmarcar Todos
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm btn-invert-selection" title="Inverter seleção dos jogos visíveis">
+                        <i class="fa fa-exchange text-muted"></i> Inverter
+                    </button>
+                </div>
+
+                <!-- Ajuste de Margem de Cotações em Lote -->
+                <div class="input-group input-group-sm" style="display: inline-table; width: 170px; vertical-align: middle;">
+                    <span class="input-group-addon" title="Ajuste global: valores positivos aumentam e negativos reduzem as odds">Margem:</span>
+                    <select class="form-control input-sm" id="ajuste-tipo" style="width: 45px; padding: 2px 5px;">
+                        <option value="%">%</option>
+                        <option value="$">$</option>
+                    </select>
+                    <input type="number" id="ajuste-valor" step="1" value="0" min="-100" max="500" class="form-control input-sm" style="width: 50px;"/>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-warning btn-sm btn-aplicar-ajuste" title="Aplicar margem em todas as cotações carregadas">
+                            <i class="fa fa-magic"></i>
+                        </button>
+                    </span>
+                </div>
+                <small class="text-muted" style="display: block; margin-top: 5px;">Use valor positivo para aumentar e negativo para reduzir todas as odds carregadas.</small>
+            </div>
+        </div>
+
+        <!-- Filtro instantâneo por texto -->
+        <div style="margin-top: 12px;">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                <input type="text" id="filtro-busca" class="form-control" placeholder="Buscar por time (ex: Flamengo, Real Madrid) ou campeonato em tempo real..."/>
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default btn-limpar-busca" title="Limpar filtro de busca">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORMULÁRIO DE LISTAGEM E IMPORTAÇÃO -->
+    <form class="form-jogos" onsubmit="return false;">
+
+        <!-- Mensagem de estado vazio -->
+        <div id="container-vazio" class="text-center p-v-lg" style="background: #fff; border-radius: 6px; padding: 50px 20px; border: 2px dashed #e9ecef;">
+            <i class="fa fa-download fa-3x text-muted m-b-sm"></i>
+            <h4 class="text-muted">Nenhum jogo carregado no momento</h4>
+            <p class="text-muted">Selecione a fonte e clique no botão <b>"CARREGAR JOGOS"</b> acima para buscar as partidas disponíveis.</p>
+        </div>
+
+        <!-- Container onde as tabelas de campeonatos serão inseridas -->
+        <div class="container-tabelas"></div>
+
+        <!-- Template Oculto para Clonagem de Painéis de Campeonato -->
+        <div class="panel panel-default panel-campeonato template-painel" style="display: none;">
+            <div class="panel-heading">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label class="custom-control-cb" title="Marcar ou desmarcar todos os jogos desta liga">
+                        <input type="checkbox" class="switchery check-campeonato"/>
+                        <span class="cb-indicator"></span>
+                    </label>
+                    <span class="campeonato-nome font-bold"></span>
+                </div>
+                <span class="badge badge-default total-jogos-camp">0 jogos</span>
+            </div>
+            <div class="panel-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover m-b-0 table-cotacoes">
+                        <thead>
+                        <tr>
+                            <th width="50" class="text-center"><i class="fa fa-check"></i></th>
+                            <th width="125" class="text-center">Data/Hora</th>
+                            <th>Confronto</th>
+                            <th width="85" class="text-center">Casa (1)</th>
+                            <th width="85" class="text-center">Empate (X)</th>
+                            <th width="85" class="text-center">Fora (2)</th>
+                            <th width="90" class="text-center">Dupla Ch.</th>
+                            <th width="90" class="text-center">Ambas</th>
+                            <th width="90" class="text-center">Gols (2.5)</th>
+                            <th width="90" class="text-center">Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Template Oculto para Linha de Partida -->
+        <table style="display: none;">
+            <tbody id="template-tr-jogo">
+            <tr class="tr-jogo">
+                <td class="text-center cell-checkbox">
+                    <label class="custom-control-cb" title="Selecionar jogo">
+                        <input type="checkbox" name="jogo" class="switchery input-jogo"/>
+                        <span class="cb-indicator"></span>
+                    </label>
+                </td>
+                <td class="text-center">
+                    <div class="data-jogo font-bold"></div>
+                    <div class="hora-jogo text-muted small"></div>
+                </td>
+                <td class="cell-confronto">
+                    <div class="confronto-title font-bold"></div>
+                    <div class="extra-status m-t-xs"></div>
+                </td>
+                <td class="text-center odd-casa"><span class="odd-badge col-casa">-</span></td>
+                <td class="text-center odd-empate"><span class="odd-badge col-empate">-</span></td>
+                <td class="text-center odd-fora"><span class="odd-badge col-fora">-</span></td>
+                <td class="text-center odd-dupla"><span class="odd-badge col-dupla" title="1X">-</span></td>
+                <td class="text-center odd-ambas"><span class="odd-badge col-ambas" title="Ambas Marcam Sim">-</span></td>
+                <td class="text-center odd-gols"><span class="odd-badge col-gols" title="+2.5 Gols">-</span></td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-default btn-xs ver-cotacoes-btn" title="Ver todas as cotações detalhadas da partida">
+                        <i class="fa fa-list"></i> Odds
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Box de Ajuste de Horário e Botão Principal de Importação -->
+        <div class="ajustar-horario-box">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label class="custom-control-cb" title="Ajusta partidas com horário passado para hoje (+2h), garantindo que fiquem abertas para apostas imediatamente na página inicial do site">
+                    <input type="checkbox" id="check-ajustar-horario" class="switchery" checked/>
+                    <span class="cb-indicator"></span>
+                </label>
+                <div>
+                    <span style="font-weight: 600; color: #166534; font-size: 13px;">
+                        <i class="fa fa-bolt text-warning"></i> <b>Garantir jogos abertos no site:</b> ajustar automaticamente horários passados para hoje (+2h) para que apareçam imediatamente para apostas na página inicial.
+                    </span>
+                    <div class="text-muted small">
+                        O sistema do site só exibe jogos abertos para apostas (com início previsto para daqui a mais de 10 minutos).
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button type="button" class="btn btn-success btn-lg btn-executar-importacao" style="font-weight: 700; padding: 12px 30px; box-shadow: 0 4px 14px rgba(46,204,113,0.35);">
+                    <i class="fa fa-cloud-upload"></i> IMPORTAR (<span id="btn-count-selecionados">0</span>) JOGOS SELECIONADOS
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Modal Todas as Cotações -->
+    <div class="modal fade modal-cotacoes" id="modal-cotacoes" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title font-bold"><i class="fa fa-calculator text-primary"></i> Todas as Cotações da Partida</h4>
+                </div>
+                <div class="modal-body">
+                    <h4 class="modal-jogo-titulo text-center m-b-md text-primary font-bold"></h4>
+                    <div class="row">
+                        {% for tempo in tempos %}
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading font-bold">{{ tempo.title }}</div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            {% for c in cotacoes %}
+                                                <div class="col-md-3 col-sm-4 col-xs-6 m-b-sm">
+                                                    <div style="border: 1px solid #e2e8f0; border-radius: 4px; padding: 6px 10px; background: #f8fafc;">
+                                                        <div class="small text-muted font-bold">{{ c.getTitulo() }} ({{ c.getSigla() }})</div>
+                                                        <label class="sr-only">Odd {{ c.getTitulo() }} ({{ tempo.title }})</label>
+                                                        <input type="number" min="1.01" step="0.01" inputmode="decimal"
+                                                               class="form-control input-sm modal-odd-input"
+                                                               data-modal-tempo="{{ tempo.key }}" data-modal-campo="{{ c.getCampo() }}"
+                                                               placeholder="-" title="Edite a odd; deixe vazio para remover este mercado"/>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span class="text-muted pull-left modal-odds-status">Edite as odds desejadas e salve antes de importar.</span>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" id="btn-salvar-odds-importacao"><i class="fa fa-save"></i> Salvar odds</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function () {
+            var dadosAtuais = [];
+            var tplPainel = $('.template-painel');
+            var tplTr = $('#template-tr-jogo tr');
+            var linhaOddsModal = null;
+
+            // Extermina qualquer efeito do plugin Uniform que tenha encapsulado os checkboxes
+            function eliminarUniform() {
+                $('.form-jogos .checker, .panel-campeonato .checker, #template-tr-jogo .checker, .template-painel .checker, .ajustar-horario-box .checker').each(function () {
+                    var chk = $(this).find('input');
+                    if (chk.length) {
+                        $(this).replaceWith(chk);
+                    }
+                });
+            }
+            eliminarUniform();
+
+            // Alternância de campos conforme a fonte selecionada
+            $('#select-source').on('change', function () {
+                var src = $(this).val();
+                if (src === 'node') {
+                    $('.group-node-opts').slideDown(200);
+                    $('.group-theodds-opts').slideUp(200);
+                } else if (src === 'theodds') {
+                    $('.group-node-opts').slideUp(200);
+                    $('.group-theodds-opts').slideDown(200);
+                } else {
+                    $('.group-node-opts').slideUp(200);
+                    $('.group-theodds-opts').slideUp(200);
+                }
+            }).trigger('change');
+
+            // Salvar chave da The Odds API
+            $('.btn-salvar-chave').on('click', function () {
+                var key = $('#input-api-key').val().trim();
+                if (!key) {
+                    alert('Por favor, informe a chave API.');
+                    return;
+                }
+                var btn = $(this);
+                btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Salvando...');
+
+                $.post(url('importar/importarjogos/saveTheOddsKey'), { apiKey: key }, function (res) {
+                    alert(res.message || 'Chave salva com sucesso!');
+                }, 'json').fail(function () {
+                    alert('Erro ao salvar chave.');
+                }).always(function () {
+                    btn.prop('disabled', false).html('<i class="fa fa-save"></i> Salvar Chave');
+                });
+            });
+
+            // Carregar Jogos da API
+            $('.btn-carregar-api').on('click', function () {
+                carregarJogos();
+            });
+
+            function carregarJogos() {
+                eliminarUniform();
+
+                var source = $('#select-source').val();
+                var mode = $('#select-mode').val();
+                var subsource = $('#select-subsource').val();
+                var sport = $('#select-sport').val();
+                var apiKey = $('#input-api-key').val().trim();
+
+                var btn = $('.btn-carregar-api');
+                btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> CARREGANDO...');
+                $('html').addClass('page-loading');
+
+                var params = {
+                    source: source,
+                    mode: mode,
+                    subsource: subsource,
+                    sport: sport,
+                    apiKey: apiKey
+                };
+
+                $.ajax({
+                    url: url('importar/importarjogos/jogos'),
+                    type: 'GET',
+                    data: params,
+                    dataType: 'json',
+                    timeout: 90000,
+                    success: function (json) {
+                        if (json.result != 1 && !json.jogos) {
+                            alert(json.message || 'Não foi possível carregar os jogos desta fonte.');
+                            return;
+                        }
+
+                        dadosAtuais = json.jogos || [];
+                        renderizarTabelas(dadosAtuais, json.jogosAlterados || []);
+                    },
+                    error: function (xhr, status, error) {
+                        var detalhe = (xhr.responseJSON && xhr.responseJSON.message) 
+                            ? xhr.responseJSON.message 
+                            : (status === 'timeout' ? 'Tempo limite excedido' : (error || xhr.statusText || 'Erro de conexão com o servidor'));
+                        alert('Falha na comunicação com a API: ' + detalhe);
+                    },
+                    complete: function () {
+                        btn.prop('disabled', false).html('<i class="fa fa-refresh"></i> CARREGAR JOGOS');
+                        $('html').removeClass('page-loading');
+                    }
+                });
+            }
+
+            function renderizarTabelas(jogos, jogosAlterados) {
+                var container = $('.container-tabelas');
+                container.empty();
+
+                if (!jogos || jogos.length === 0) {
+                    $('#container-vazio').show();
+                    atualizarEstatisticas(0, 0, 0, 0);
+                    return;
+                }
+
+                $('#container-vazio').hide();
+
+                // Ponto de corte para determinar se o jogo está no futuro (agora + 11 minutos)
+                var cutoffTime = new Date().getTime() + (11 * 60 * 1000);
+
+                // Agrupa jogos por campeonato
+                var grupos = {};
+                var totalLive = 0;
+
+                $.each(jogos, function (idx, j) {
+                    var camp = j.campeonato || 'Futebol Geral';
+                    if (!grupos[camp]) grupos[camp] = [];
+                    grupos[camp].push(j);
+                    if (j.is_live) totalLive++;
+                });
+
+                var totalLigas = Object.keys(grupos).length;
+
+                $.each(grupos, function (campNome, listaJogos) {
+                    var painel = tplPainel.clone().removeClass('template-painel').show();
+                    painel.find('.campeonato-nome').text(campNome);
+                    painel.find('.total-jogos-camp').text(listaJogos.length + (listaJogos.length > 1 ? ' jogos' : ' jogo'));
+
+                    var tbody = painel.find('tbody');
+
+                    $.each(listaJogos, function (i, j) {
+                        var tr = tplTr.clone();
+                        tr.data('dados', j);
+                        tr.attr('data-ref', j.refid);
+                        tr.attr('data-busca', (j.timecasa + ' ' + j.timefora + ' ' + campNome).toLowerCase());
+
+                        tr.find('.input-jogo').val(j.refid);
+                        tr.find('.data-jogo').text(j.data.split('-').reverse().join('/'));
+                        tr.find('.hora-jogo').text(j.hora);
+
+                        // Determina se a partida é futura
+                        var partesData = (j.data || '').split('-');
+                        var partesHora = (j.hora || '00:00:00').split(':');
+                        var isFuturo = false;
+                        if (partesData.length === 3) {
+                            var dtJogo = new Date(
+                                parseInt(partesData[0]),
+                                parseInt(partesData[1]) - 1,
+                                parseInt(partesData[2]),
+                                parseInt(partesHora[0] || 0),
+                                parseInt(partesHora[1] || 0),
+                                parseInt(partesHora[2] || 0)
+                            );
+                            isFuturo = (dtJogo.getTime() > cutoffTime);
+                        }
+                        tr.attr('data-futuro', isFuturo ? '1' : '0');
+
+                        // Confronto
+                        var tituloHtml = j.timecasa + ' x ' + j.timefora;
+                        if (j.is_live) {
+                            tituloHtml += ' <span class="score-pill">' + (j.placar || '0 x 0') + '</span>';
+                        }
+                        tr.find('.confronto-title').html(tituloHtml);
+
+                        // Badges extras de status
+                        var extraHtml = '';
+                        if (isFuturo) {
+                            extraHtml += '<span class="label label-success m-r-xs" title="Horário futuro: jogo aparecerá aberto para apostas no site"><i class="fa fa-clock-o"></i> Aberto no Site</span> ';
+                        } else {
+                            extraHtml += '<span class="label label-warning m-r-xs" title="Horário já iniciado ou passado. Marque a opção de ajuste de horário para abrir apostas no site"><i class="fa fa-history"></i> Passado</span> ';
+                        }
+
+                        if (j.is_live) {
+                            extraHtml += '<span class="badge-live-pulse m-r-xs"><i class="fa fa-circle"></i> AO VIVO ' + (j.periodo ? '(' + j.periodo + ')' : '') + '</span> ';
+                        }
+                        if (j.source) {
+                            extraHtml += '<span class="label label-info" style="font-size: 10px;">' + j.source + '</span> ';
+                        }
+                        if (jogosAlterados && jogosAlterados.indexOf(j.refid) !== -1) {
+                            extraHtml += '<span class="label label-primary" style="font-size: 10px;" title="Já cadastrado no banco (será atualizado)">Cadastrado</span>';
+                        }
+                        tr.find('.extra-status').html(extraHtml);
+
+                        // Odds principais
+                        atualizarResumoOdds(tr, j);
+
+                        // Marca por padrão todos os jogos abertos / futuros
+                        if (isFuturo) {
+                            tr.addClass('row-selected');
+                            tr.find('.input-jogo').prop('checked', true);
+                        } else {
+                            tr.removeClass('row-selected');
+                            tr.find('.input-jogo').prop('checked', false);
+                        }
+
+                        tbody.append(tr);
+                    });
+
+                    container.append(painel);
+                    atualizarCampCheckbox(painel);
+                });
+
+                eliminarUniform();
+                atualizarContadores();
+            }
+
+            function setOddBadge(el, val) {
+                if (val && parseFloat(val) > 1.0) {
+                    el.text(parseFloat(val).toFixed(2)).addClass('has-val');
+                } else {
+                    el.text('-').removeClass('has-val');
+                }
+            }
+
+            function atualizarResumoOdds(tr, dados) {
+                var c90 = dados && dados.cotacoes && dados.cotacoes['90'] ? dados.cotacoes['90'] : {};
+                setOddBadge(tr.find('.col-casa'), c90.casa);
+                setOddBadge(tr.find('.col-empate'), c90.empate);
+                setOddBadge(tr.find('.col-fora'), c90.fora);
+                setOddBadge(tr.find('.col-dupla'), c90.dplcasa || c90.cof || c90.dplfora);
+                setOddBadge(tr.find('.col-ambas'), c90.amb);
+                setOddBadge(tr.find('.col-gols'), c90.gmais3 || c90.gmais2);
+            }
+
+            // Atualiza o estado visual do checkbox do campeonato (checked, unchecked ou indeterminate)
+            function atualizarCampCheckbox(painel) {
+                var visiveis = painel.find('.tr-jogo:visible');
+                var total = visiveis.length;
+                var marcados = visiveis.find('.input-jogo:checked').length;
+                var campChk = painel.find('.check-campeonato');
+
+                if (total === 0 || marcados === 0) {
+                    campChk.prop('checked', false).prop('indeterminate', false);
+                } else if (marcados === total) {
+                    campChk.prop('checked', true).prop('indeterminate', false);
+                } else {
+                    campChk.prop('checked', false).prop('indeterminate', true);
+                }
+            }
+
+            function atualizarContadores() {
+                var visiveis = $('.container-tabelas .tr-jogo:visible').length;
+                var totalGeral = $('.container-tabelas .tr-jogo').length;
+                var totalLive = $('.container-tabelas .tr-jogo:visible').find('.badge-live-pulse').length;
+                var ligas = $('.container-tabelas .panel-campeonato:visible').length;
+
+                var selecionadosTotal = $('.container-tabelas .tr-jogo .input-jogo:checked').length;
+                var selecionadosVisiveis = $('.container-tabelas .tr-jogo:visible .input-jogo:checked').length;
+
+                $('#stat-campeonatos').text(ligas);
+                $('#stat-jogos').text(visiveis + (visiveis !== totalGeral ? ' de ' + totalGeral : ''));
+                $('#stat-live').text(totalLive);
+                $('#stat-selecionados').text(selecionadosTotal + (visiveis !== totalGeral ? ' (' + selecionadosVisiveis + ' visíveis)' : ''));
+
+                $('#btn-count-selecionados').text(selecionadosTotal);
+                $('.btn-executar-importacao').prop('disabled', selecionadosTotal === 0);
+            }
+
+            function atualizarEstatisticas(ligas, jogos, live, selecionados) {
+                $('#stat-campeonatos').text(ligas);
+                $('#stat-jogos').text(jogos);
+                $('#stat-live').text(live);
+                $('#stat-selecionados').text(selecionados);
+                $('#btn-count-selecionados').text(selecionados);
+                $('.btn-executar-importacao').prop('disabled', selecionados === 0);
+            }
+
+            // Clique na linha da tabela para selecionar/desmarcar o jogo com feedback imediato
+            $(document).on('click', '.container-tabelas .tr-jogo', function (e) {
+                // Se clicou em botões como "Odds", modal ou links, ignora
+                if ($(e.target).closest('.ver-cotacoes-btn, .modal, button, a').length) {
+                    return;
+                }
+
+                var tr = $(this);
+                var chk = tr.find('.input-jogo');
+
+                // Se clicou na linha (e não diretamente dentro da label do checkbox), alterna o input
+                if (!$(e.target).closest('.custom-control-cb').length) {
+                    chk.prop('checked', !chk.prop('checked'));
+                }
+
+                var isChecked = chk.prop('checked');
+                tr.toggleClass('row-selected', isChecked);
+                atualizarCampCheckbox(tr.closest('.panel-campeonato'));
+                atualizarContadores();
+            });
+
+            // Disparo direto quando o input-jogo muda
+            $(document).on('change', '.input-jogo', function () {
+                var tr = $(this).closest('.tr-jogo');
+                var isChecked = $(this).prop('checked');
+                tr.toggleClass('row-selected', isChecked);
+                atualizarCampCheckbox(tr.closest('.panel-campeonato'));
+                atualizarContadores();
+            });
+
+            // Seleção de todos os jogos de uma liga específica
+            $(document).on('change', '.check-campeonato', function () {
+                var isChecked = $(this).prop('checked');
+                var painel = $(this).closest('.panel-campeonato');
+                painel.find('.tr-jogo:visible').each(function () {
+                    var tr = $(this);
+                    tr.find('.input-jogo').prop('checked', isChecked);
+                    tr.toggleClass('row-selected', isChecked);
+                });
+                atualizarCampCheckbox(painel);
+                atualizarContadores();
+            });
+
+            // Botão: Selecionar Todos (Visíveis)
+            $('.btn-select-all').on('click', function () {
+                $('.container-tabelas .tr-jogo:visible').each(function () {
+                    var tr = $(this);
+                    tr.find('.input-jogo').prop('checked', true);
+                    tr.addClass('row-selected');
+                });
+                $('.container-tabelas .panel-campeonato:visible').each(function () {
+                    atualizarCampCheckbox($(this));
+                });
+                atualizarContadores();
+            });
+
+            // Botão: Selecionar apenas Jogos Futuros (Abertos no Site)
+            $('.btn-select-future').on('click', function () {
+                $('.container-tabelas .tr-jogo:visible').each(function () {
+                    var tr = $(this);
+                    var isFuturo = tr.attr('data-futuro') === '1';
+                    tr.find('.input-jogo').prop('checked', isFuturo);
+                    tr.toggleClass('row-selected', isFuturo);
+                });
+                $('.container-tabelas .panel-campeonato:visible').each(function () {
+                    atualizarCampCheckbox($(this));
+                });
+                atualizarContadores();
+            });
+
+            // Botão: Desmarcar Todos
+            $('.btn-unselect-all').on('click', function () {
+                $('.container-tabelas .tr-jogo').each(function () {
+                    var tr = $(this);
+                    tr.find('.input-jogo').prop('checked', false);
+                    tr.removeClass('row-selected');
+                });
+                $('.container-tabelas .panel-campeonato').each(function () {
+                    atualizarCampCheckbox($(this));
+                });
+                atualizarContadores();
+            });
+
+            // Botão: Inverter Seleção
+            $('.btn-invert-selection').on('click', function () {
+                $('.container-tabelas .tr-jogo:visible').each(function () {
+                    var tr = $(this);
+                    var novo = !tr.find('.input-jogo').prop('checked');
+                    tr.find('.input-jogo').prop('checked', novo);
+                    tr.toggleClass('row-selected', novo);
+                });
+                $('.container-tabelas .panel-campeonato:visible').each(function () {
+                    atualizarCampCheckbox($(this));
+                });
+                atualizarContadores();
+            });
+
+            // Filtro de busca instantânea
+            $('#filtro-busca').on('keyup input', function () {
+                var q = $(this).val().toLowerCase().trim();
+                if (!q) {
+                    $('.container-tabelas .tr-jogo').show();
+                    $('.container-tabelas .panel-campeonato').show();
+                } else {
+                    $('.container-tabelas .panel-campeonato').each(function () {
+                        var painel = $(this);
+                        var encontrou = false;
+                        painel.find('.tr-jogo').each(function () {
+                            var tr = $(this);
+                            var texto = tr.attr('data-busca') || '';
+                            if (texto.indexOf(q) !== -1) {
+                                tr.show();
+                                encontrou = true;
+                            } else {
+                                tr.hide();
+                            }
+                        });
+                        if (encontrou) {
+                            painel.show();
+                            atualizarCampCheckbox(painel);
+                        } else {
+                            painel.hide();
+                        }
+                    });
+                }
+                atualizarContadores();
+            });
+
+            // Limpar busca
+            $('.btn-limpar-busca').on('click', function () {
+                $('#filtro-busca').val('').trigger('input');
+            });
+
+            // Ajuste em lote de cotações
+            $('.btn-aplicar-ajuste').on('click', function () {
+                var tipo = $('#ajuste-tipo').val();
+                var val = parseFloat($('#ajuste-valor').val()) || 0;
+                if (val === 0) return;
+
+                $('.container-tabelas .tr-jogo').each(function () {
+                    var tr = $(this);
+                    var d = tr.data('dados');
+                    if (d && d.cotacoes) {
+                        $.each(d.cotacoes, function (tempo, odds) {
+                            if ($.isPlainObject(odds)) {
+                                $.each(odds, function (k, v) {
+                                    var orig = parseFloat(v) || 0;
+                                    if (orig > 1.0) {
+                                        var novo = (tipo === '%') ? orig * (1 + (val / 100)) : orig + val;
+                                        d.cotacoes[tempo][k] = Math.max(1.01, parseFloat(novo.toFixed(2)));
+                                    }
+                                });
+                            }
+                        });
+                        tr.data('dados', d);
+                        atualizarResumoOdds(tr, d);
+                    }
+                });
+
+                alert('Ajuste de ' + (val > 0 ? '+' : '') + val + tipo + ' aplicado em todas as cotações carregadas!');
+            });
+
+            // Modal Ver Todas as Cotações
+            $(document).on('click', '.ver-cotacoes-btn', function (e) {
+                e.stopPropagation();
+                var tr = $(this).closest('.tr-jogo');
+                var d = tr.data('dados');
+                if (!d) return;
+
+                linhaOddsModal = tr;
+                $('#modal-cotacoes .modal-jogo-titulo').text(d.timecasa + ' x ' + d.timefora);
+                $('#modal-cotacoes .modal-odds-status').text('Edite as odds desejadas e salve antes de importar.');
+                $('#modal-cotacoes .modal-odd-input').val('');
+                $('#modal-cotacoes .modal-odd-input').each(function () {
+                    var campo = $(this).attr('data-modal-campo');
+                    var tempo = $(this).attr('data-modal-tempo');
+                    var valor = d.cotacoes && d.cotacoes[tempo] ? parseFloat(d.cotacoes[tempo][campo]) : NaN;
+                    if (Number.isFinite(valor) && valor > 1) {
+                        $(this).val(valor.toFixed(2));
+                    }
+                });
+
+                $('#modal-cotacoes').modal('show');
+            });
+
+            $('#btn-salvar-odds-importacao').on('click', function () {
+                if (!linhaOddsModal || !linhaOddsModal.length) return;
+                var dados = linhaOddsModal.data('dados');
+                if (!dados || !dados.cotacoes) dados.cotacoes = {};
+
+                var erro = false;
+                $('#modal-cotacoes .modal-odd-input').each(function () {
+                    var input = $(this);
+                    var campo = input.attr('data-modal-campo');
+                    var tempo = input.attr('data-modal-tempo');
+                    var bruto = String(input.val() || '').trim().replace(',', '.');
+                    if (!dados.cotacoes[tempo] || !$.isPlainObject(dados.cotacoes[tempo])) {
+                        dados.cotacoes[tempo] = {};
+                    }
+                    if (bruto === '') {
+                        delete dados.cotacoes[tempo][campo];
+                        return;
+                    }
+                    var valor = Number(bruto);
+                    if (!Number.isFinite(valor) || valor < 1.01) {
+                        input.focus();
+                        erro = true;
+                        return false;
+                    }
+                    dados.cotacoes[tempo][campo] = Number(valor.toFixed(2));
+                });
+
+                if (erro) {
+                    alert('Informe odds válidas a partir de 1,01 ou deixe o campo vazio.');
+                    return;
+                }
+                linhaOddsModal.data('dados', dados);
+                atualizarResumoOdds(linhaOddsModal, dados);
+                $('#modal-cotacoes .modal-odds-status').text('Odds salvas para esta partida.');
+            });
+
+            // Executar Importação dos Jogos Selecionados
+            $('.btn-executar-importacao').on('click', function () {
+                var selecionados = [];
+                $('.container-tabelas .tr-jogo').each(function () {
+                    var tr = $(this);
+                    if (tr.find('.input-jogo').prop('checked')) {
+                        var d = tr.data('dados');
+                        if (d) {
+                            selecionados.push(d);
+                        }
+                    }
+                });
+
+                if (selecionados.length === 0) {
+                    alert('Por favor, selecione no mínimo 1 partida para importar.');
+                    return;
+                }
+
+                var ajustarHorario = $('#check-ajustar-horario').is(':checked') ? 1 : 0;
+                var msgConfirm = 'Deseja importar os ' + selecionados.length + ' jogos selecionados para o banco de dados?';
+                if (ajustarHorario) {
+                    msgConfirm += '\n\n* Observação: Jogos com horários passados serão ajustados para hoje (+2h) para ficarem abertos para apostas imediatamente na página inicial do site.';
+                }
+
+                if (!confirm(msgConfirm)) {
+                    return;
+                }
+
+                var btn = $(this);
+                btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> IMPORTANDO (' + selecionados.length + ') JOGOS...');
+                $('html').addClass('page-loading');
+
+                $.ajax({
+                    url: url('importar/importarjogos/importar'),
+                    type: 'POST',
+                    data: {
+                        jogos: JSON.stringify(selecionados),
+                        ajustarHorario: ajustarHorario
+                    },
+                    dataType: 'json',
+                    timeout: 120000,
+                    success: function (res) {
+                        if (res.result == 1) {
+                            var resumo = res.message || 'Importação realizada com sucesso!';
+                            if (res.criados !== undefined || res.alterados !== undefined) {
+                                resumo += '\n- Inseridos: ' + (res.criados || 0);
+                                resumo += '\n- Atualizados: ' + (res.alterados || 0);
+                                if (res.abertosSite !== undefined) {
+                                    resumo += '\n- Abertos no Site: ' + res.abertosSite;
+                                }
+                            }
+                            alert(resumo);
+
+                            // Marca visualmente as partidas importadas
+                            $('.container-tabelas .tr-jogo').each(function () {
+                                var tr = $(this);
+                                if (tr.find('.input-jogo').prop('checked')) {
+                                    tr.find('.extra-status .label-importado').remove();
+                                    tr.find('.extra-status').append(' <span class="label label-success label-importado" style="font-size: 10px;"><i class="fa fa-check"></i> Importado</span>');
+                                }
+                            });
+                        } else {
+                            alert(res.message || 'Erro ao importar jogos.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Erro ao importar jogos: ' + (xhr.responseJSON?.message || error || 'Falha de comunicação com o servidor'));
+                    },
+                    complete: function () {
+                        btn.prop('disabled', false).html('<i class="fa fa-cloud-upload"></i> IMPORTAR (<span id="btn-count-selecionados">' + $('.container-tabelas .tr-jogo .input-jogo:checked').length + '</span>) JOGOS SELECIONADOS');
+                        $('html').removeClass('page-loading');
+                    }
+                });
+            });
+
+            // Carrega automaticamente os jogos ao abrir a página
+            setTimeout(function () {
+                carregarJogos();
+            }, 300);
+        });
+    </script>
+{% endblock %}

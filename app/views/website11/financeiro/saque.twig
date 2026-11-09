@@ -1,0 +1,213 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - FINANCEIRO / SAQUE
+   ---------------------------------------------------------------------
+   Visual: design system do tema v4 (app.css + v4.css):
+     .account-form / .account-field / .account-label / .account-input
+     .account-submit / .account-secondary / .account-hint / .bet24-card
+     .bet24-table / .bet24-badge / .v4-saq-saldo / .v4-filtros
+
+   LOGICA: e a mesma do template base do sistema
+   (app/views/website/financeiro/saque.twig). O modal de solicitacao
+   continua vindo de admin/inc/modal-saque.twig (mesmos names/ids) e o
+   JavaScript (adminPage) foi preservado. Apenas o HTML/CSS mudou.
+   ===================================================================== #}
+
+{% block list %}
+
+    {% if busca.getCount() %}
+
+        <div class="bet24-card">
+            <div class="bet24-table-scroll">
+                <table class="bet24-table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Data</th>
+                        <th>Destino do saque</th>
+                        <th class="bet24-table-num">Valor</th>
+                        <th>Situação</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for v in busca.getRegistros() %}
+                        {% set cliente = v.voUser() %}
+                        <tr>
+                            <td class="bet24-table-id">#{{ v.getId() }}</td>
+                            <td class="bet24-table-nowrap">{{ v.getData(true) }}</td>
+                            <td>
+                                {% if v.getTipo() == 'picpay' %}
+                                    <span class="bet24-badge is-info">
+                                        <i class="fas fa-mobile-alt"></i> PicPay
+                                    </span>
+                                    <small class="bet24-muted">Chave: {{ v.getPicpay()|default('—') }}</small>
+                                {% else %}
+                                    <span class="bet24-badge is-info">
+                                        <i class="fas fa-university"></i> Conta bancária
+                                    </span>
+                                    <small class="bet24-muted">
+                                        AG {{ v.getAgencia()|default('—') }} · Conta {{ v.getConta()|default('—') }} ·
+                                        {{ v.getBanco()|default('—') }}
+                                    </small>
+                                    <small class="bet24-muted">
+                                        Titular: {{ v.getNomeCompleto()|default(cliente.getNome()) }} ·
+                                        Doc: {{ v.getCpf()|default(v.getCnpj())|default('—') }}
+                                    </small>
+                                    <small class="bet24-muted">
+                                        Conta {{ v.getContaTipo()|default('—') }}
+                                        {% if v.getVariacao() %}· Variação {{ v.getVariacao() }}{% endif %}
+                                    </small>
+                                {% endif %}
+                                {% if cliente %}
+                                    <small class="bet24-muted">Solicitante: {{ cliente.getLogin() }}</small>
+                                {% endif %}
+                            </td>
+                            <td class="bet24-table-num">
+                                <span class="bet24-valor-neg">- R$ {{ v.getValor(true) }}</span>
+                            </td>
+                            <td>
+                                {% if v.getStatus() == 2 %}
+                                    <span class="bet24-badge is-ganha">
+                                        <i class="fas fa-check-circle"></i> {{ v.getStatusTitle() }}
+                                    </span>
+                                {% elseif v.getStatus() == 1 %}
+                                    <span class="bet24-badge is-pendente">
+                                        <i class="fas fa-clock"></i> {{ v.getStatusTitle() }}
+                                    </span>
+                                {% else %}
+                                    <span class="bet24-badge is-perdida">
+                                        <i class="fas fa-times-circle"></i> {{ v.getStatusTitle() }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if busca.getTotalPaginas() > 1 %}
+                <div class="bet24-paginacao">{{ busca }}</div>
+            {% endif %}
+        </div>
+
+    {% elseif message is defined and message %}
+
+        <div class="bet24-msg is-aviso">
+            <i class="fas fa-exclamation-triangle"></i> {{ message }}
+        </div>
+
+    {% else %}
+
+        <div class="empty">
+            <div class="empty-state">
+                <span class="empty-icon"><i class="fas fa-money-bill-wave"></i></span>
+                <p class="empty-title">Nenhum saque solicitado</p>
+                <p class="empty-text">Quando você solicitar um saque ele aparece aqui com o destino e a situação.</p>
+                <div class="empty-actions">
+                    <button type="button" class="empty-button" onclick="$('.modal-saque').setValues({});">
+                        <i class="fas fa-plus-circle"></i> Solicitar saque
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+{% endblock %}
+
+{% block main %}
+
+    {# Modal de solicitacao de saque (mesmo partial usado pelo sistema) #}
+    {% include 'admin/inc/modal-saque.twig' %}
+
+    <div class="bet24-page-wide">
+
+        <div class="bet24-page-head">
+            <div>
+                <h1 class="bet24-page-title">Saques</h1>
+                <p class="bet24-page-sub">Resgate o saldo da sua conta informando os dados bancários ou o PicPay.</p>
+            </div>
+            <button type="button" class="account-submit" onclick="$('.modal-saque').setValues({});">
+                <i class="fas fa-plus-circle"></i> Solicitar saque
+            </button>
+        </div>
+
+        <div class="v4-saq-saldo bet24-saldo">
+            <span>Saldo disponível</span>
+            <b>R$ {{ user.getCredito(true) }}</b>
+        </div>
+
+        <div class="bet24-card bet24-saq-como">
+            <h2 class="bet24-card-title">Como funciona o saque</h2>
+            <ol class="bet24-passos">
+                <li>
+                    <span class="bet24-passo-num">1</span>
+                    <span class="bet24-passo-texto"><strong>Solicite</strong> informe o valor e os dados de destino.</span>
+                </li>
+                <li>
+                    <span class="bet24-passo-num">2</span>
+                    <span class="bet24-passo-texto"><strong>Análise</strong> a equipe confere a solicitação.</span>
+                </li>
+                <li>
+                    <span class="bet24-passo-num">3</span>
+                    <span class="bet24-passo-texto"><strong>Pagamento</strong> o valor é transferido para a conta informada.</span>
+                </li>
+            </ol>
+            <p class="account-hint">
+                <i class="fas fa-info-circle"></i> Saque mínimo de R$ 50,00. O prazo de análise pode variar
+                conforme o horário da solicitação.
+            </p>
+        </div>
+
+        <div class="bet24-card">
+            <form class="admpage-form-search v4-filtros v4-filtros-2" onsubmit="javascript:return false;">
+                <label class="account-field">
+                    <span class="account-label">De</span>
+                    <input type="date" name="dataInicial" class="account-input"/>
+                </label>
+                <label class="account-field">
+                    <span class="account-label">Até</span>
+                    <input type="date" name="dataFinal" class="account-input"/>
+                </label>
+                <button type="submit" class="account-submit">
+                    <i class="fas fa-search"></i> Filtrar
+                </button>
+            </form>
+        </div>
+
+        <div class="admpage-container"></div>
+
+    </div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        /* Formulario do modal de saque + lista (AJAX / adminPage) */
+        $('.modal-saque')
+            .adminPage({
+                formSearch: '.admpage-form-search',
+                container: '.admpage-container',
+            });
+
+        /* Mostra apenas os campos do tipo de saque escolhido.
+           Mesmo comportamento do custom.js usado nos outros temas. */
+        var $modalSaque = $('.modal-saque');
+
+        $modalSaque.on('change', '[name="tipo"]', function () {
+            $modalSaque.find('.tipos').children().addClass('hide');
+            $modalSaque.find('.tipos .tipo-' + this.value).removeClass('hide');
+        });
+
+        $modalSaque.on('setValues', function () {
+            $(this).find('[name="tipo"]').trigger('change');
+        });
+
+        $modalSaque.find('[name="tipo"]').trigger('change');
+
+    </script>
+
+{% endblock %}

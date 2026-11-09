@@ -1,0 +1,95 @@
+<!--
+  TEMA BET24 (site11) - REFERENCIA v4
+  Arquivo: 15 - Avisos, tooltips, estados vazios e toasts
+  Origem: pages/home.html (aviso do topo + tooltip CA/PA), css_v4_v4.css (tooltip, alertas,
+          textos de estado) e css_v4_app.css (.toast, .empty, .empty-state, .slip-note).
+-->
+
+<!-- =====================================================================
+     1) Barra de aviso do topo (.v4-alerta)
+     Usada para faixa de aviso acima do conteudo (fundo amarelo translucido).
+     ===================================================================== -->
+<div class="v4-alerta">Aviso: manutencao programada hoje das 04h as 05h. Apostas em andamento nao sao afetadas.</div>
+
+<!-- =====================================================================
+     2) Tooltip dos selos CA / PA (criado por JS e anexado ao body)
+     Trigger: elemento com [data-tooltip="CA"] ou [data-tooltip="PA"]
+     ===================================================================== -->
+<div class="tooltip-box" id="tooltip-1" role="tooltip">
+    <div class="tooltip-header">
+        <span class="badge ca-icon mt-n">CA</span>
+        <span class="tooltip-title">Criar Aposta</span>
+    </div>
+    <div class="tooltip-text">Combine seleções de odds com a função Criar Aposta no mesmo evento</div>
+</div>
+
+<div class="tooltip-box" id="tooltip-2" role="tooltip">
+    <div class="tooltip-header">
+        <span class="badge pa-icon mt-n">PA</span>
+        <span class="tooltip-title">Pagamento Antecipado - 2 de Vantagem</span>
+    </div>
+    <div class="tooltip-text">Vença a sua aposta pré-partida imediatamente caso a equipe em que você apostou tenha uma <strong>vantagem de 2 gols</strong> - independente do resultado final</div>
+</div>
+
+<!-- =====================================================================
+     3) Estado vazio de lista (.empty + .empty-state)
+     Usado em "Nenhum jogo ao vivo agora", falha de carregamento, etc.
+     ===================================================================== -->
+<div class="empty">
+    <div class="empty-state">
+        <p class="empty-title">Nenhum jogo ao vivo agora</p>
+        <p class="empty-text">Esta lista atualiza sozinha a cada 20 segundos.</p>
+    </div>
+</div>
+
+<!-- Com botoes de acao -->
+<div class="empty">
+    <div class="empty-state">
+        <span class="empty-icon">
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-2.300-1.600L14.300 21 12 19.400 9.700 21l-2.400-1.600L5 21z"/><path d="M9 8h6M9 12h6"/></svg>
+        </span>
+        <p class="empty-title">Nenhuma aposta em aberto.</p>
+        <p class="empty-text">Monte um bilhete clicando nas odds dos jogos.</p>
+        <div class="empty-actions">
+            <a class="empty-button" href="/v4/proximos">Próximos jogos</a>
+            <a class="empty-button is-quiet" href="/v4/aovivo">Ao vivo</a>
+        </div>
+    </div>
+</div>
+
+<!-- =====================================================================
+     4) Notas de estado do bilhete (.slip-note)
+     ===================================================================== -->
+<p class="slip-note slip-note-up">A cotação subiu: 2,11 &rarr; 2,15</p>
+<p class="slip-note slip-note-down">A cotação caiu: 2,11 &rarr; 2,05</p>
+<p class="slip-note slip-note-warn">Aceite a nova cotação para confirmar a aposta.</p>
+
+<!-- Aviso grande dentro do bilhete (.slip-alert) -->
+<div class="slip-alert">
+    <span class="slip-alert-icon" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+    </span>
+    <div class="slip-alert-body">
+        <span class="slip-alert-title">Cotações alteradas</span>
+        <p class="slip-alert-text">Uma ou mais cotações foram atualizadas. Confirme para apostar com os novos valores.</p>
+    </div>
+</div>
+
+<!-- =====================================================================
+     5) Toast (barra flutuante de confirmacao) - css_v4_app.css
+     Aparece fixo no rodape da tela; no celular sobe acima do bottom-nav.
+     ===================================================================== -->
+<div class="toast">
+    <span class="toast-check" aria-hidden="true">&#10003;</span>
+    <span>Aposta registrada.</span>
+    <a class="toast-link" href="/v4/minhas-apostas">Ver bilhete</a>
+</div>
+
+<!-- =====================================================================
+     6) SweetAlert2 (avisos/erros em modal)
+     O v4 carrega sweetalert2@11 e usa Swal.fire(...). O tema escuro/claro
+     e repassado por: .swal2-popup { font-family: inherit } e
+     .swal2-styled.swal2-confirm { background: var(--primary-color); color: var(--text-primary-color) }.
+     ===================================================================== -->
+<!-- Exemplo de chamada usada no v4 (nao e markup): -->
+<!-- Swal.fire('Erro', 'Ocorreu um erro ao marcar suas escolhas', 'error'); -->

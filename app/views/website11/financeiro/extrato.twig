@@ -1,0 +1,164 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - FINANCEIRO / EXTRATO
+   ---------------------------------------------------------------------
+   Visual: design system do tema v4 (app.css + v4.css):
+     .tx / .tx-card / .tx-list / .tx-row / .tx-icon
+     .tx-main / .tx-label / .tx-meta / .tx-code / .tx-side
+     .tx-amount / .tx-after / .tx-status / .tx-pages
+     .v4-resumo / .v4-resumo-item / .bet24-card / .bet24-msg
+
+   LOGICA: e a mesma do template base do sistema
+   (app/views/website/financeiro/extrato.twig). Endpoint
+   POST /financeiro/extrato/list preservado, o JavaScript (adminPage +
+   primeira busca automatica) foi preservado. Apenas o HTML/CSS mudou.
+
+   Variaveis enviadas pelo controller:
+     - main: (nenhuma obrigatoria)
+     - list: resumoAnterior ({pontos, creditos}), busca, message
+   ===================================================================== #}
+
+{% block list %}
+
+    {% if message is defined and message %}
+
+        <div class="bet24-msg is-erro">
+            <i class="fas fa-exclamation-triangle"></i> {{ message }}
+        </div>
+
+    {% elseif busca is defined and busca.getCount() %}
+
+        {% set registros = busca.getRegistros() %}
+
+        <div class="tx">
+
+            <dl class="v4-resumo bet24-extrato-resumo">
+                <div class="v4-resumo-item">
+                    <dt>Saldo anterior ao período</dt>
+                    <dd>R$ {{ resumoAnterior.creditos|default(0)|number_format(2, ',', '.') }}</dd>
+                </div>
+                <div class="v4-resumo-item">
+                    <dt>Movimentações no período</dt>
+                    <dd>{{ registros|length }}</dd>
+                </div>
+            </dl>
+
+            <ul class="tx-card tx-list">
+                {% for v in registros %}
+                    <li>
+                        <div class="tx-row v4-tx-row">
+                            <span class="tx-icon {{ v.getValor() < 0 ? 'is-out' : 'is-in' }}">
+                                {% if v.getValor() < 0 %}
+                                    <i class="fas fa-arrow-up"></i>
+                                {% else %}
+                                    <i class="fas fa-arrow-down"></i>
+                                {% endif %}
+                            </span>
+
+                            <div class="tx-main">
+                                <span class="tx-label">{{ v.getDescricao()|raw }}</span>
+                                <span class="tx-meta">
+                                    {{ v.getInsert()|date('d/m/Y H:i') }} ·
+                                    <span class="tx-code">#{{ v.getId() }}</span>
+                                </span>
+                            </div>
+
+                            <div class="tx-side">
+                                <span class="tx-amount {{ v.getValor() < 0 ? 'is-out' : 'is-in' }}">
+                                    {{ fncSinal(v.getValor(), true) }}
+                                </span>
+                                <span class="tx-after">{{ fncSinal(v.getSaldoCreditos(), true) }}</span>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="tx-pages">
+                <span>{{ busca.getPageDescription() }}</span>
+                {% if busca.getTotalPaginas() > 1 %}{{ busca }}{% endif %}
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty">
+            <div class="empty-state">
+                <span class="empty-icon"><i class="fas fa-history"></i></span>
+                <p class="empty-title">Nenhuma movimentação no período</p>
+                <p class="empty-text">Escolha outro intervalo de datas para ver o seu histórico financeiro.</p>
+                <div class="empty-actions">
+                    <a class="empty-button" href="{{ url('financeiro/deposito') }}">
+                        <i class="fas fa-plus-circle"></i> Fazer um depósito
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+{% endblock %}
+
+{% block main %}
+
+    <div class="bet24-page">
+
+        <div class="bet24-page-head">
+            <div>
+                <h1 class="bet24-page-title">Extrato financeiro</h1>
+                <p class="bet24-page-sub">Acompanhe suas movimentações de crédito e o saldo após cada lançamento.</p>
+            </div>
+            <a class="bet24-voltar" href="{{ url('financeiro/deposito') }}">
+                <i class="fas fa-plus-circle"></i> Depósito
+            </a>
+        </div>
+
+        <div class="v4-saq-saldo bet24-saldo">
+            <span>Saldo atual</span>
+            <b>R$ {{ user.getCredito(true) }}</b>
+        </div>
+
+        <div class="bet24-card">
+            <form class="admpage-form-search v4-filtros v4-filtros-2" onsubmit="javascript:return false;">
+                <label class="account-field">
+                    <span class="account-label">De</span>
+                    <input type="date" name="dataInicial" class="account-input"
+                           value="{{ 'now'|date('Y-m-01') }}"/>
+                </label>
+                <label class="account-field">
+                    <span class="account-label">Até</span>
+                    <input type="date" name="dataFinal" class="account-input"
+                           value="{{ 'now'|date('Y-m-t') }}"/>
+                </label>
+                <button type="submit" class="account-submit">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+            </form>
+        </div>
+
+        <div class="admpage-container"></div>
+
+    </div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        /* Lista do extrato (AJAX / adminPage) */
+        $
+            .adminPage({
+                formSearch: '.admpage-form-search',
+                container: '.admpage-container',
+                autoSearch: false,
+            });
+
+        /* Primeira busca automatica com o periodo padrao */
+        $('.admpage-form-search').submit();
+
+    </script>
+
+{% endblock %}

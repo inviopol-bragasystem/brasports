@@ -1,0 +1,35 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="gold-card m-3">
+        <div class="gold-card-header">
+            <i class="fa fa-line-chart"></i> Tabela de Cotações e Mercados
+        </div>
+
+        {% for id, g in grupos %}
+            <h5 class="mt-4 mb-3 font-weight-bold" style="color: #d29d00; border-bottom: 2px solid #d29d00; padding-bottom: 5px;">
+                {{ g }}
+            </h5>
+            <div class="row">
+                {% for c in cotacoes %}
+                    {% if id == c.getGrupo() %}
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <div class="card h-100 shadow-sm border">
+                                <div class="card-header text-center" style="background: #000; color: #fff; padding: 8px;">
+                                    <div class="font-weight-bold" style="font-size: 13px;">{{ c.getTitulo() }}</div>
+                                    <small style="color: #d29d00;">{{ c.getSigla() }}</small>
+                                </div>
+                                <div class="card-body p-2 small text-muted">
+                                    {{ c.getDescricao()|raw }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
+

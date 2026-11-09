@@ -1,0 +1,53 @@
+<!--
+  TEMA BET24 (site11) - REFERENCIA v4
+  Arquivo: 01 - Header / topbar + topnav
+  Origem: pages/home.html linhas 406-448
+  Obs.: Header sticky de 60px: logo, menu principal, busca-pill, troca de layout V5, tema claro/escuro, bilhete e entrar/cadastrar.
+
+  Recorte REAL do site antigo bet24hs.site/v4 (classes e estrutura preservadas).
+  Os links /v4/..., as imagens do CDN e os ids/onclick do backend v4 sao apenas
+  referencia: no tema novo troque por rotas Twig e dados do sistema atual.
+-->
+        <header class="topbar">
+            <a class="brand" href="/v4/" aria-label="Bet24hs.site">
+                <img class="brand-logo" src="https://cdn.mindsports.online/DB_NAME_L/7c6e29633294ed7cd044fe3a79ac1f70.png" alt="">
+            </a>
+
+            <nav class="topnav" aria-label="Seções">
+                <a class="topnav-link topnav-active active" href="/v4/">Esportes</a>
+                <a class="topnav-link" href="/v4/aovivo">Ao vivo</a>
+                                    <a class="topnav-link" href="/v4/proximos">Próximos jogos</a>
+                                                    <a class="topnav-link" href="/v4/cassino">Cassino</a>
+                                                <a class="topnav-link" href="javascript:bilheteVirtual();">Bilhete virtual</a>
+                <a class="topnav-link" href="/v4/acumuladao">Acumuladão</a>
+                <a class="topnav-link" href="/v4/longo-prazo">Longo prazo</a>
+            </nav>
+
+            <div class="topbar-actions">
+                <button type="button" class="search-pill" data-v4-busca aria-haspopup="dialog" aria-label="Buscar jogos">
+                    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>                    <span class="search-pill-text">Buscar jogos</span>
+                </button>
+
+                <!-- Troca de layout: vai para a v5 e guarda a escolha (themeView) -->
+                                <button type="button" class="topbar-icon topbar-view" data-theme-view="v5" aria-label="Usar o layout v5" title="Usar o layout v5">
+                    <span class="topbar-view-txt">V5</span>
+                </button>
+                
+                                <button type="button" class="topbar-icon" id="theme-toggle" aria-label="Alternar tema claro e escuro" title="Tema claro / escuro">
+                    <span class="v4-tema-claro"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.500A8 8 0 0 1 9.500 4a8 8 0 1 0 10.500 10.500z"/></svg></span>
+                    <span class="v4-tema-escuro"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M2 12h2M20 12h2M4.900 19.100l1.400-1.400M17.700 6.300l1.400-1.400"/></svg></span>
+                </button>
+                
+                <button type="button" class="topbar-icon topbar-bets" data-v4-bilhete aria-label="Abrir bilhete" title="Bilhete">
+                    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18l-2.300-1.600L14.300 21 12 19.400 9.700 21l-2.400-1.600L5 21z"/><path d="M9 8h6M9 12h6"/></svg>                    <span class="topbar-badge v4-qtd" hidden>0</span>
+                </button>
+
+                
+                    <div class="account-actions">
+                        <button type="button" class="account-signin" data-v4-entrar aria-haspopup="dialog">Entrar</button>
+
+                                                    <a class="account-signup" href="/v4/cadastro" data-v4-cadastro>Cadastrar</a>
+                                            </div>
+
+                            </div>
+        </header>

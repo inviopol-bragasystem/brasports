@@ -1,0 +1,32 @@
+{% extends layout %}
+
+{% set comunicados = comunicados() %}
+
+{% block main %}
+    <div class="page-title">
+        <h1 class="title">
+            <i class="fa fa-bullhorn"></i> Comunicados
+        </h1>
+    </div>
+    <div class="container-fluid py-5">
+        {% if comunicados %}
+            <div class="comunicados">
+                {% for v in comunicados %}
+                    <div class="comunicado">
+                        <div class="header px-3">
+                            <div class="row">
+                                <div class="col title">{{ v.getTitle() }}</div>
+                                <div class="col-auto hora">{{ v.getData(true) }}</div>
+                            </div>
+                        </div>
+                        <div class="mensagem p-3">{{ v.getMensagem()|raw }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning">
+                <i class="fa fa-warning"></i> Nenhum comnunicado no momento.
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

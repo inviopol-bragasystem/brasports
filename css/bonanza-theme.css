@@ -1,0 +1,1122 @@
+/* ==========================================================================
+   TEMA BONANZA SPORT (bonanzasport.one)
+   Design moderno, Full-Width, 3 Colunas Desktop, Sticky Cupom e Mobile Bottom Nav
+   ========================================================================== */
+
+[v-cloak] {
+  display: none !important;
+}
+
+:root {
+  /* Cores exatas extraídas do sistema online bonanzasport.one */
+  --sidebar--color: #3f0906;
+  --container_jogos--color: rgb(167, 30, 23);
+  --logo--color: rgb(151, 25, 19);
+  --btn--color: #E63329;
+  --btn_cef--color: rgb(30, 38, 42);
+  --fundo--color: #e9ecef;
+  --linhas--color: #FF382E;
+  --btn_selecionado-color: #BF2A22;
+  --btn_selecionado-border-color: #BF2A22;
+  --hover_menu--color: rgb(134, 21, 15);
+  --btn_menu_principal--color: #5f130d;
+  --btn_salvar_hover--color: rgb(204, 32, 23);
+  --card-bg: #ffffff;
+  --text-dark: #1e262a;
+  --text-muted: #6c757d;
+  --border-light: #e2e8f0;
+}
+
+/* ==========================================================================
+   RESET & ESTRUTURA GLOBAL FULL-WIDTH
+   ========================================================================== */
+html, body {
+  min-height: 100%;
+  font-family: 'Poppins', 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  background-color: var(--fundo--color) !important;
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Cancelar restrição do container antigo encaixotado de 1140px */
+html:not(.responsive) .app-container,
+.app-container,
+.app-container.container,
+.bonanza-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  margin: 0 !important;
+}
+
+#website {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--fundo--color);
+}
+
+.bonanza-content-wrapper {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 15px 15px 75px 15px; /* espaço extra embaixo para o bottom nav móvel */
+}
+
+@media (min-width: 992px) {
+  .bonanza-content-wrapper {
+    padding: 15px 20px 25px 20px;
+  }
+}
+
+.app {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.app-main {
+  background: transparent !important;
+}
+
+/* Títulos de Páginas Internas */
+#pg-aposta .page-title {
+  display: none !important;
+}
+
+.page-title {
+  background: #ffffff !important;
+  border-radius: 6px;
+  padding: 14px 20px !important;
+  margin-bottom: 18px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border-light);
+  border-left: 5px solid var(--container_jogos--color) !important;
+}
+
+.page-title .title {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: var(--sidebar--color) !important;
+  margin: 0 !important;
+  line-height: normal !important;
+  text-transform: uppercase !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Formulários e Containers de Páginas Internas */
+.admpage-form, .admpage-container {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 20px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  margin-bottom: 20px;
+}
+
+.form-control {
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-control:focus {
+  border-color: var(--container_jogos--color);
+  box-shadow: 0 0 0 0.2rem rgba(167, 30, 23, 0.15);
+}
+
+.btn-primary, .btn-danger {
+  background-color: var(--btn--color) !important;
+  border-color: var(--btn--color) !important;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover, .btn-danger:hover {
+  background-color: var(--btn_salvar_hover--color) !important;
+  border-color: var(--btn_salvar_hover--color) !important;
+}
+
+/* ==========================================================================
+   CABECALHO MODERNO FULL-WIDTH (NAVBAR BONANZA)
+   ========================================================================== */
+.bonanza-navbar {
+  background-color: var(--container_jogos--color) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1030;
+  transition: all 0.3s ease;
+}
+
+.bonanza-navbar .nav-container {
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 0 15px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bonanza-navbar .brand-logo img {
+  height: 44px;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+/* Links do menu no cabeçalho */
+.bonanza-nav-links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.bonanza-nav-links li a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ffffff !important;
+  text-decoration: none;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.bonanza-nav-links li a i {
+  font-size: 15px;
+  width: 18px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.bonanza-nav-links li a i.fa-futbol-o {
+  font-size: 16px;
+  -webkit-text-stroke: 0.35px currentColor;
+}
+
+.bonanza-nav-links li a:hover,
+.bonanza-nav-links li a.active {
+  background-color: var(--sidebar--color);
+  color: #ffc107 !important;
+}
+
+.bonanza-nav-links li a:hover i,
+.bonanza-nav-links li a.active i {
+  color: #ffc107 !important;
+}
+
+/* Ações do usuário no cabeçalho */
+.bonanza-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bonanza-user-actions .btn-login-top {
+  background: var(--sidebar--color);
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 14px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.bonanza-user-actions .btn-login-top:hover {
+  background: #000;
+  border-color: #fff;
+}
+
+.bonanza-user-actions .btn-register-top {
+  background: #28a745;
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: none;
+  transition: all 0.2s;
+}
+
+.bonanza-user-actions .btn-register-top:hover {
+  background: #218838;
+}
+
+.bonanza-user-actions .user-balance-badge {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.bonanza-user-actions .user-balance-badge .val {
+  color: #ffc107;
+}
+
+/* ==========================================================================
+   BARRA DE NAVEGACAO MOBILE (TOP & BOTTOM)
+   ========================================================================== */
+.bonanza-mobile-header {
+  background-color: var(--container_jogos--color);
+  height: 52px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1025;
+}
+
+.bonanza-mobile-header .btn-toggle-menu {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.bonanza-mobile-header .mobile-brand img {
+  height: 36px;
+  object-fit: contain;
+}
+
+.bonanza-mobile-header .btn-quick-bilhete {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Barra fixa de navegação inferior mobile (Bottom Navigation Bar) */
+.sports-mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 58px;
+  background-color: var(--container_jogos--color) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+  z-index: 1045;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 4px;
+  box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.35);
+}
+
+@media (min-width: 992px) {
+  .sports-mobile-bottom-nav {
+    display: none !important;
+  }
+}
+
+.sports-mobile-bottom-nav .nav-bottom-item,
+.sports-mobile-bottom-nav .nav-bottom-itemactive {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 0;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.sports-mobile-bottom-nav .nav-bottom-item i,
+.sports-mobile-bottom-nav .nav-bottom-itemactive i {
+  font-size: 19px;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+  transition: transform 0.2s ease;
+}
+
+.sports-mobile-bottom-nav .nav-bottom-item i.fa-futbol-o,
+.sports-mobile-bottom-nav .nav-bottom-itemactive i.fa-futbol-o {
+  font-size: 21px;
+  -webkit-text-stroke: 0.4px currentColor;
+}
+
+.sports-mobile-bottom-nav .nav-bottom-item.active,
+.sports-mobile-bottom-nav .nav-bottom-item:active,
+.sports-mobile-bottom-nav .nav-bottom-itemactive {
+  color: #ffc107 !important;
+}
+
+.sports-mobile-bottom-nav .nav-bottom-item.active i,
+.sports-mobile-bottom-nav .nav-bottom-item:active i,
+.sports-mobile-bottom-nav .nav-bottom-itemactive i {
+  color: #ffc107 !important;
+}
+
+.sports-mobile-bottom-nav .nav-bottom-item .badge-count {
+  position: absolute;
+  top: 2px;
+  right: calc(50% - 20px);
+  background: #ffc107;
+  color: #000000;
+  font-weight: 800;
+  font-size: 11px;
+  border-radius: 12px;
+  padding: 1px 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  animation: pulseBadge 1.5s infinite;
+}
+
+@keyframes pulseBadge {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* Menu Lateral Mobile Off-canvas */
+html .menu-mobile {
+  position: fixed;
+  z-index: 1060;
+  left: -290px;
+  width: 290px;
+  height: 100vh;
+  background-color: var(--sidebar--color);
+  top: 0;
+  transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+}
+
+html.show-menu .menu-mobile {
+  left: 0;
+}
+
+/* Backdrop escuro quando abre o menu mobile */
+html.show-menu::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1055;
+}
+
+html .menu-mobile .header {
+  line-height: 52px;
+  padding: 0 16px;
+  font-size: 16px;
+  font-weight: 700;
+  background-color: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+html .menu-mobile ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+html .menu-mobile li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 18px;
+  color: #f1f1f1;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s;
+}
+
+html .menu-mobile li a i {
+  font-size: 16px;
+  width: 22px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html .menu-mobile li a i.fa-futbol-o {
+  font-size: 17px;
+  -webkit-text-stroke: 0.35px currentColor;
+}
+
+html .menu-mobile li a:hover,
+html .menu-mobile li a:active {
+  background-color: var(--hover_menu--color);
+  color: #ffc107;
+  padding-left: 24px;
+}
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL DE APOSTAS (GRID 3 COLUNAS)
+   ========================================================================== */
+#pg-aposta {
+  width: 100%;
+}
+
+.row.page-aposta {
+  display: flex;
+  margin-left: -8px;
+  margin-right: -8px;
+}
+
+.col-campeonatos-sidebar {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.col-jogos-center {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.col-bilhete-sidebar {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* ==========================================================================
+   COLUNA ESQUERDA: MENU DE CAMPEONATOS & FILTROS
+   ========================================================================== */
+.page-aposta .campeonatos {
+  width: 100% !important;
+  background-color: var(--sidebar--color) !important;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  max-height: calc(100vh - 90px);
+  display: flex;
+  flex-direction: column;
+}
+
+.page-aposta .campeonatos .title {
+  background-color: rgba(0, 0, 0, 0.35) !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  padding: 12px 14px !important;
+  line-height: normal !important;
+  margin: 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-aposta .campeonatos .campeonatos-search {
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.page-aposta .campeonatos .campeonatos-search input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.page-aposta .campeonatos .campeonatos-search input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.page-aposta .campeonatos ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.page-aposta .campeonatos ul::-webkit-scrollbar {
+  width: 5px;
+}
+
+.page-aposta .campeonatos ul::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.page-aposta .campeonatos ul li {
+  padding: 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.page-aposta .campeonatos ul li a {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px !important;
+  color: #e2e8f0 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+}
+
+.page-aposta .campeonatos ul li a:hover {
+  background-color: var(--hover_menu--color) !important;
+  color: #ffffff !important;
+  padding-left: 18px !important;
+}
+
+.page-aposta .campeonatos ul li a.active {
+  background-color: var(--btn_menu_principal--color) !important;
+  color: #ffc107 !important;
+  font-weight: 700 !important;
+  border-left: 4px solid #ffc107;
+}
+
+/* ==========================================================================
+   COLUNA CENTRAL: JOGOS & FILTROS RAPIDOS (BARRA HORIZONTAL)
+   ========================================================================== */
+/* Barra de Abas de Jogos (.menu-jogos) */
+.menu-jogos-tabs {
+  display: flex;
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-light);
+  margin-bottom: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.menu-jogos-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.menu-jogos-tabs .tab-item {
+  flex: 1 1 auto;
+  text-align: center;
+  padding: 11px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a5568;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.menu-jogos-tabs .tab-item:hover {
+  background-color: #f8fafc;
+  color: var(--container_jogos--color);
+}
+
+.menu-jogos-tabs .tab-item.active {
+  background-color: var(--sidebar--color);
+  color: #ffffff;
+  border-bottom-color: var(--btn--color);
+}
+
+/* Barra de Busca de Jogos */
+.search-jogos-bar {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border-light);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-jogos-bar input {
+  border: none;
+  box-shadow: none !important;
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+}
+
+/* ==========================================================================
+   TABELA / CARDS DE JOGOS & BOTOES DE ODDS MODERNOS
+   ========================================================================== */
+#pg-aposta .table-jogos-container {
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-light);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+/* Cabecalho da Liga / Campeonato */
+#pg-aposta .header-campeonato {
+  background: var(--container_jogos--color) !important;
+  color: #ffffff !important;
+  padding: 8px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-radius: 4px 4px 0 0 !important;
+  border-left: none !important;
+  margin-bottom: 0 !important;
+}
+
+#pg-aposta .header-campeonato .campeonato-nome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#pg-aposta .header-campeonato .campeonato-nome a {
+  color: #ffffff !important;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+#pg-aposta .header-campeonato .cotacoes-labels {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#pg-aposta .header-campeonato .cotacoes-labels span {
+  width: 62px;
+  text-align: center;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+#pg-aposta .header-campeonato .cotacoes-labels span.mais {
+  width: 48px;
+}
+
+/* Linha do Jogo */
+#pg-aposta .jogo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid #edf2f7;
+  background: #ffffff;
+  transition: background 0.15s ease;
+}
+
+#pg-aposta .jogo-row:hover {
+  background-color: #f8fafc;
+}
+
+#pg-aposta .jogo-row:last-child {
+  border-bottom: none;
+}
+
+#pg-aposta .jogo-info-col {
+  flex: 1;
+  min-width: 0;
+  padding-right: 12px;
+  cursor: pointer;
+}
+
+#pg-aposta .jogo-info-col .times-box {
+  font-weight: 600;
+  font-size: 13px;
+  color: #1a202c;
+  line-height: 1.35;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+#pg-aposta .jogo-info-col .time-casa,
+#pg-aposta .jogo-info-col .time-fora {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+#pg-aposta .jogo-info-col .versus {
+  font-size: 11px;
+  color: #a0aec0;
+  font-weight: 700;
+}
+
+#pg-aposta .jogo-info-col .horario-badge {
+  font-size: 11px;
+  color: #718096;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 3px;
+}
+
+/* Botoes de Cotacoes (Odds) */
+#pg-aposta .jogo-odds-col {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+#pg-aposta .btn-cotacao {
+  width: 62px !important;
+  height: 32px !important;
+  line-height: normal !important;
+  background-color: var(--btn_cef--color) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  border-radius: 3px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  border: 1px solid rgba(0, 0, 0, 0.25) !important;
+  transition: all 0.15s ease !important;
+  text-decoration: none !important;
+  user-select: none;
+}
+
+#pg-aposta .btn-cotacao:hover {
+  background-color: #f10b0b !important;
+  color: #ffffff !important;
+}
+
+#pg-aposta .btn-cotacao.active {
+  background-color: var(--btn_selecionado-color) !important;
+  border: 1px solid var(--btn_selecionado-border-color) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 8px rgba(191, 42, 34, 0.6) !important;
+}
+
+#pg-aposta .btn-cotacao.outras {
+  width: 48px !important;
+  background-color: var(--btn--color) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  border: none !important;
+  border-radius: 3px !important;
+}
+
+#pg-aposta .btn-cotacao.outras:hover,
+#pg-aposta .btn-cotacao.outras.active {
+  background-color: var(--btn_salvar_hover--color) !important;
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   COLUNA DIREITA: CUPOM DE APOSTAS / BILHETE (STICKY NO DESKTOP)
+   ========================================================================== */
+@media (min-width: 992px) {
+  .col-bilhete-sidebar {
+    position: sticky !important;
+    top: 70px !important;
+    max-height: calc(100vh - 85px) !important;
+    overflow-y: auto !important;
+    z-index: 100 !important;
+  }
+}
+
+.page-aposta .bilhete {
+  width: 100% !important;
+  background-color: #ffffff !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid var(--border-light) !important;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-aposta .bilhete header {
+  background-color: var(--sidebar--color) !important;
+  color: #ffffff !important;
+  padding: 12px 16px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page-aposta .bilhete header .title {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px;
+  line-height: normal !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-aposta .bilhete header .bilhete-close {
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.page-aposta .bilhete .lista-jogos {
+  background-color: #f8fafc !important;
+  max-height: 280px;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.page-aposta .bilhete .table-aposta {
+  background: #ffffff;
+  margin: 0;
+}
+
+.page-aposta .bilhete .table-aposta tr {
+  border-bottom: 1px solid #edf2f7;
+}
+
+.page-aposta .bilhete .table-aposta td {
+  padding: 10px 12px !important;
+  vertical-align: middle;
+}
+
+.page-aposta .bilhete .table-aposta .item-times {
+  font-weight: 600;
+  font-size: 12px;
+  color: #1a202c;
+}
+
+.page-aposta .bilhete .table-aposta .item-detalhes {
+  font-size: 11px;
+  color: #718096;
+  margin-top: 2px;
+}
+
+.page-aposta .bilhete .table-aposta .item-taxa {
+  background: #ffedd5;
+  color: #c2410c;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 11px;
+  display: inline-block;
+}
+
+/* Rodapé do Bilhete com Cálculos */
+.page-aposta .bilhete footer {
+  padding: 12px 14px !important;
+  background: #ffffff;
+}
+
+.page-aposta .bilhete .summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #4a5568;
+}
+
+.page-aposta .bilhete .summary-row.premio-box {
+  background: #00a65a !important;
+  border: none !important;
+  padding: 10px 14px !important;
+  border-radius: 4px !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  margin-top: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+.page-aposta .bilhete .summary-row.premio-box .premio-val {
+  font-size: 18px !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+.page-aposta .bilhete .btn-finalizar {
+  background-color: var(--btn--color) !important;
+  border-color: var(--btn--color) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  text-transform: uppercase !important;
+  padding: 10px !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 8px rgba(230, 51, 41, 0.35);
+}
+
+.page-aposta .bilhete .btn-finalizar:hover {
+  background-color: #dc2626 !important;
+  transform: translateY(-1px);
+}
+
+.page-aposta .bilhete .btn-limpar {
+  background: #e2e8f0;
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 13px;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.page-aposta .bilhete .btn-limpar:hover {
+  background: #cbd5e1;
+  color: #1e293b;
+}
+
+/* ==========================================================================
+   COMPORTAMENTO DO BILHETE NO CELULAR (BOTTOM SHEET / DRAWER)
+   ========================================================================== */
+@media (max-width: 991px) {
+  .page-aposta .bilhete {
+    position: fixed !important;
+    bottom: -100% !important;
+    top: auto !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 85vh !important;
+    max-height: 85vh !important;
+    z-index: 1050 !important;
+    border-radius: 16px 16px 0 0 !important;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45) !important;
+    transition: bottom 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    margin: 0 !important;
+  }
+
+  .page-aposta .bilhete.show {
+    bottom: 0 !important;
+  }
+
+  .page-aposta .bilhete .lista-jogos {
+    max-height: calc(85vh - 310px);
+  }
+
+  .page-aposta .bilhete footer {
+    padding-bottom: 25px !important;
+  }
+}
+
+/* ==========================================================================
+   AJUSTES RESPONSIVOS PARA TELAS PEQUENAS (MOBILE JOGOS)
+   ========================================================================== */
+@media (max-width: 767px) {
+  #pg-aposta .jogo-row {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  #pg-aposta .jogo-info-col {
+    padding-right: 0;
+  }
+
+  #pg-aposta .jogo-info-col .time-casa,
+  #pg-aposta .jogo-info-col .time-fora {
+    max-width: 100%;
+  }
+
+  #pg-aposta .jogo-odds-col {
+    display: flex;
+    width: 100%;
+    gap: 4px;
+  }
+
+  #pg-aposta .btn-cotacao {
+    flex: 1 !important;
+    width: auto !important;
+    height: 42px !important;
+    font-size: 13px !important;
+  }
+
+  #pg-aposta .btn-cotacao.outras {
+    flex: 0 0 46px !important;
+    width: 46px !important;
+  }
+
+  #pg-aposta .header-campeonato .cotacoes-labels {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   RODAPÉ BONANZA
+   ========================================================================== */
+.bonanza-footer {
+  background-color: var(--sidebar--color) !important;
+  color: #e2e8f0 !important;
+  padding: 16px 0;
+  font-size: 13px;
+  border-top: 2px solid var(--container_jogos--color);
+  margin-top: auto;
+}
+
+.bonanza-footer a {
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.bonanza-footer a:hover {
+  color: #ffc107;
+}
+
+.bonanza-footer ul {
+  display: flex;
+  list-style: none;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+}

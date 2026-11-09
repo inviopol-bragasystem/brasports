@@ -1,0 +1,134 @@
+{% extends layout %}
+
+{% set cat = category|default('all') %}
+{% set busca = search|default('') %}
+
+{% block main %}
+
+    <div class="container-fluid" style="max-width: 1600px; margin: 0 auto; padding: 15px;">
+        
+        <div style="border-radius: 8px; overflow: hidden; background: #1c1c1c; border: 1px solid #2e2e2e; box-shadow: 0 4px 12px rgba(0,0,0,0.5); margin-bottom: 25px;">
+            
+            <!-- Barra Superior do Cassino -->
+            <div style="background: #181818; color: #ffffff; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-bottom: 2px solid #e50914;">
+                <div style="font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; letter-spacing: -0.3px;">
+                    <i class="fa fa-gamepad" style="color: #e50914; font-size: 20px;"></i>
+                    <span>CASSINO ONLINE BANCA DE APOSTAS</span>
+                </div>
+                <div>
+                    <span class="badge" style="background: #e50914; color: #ffffff; font-size: 13px; font-weight: 700; border-radius: 20px; padding: 6px 14px;">
+                        {{ jogos|length }} Jogos Disponíveis
+                    </span>
+                </div>
+            </div>
+
+            <!-- Filtros de Busca e Categorias de Provedores -->
+            <div style="background: #111111; padding: 14px 20px; border-bottom: 1px solid #2e2e2e;">
+                <div class="row align-items-center">
+                    <div class="col-lg-4 col-md-5 col-12 mb-3 mb-md-0">
+                        <form method="get" action="{{ url('cassino') }}" class="d-flex">
+                            <input type="text"
+                                   name="search"
+                                   value="{{ busca }}"
+                                   class="form-control mr-2"
+                                   placeholder="Buscar jogo por nome..."
+                                   style="height: 40px; border-radius: 20px; font-size: 13px; background: #0a0e14; border: 1px solid rgba(255,255,255,0.2); color: #ffffff; padding-left: 16px;"/>
+                            <button type="submit" class="btn" style="height: 40px; padding: 0 18px; background: #e50914; color: #ffffff; font-weight: 700; border-radius: 20px;">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-lg-8 col-md-7 col-12 text-md-right" style="overflow-x: auto; white-space: nowrap; padding-bottom: 4px;">
+                        <a href="{{ url('cassino') }}" class="btn btn-sm mb-1 mr-1" style="border-radius: 20px; padding: 6px 15px; font-size: 12px; font-weight: 700; {{ not busca and (cat == 'all' or not cat) ? 'background: ' ~ conf.primary ~ '; color: ' ~ conf.btnText ~ ';' : 'background: ' ~ inactivePillBg ~ '; color: ' ~ inactivePillColor ~ ';' }}">
+                            Todos
+                        </a>
+                        <a href="{{ url('cassino', null, null, {'category': 'Destaque'}) }}" class="btn btn-sm mb-1 mr-1" style="border-radius: 20px; padding: 6px 15px; font-size: 12px; font-weight: 700; {{ cat == 'Destaque' or cat == 'featured' or cat == 'Destaques' ? 'background: ' ~ conf.primary ~ '; color: ' ~ conf.btnText ~ ';' : 'background: ' ~ inactivePillBg ~ '; color: ' ~ inactivePillColor ~ ';' }}">
+                            <i class="fa fa-star text-warning"></i> Destaques
+                        </a>
+                        <a href="{{ url('cassino', null, null, {'category': 'Pragmatic'}) }}" class="btn btn-sm mb-1 mr-1" style="border-radius: 20px; padding: 6px 15px; font-size: 12px; font-weight: 700; {{ cat == 'Pragmatic' or cat == 'PRAGMATIC' ? 'background: ' ~ conf.primary ~ '; color: ' ~ conf.btnText ~ ';' : 'background: ' ~ inactivePillBg ~ '; color: ' ~ inactivePillColor ~ ';' }}">
+                            Pragmatic Play
+                        </a>
+                        <a href="{{ url('cassino', null, null, {'category': 'PGSOFT'}) }}" class="btn btn-sm mb-1 mr-1" style="border-radius: 20px; padding: 6px 15px; font-size: 12px; font-weight: 700; {{ cat == 'PGSOFT' or cat == 'PG Soft' ? 'background: ' ~ conf.primary ~ '; color: ' ~ conf.btnText ~ ';' : 'background: ' ~ inactivePillBg ~ '; color: ' ~ inactivePillColor ~ ';' }}">
+                            PG Soft
+                        </a>
+                        <a href="{{ url('cassino', null, null, {'category': 'TADA'}) }}" class="btn btn-sm mb-1 mr-1" style="border-radius: 20px; padding: 6px 15px; font-size: 12px; font-weight: 700; {{ cat == 'TADA' or cat == 'TaDa' ? 'background: ' ~ conf.primary ~ '; color: ' ~ conf.btnText ~ ';' : 'background: ' ~ inactivePillBg ~ '; color: ' ~ inactivePillColor ~ ';' }}">
+                            TaDa Gaming
+                        </a>
+                        <a href="{{ url('cassino', null, null, {'category': 'Crash'}) }}" class="btn btn-sm mb-1 mr-1" style="border-radius: 20px; padding: 6px 15px; font-size: 12px; font-weight: 700; {{ cat == 'Crash' ? 'background: ' ~ conf.primary ~ '; color: ' ~ conf.btnText ~ ';' : 'background: ' ~ inactivePillBg ~ '; color: ' ~ inactivePillColor ~ ';' }}">
+                            Aviator & Crash
+                        </a>
+                        <a href="{{ url('cassino', null, null, {'category': 'CPGAMES'}) }}" class="btn btn-sm mb-1 mr-1" style="border-radius: 20px; padding: 6px 15px; font-size: 12px; font-weight: 700; {{ cat == 'CPGAMES' or cat == 'CP Games' ? 'background: ' ~ conf.primary ~ '; color: ' ~ conf.btnText ~ ';' : 'background: ' ~ inactivePillBg ~ '; color: ' ~ inactivePillColor ~ ';' }}">
+                            CP Games
+                        </a>
+                        <a href="{{ url('cassino', null, null, {'category': 'WG'}) }}" class="btn btn-sm mb-1 mr-1" style="border-radius: 20px; padding: 6px 15px; font-size: 12px; font-weight: 700; {{ cat == 'WG' ? 'background: ' ~ conf.primary ~ '; color: ' ~ conf.btnText ~ ';' : 'background: ' ~ inactivePillBg ~ '; color: ' ~ inactivePillColor ~ ';' }}">
+                            WG Slots
+                        </a>
+                        <a href="{{ url('cassino', null, null, {'category': 'POPOK'}) }}" class="btn btn-sm mb-1 mr-1" style="border-radius: 20px; padding: 6px 15px; font-size: 12px; font-weight: 700; {{ cat == 'POPOK' ? 'background: ' ~ conf.primary ~ '; color: ' ~ conf.btnText ~ ';' : 'background: ' ~ inactivePillBg ~ '; color: ' ~ inactivePillColor ~ ';' }}">
+                            PopOK Gaming
+                        </a>
+                        <a href="{{ url('cassino', null, null, {'category': 'G759'}) }}" class="btn btn-sm mb-1" style="border-radius: 20px; padding: 6px 15px; font-size: 12px; font-weight: 700; {{ cat == 'G759' ? 'background: ' ~ conf.primary ~ '; color: ' ~ conf.btnText ~ ';' : 'background: ' ~ inactivePillBg ~ '; color: ' ~ inactivePillColor ~ ';' }}">
+                            G759
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grade de Jogos com Capas Oficiais -->
+            <div style="padding: 20px; background: #1c1c1c;">
+                {% if jogos|length > 0 %}
+                    <div class="row">
+                        {% for j in jogos %}
+                            <div class="col-xl-2 col-lg-3 col-md-4 col-6 mb-4">
+                                <div style="overflow: hidden; border-radius: 10px; border: 1px solid #2e2e2e; background: #141a24; box-shadow: 0 4px 12px rgba(0,0,0,0.5); height: 100%; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.5)';">
+                                    <div style="position: relative; background: #000; padding-top: 100%; overflow: hidden;">
+                                        <img src="{{ j.image|default(j.cover)|default(j.banner) }}"
+                                             alt="{{ j.name }}"
+                                             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
+                                             onerror="this.src='{{ url('imagens/sem-imagem.png') }}'"
+                                             loading="lazy"/>
+                                        
+                                        <span class="badge" style="position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 4px; background: rgba(0,0,0,0.85); color: #fff; border: 1px solid rgba(255,255,255,0.2);">
+                                            {{ j.provider|default('Slots') }}
+                                        </span>
+
+                                        {% if j.featured %}
+                                            <span class="badge" style="position: absolute; top: 8px; left: 8px; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 4px; background: #e50914; color: #ffffff;">
+                                                ★ Destaque
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div style="padding: 12px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; background: #111720;">
+                                        <div>
+                                            <div style="font-weight: 700; font-size: 13px; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ j.name }}">
+                                                {{ j.name }}
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px; font-size: 11px; color: #888;">
+                                                <span>RTP {{ j.rtp|default('96.5') }}%</span>
+                                                <span><i class="fa fa-eye"></i> {{ j.views_count|default(100) }}</span>
+                                            </div>
+                                        </div>
+                                        <a href="{{ url('cassino/jogar', [j.game_code|default(j.code)]) }}" class="btn btn-block mt-3" style="background: #e50914; color: #ffffff; font-weight: 700; font-size: 12px; border-radius: 6px; padding: 8px 10px; text-decoration: none; border: none;">
+                                            <i class="fa fa-play mr-1"></i> Jogar Agora
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert text-center py-5" style="background: rgba(255,255,255,0.05); color: #ffffff; border: 1px solid #2e2e2e; border-radius: 8px;">
+                        <i class="fa fa-gamepad fa-3x mb-3 text-muted"></i>
+                        <h4 style="font-weight: 700;">Nenhum jogo encontrado</h4>
+                        <p class="text-muted">Tente alterar o filtro ou pesquisar por outro termo.</p>
+                        <a href="{{ url('cassino') }}" class="btn btn-sm mt-2" style="background: #e50914; color: #ffffff; font-weight: 700; border-radius: 20px; padding: 6px 18px;">
+                            Ver Todos os Jogos
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}

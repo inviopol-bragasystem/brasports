@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ game.name }} - GoldEsporte Cassino</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #d29d00;
+            --secondary-color: #000000;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: #000;
+            color: #fff;
+        }
+        .player-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            background: #000;
+        }
+        .player-header {
+            height: 52px;
+            background: #111;
+            border-bottom: 2px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 10;
+        }
+        .player-header a.btn-voltar {
+            color: #fff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .player-header a.btn-voltar:hover {
+            color: var(--primary-color);
+        }
+        .player-header .game-info {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .player-header .user-info {
+            font-size: 13px;
+            color: #ccc;
+        }
+        .player-header .user-info strong {
+            color: #28a745;
+        }
+        .player-iframe-container {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 52px);
+        }
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="player-wrapper">
+        <header class="player-header">
+            <a href="{{ url('cassino') }}" class="btn-voltar">
+                <i class="fa fa-arrow-left"></i> Voltar ao Cassino
+            </a>
+            <div class="game-info">
+                {{ game.name }}
+            </div>
+            <div class="user-info">
+                {% if user %}
+                    Saldo: <strong>R$ {{ user.getCredito(true) }}</strong>
+                {% else %}
+                    <span style="color:#d29d00;">Modo Demonstração</span>
+                {% endif %}
+            </div>
+        </header>
+        <main class="player-iframe-container">
+            {% if errorMessage %}
+                <div style="position: absolute; inset: 0; background: #0b0b0b; display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 60; padding: 24px; text-align: center;">
+                    <i class="fa fa-exclamation-triangle fa-3x" style="color: #d29d00; margin-bottom: 16px;"></i>
+                    <h3 style="color: #fff; margin-bottom: 10px; font-weight: 700;">Não foi possível carregar o jogo</h3>
+                    <p style="color: #aaa; max-width: 480px; margin-bottom: 24px; font-size: 14px;">{{ errorMessage }}</p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                        <a href="{{ url('cassino') }}" class="btn-voltar" style="background: #d29d00; color: #000; text-decoration: none; padding: 10px 20px; border-radius: 4px; font-weight: 700;">
+                            <i class="fa fa-arrow-left"></i> Voltar ao Cassino
+                        </a>
+                        <button type="button" class="btn-voltar" onclick="window.location.reload();" style="background: #222; color: #fff; padding: 10px 20px; border-radius: 4px; font-weight: 700; border: 1px solid #444; cursor: pointer;">
+                            <i class="fa fa-refresh"></i> Tentar Novamente
+                        </button>
+                    </div>
+                </div>
+            {% else %}
+                <iframe src="{{ launchUrl }}" allowfullscreen></iframe>
+            {% endif %}
+        </main>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,192 @@
+<!-- Modal Depósito PIX Automático (PixUp) -->
+<div id="modal-deposito-pix" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content shadow-lg border-0" style="border-radius: 10px; overflow: hidden; background: #ffffff; color: #1e293b;">
+            
+            <!-- Etapa 1: Digitar Valor -->
+            <div id="pix-step-form">
+                <div class="modal-header bg-dark text-white border-bottom-0 py-3">
+                    <h5 class="modal-title font-weight-bold" style="font-size: 16px;">
+                        <i class="fa fa-qrcode text-success mr-2"></i> Depósito Instantâneo via PIX {{ gatewayPix|capitalize }}
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fechar" style="opacity: 0.9;">&times;</button>
+                </div>
+                <div class="modal-body p-4 text-left">
+                    
+                    <div class="alert alert-success py-2 px-3 small font-weight-bold mb-3 d-flex align-items-center" style="gap: 8px;">
+                        <i class="fa fa-bolt fa-lg text-success"></i>
+                        <span><b>Crédito Imediato:</b> Seu saldo é adicionado na conta automaticamente após o pagamento do PIX.</span>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <label class="font-weight-bold text-dark small text-uppercase">Valor do Depósito (R$)</label>
+                        <div class="input-group input-group-lg">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text font-weight-bold bg-dark text-white border-dark">R$</span>
+                            </div>
+                            <input type="text" id="pix-input-valor" class="form-control mask-valor font-weight-bold text-dark" placeholder="0,00" value="20,00" required style="background: #f8fafc; font-size: 20px;"/>
+                        </div>
+                        {% if depositoMinimo > 0 %}
+                            <small class="text-muted font-weight-bold mt-1 d-block">
+                                <i class="fa fa-info-circle mr-1"></i> Valor mínimo: R$ {{ depositoMinimo|number_format(2, ',', '.') }}
+                            </small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Valores Rápidos de Seleção -->
+                    <div class="mb-4">
+                        <label class="small text-muted font-weight-bold d-block mb-1">Valores sugeridos:</label>
+                        <div class="d-flex flex-wrap" style="gap: 6px;">
+                            <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold px-3" onclick="$('#pix-input-valor').val('10,00');">R$ 10</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold px-3" onclick="$('#pix-input-valor').val('20,00');">R$ 20</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold px-3" onclick="$('#pix-input-valor').val('50,00');">R$ 50</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold px-3" onclick="$('#pix-input-valor').val('100,00');">R$ 100</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold px-3" onclick="$('#pix-input-valor').val('200,00');">R$ 200</button>
+                        </div>
+                    </div>
+
+                    <button type="button" id="btn-gerar-pix" class="btn btn-success btn-lg btn-block font-weight-bold py-3 shadow-sm" onclick="gerarPix();" style="border-radius: 8px;">
+                        <i class="fa fa-qrcode mr-1"></i> Gerar QR Code PIX
+                    </button>
+                </div>
+            </div>
+
+            <!-- Etapa 2: QR Code e Copia e Cola -->
+            <div id="pix-step-qrcode" style="display: none;">
+                <div class="modal-header bg-success text-white border-bottom-0 py-3">
+                    <h5 class="modal-title font-weight-bold" style="font-size: 16px;">
+                        <i class="fa fa-check-circle mr-2"></i> Pague com o PIX
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fechar" style="opacity: 0.9;">&times;</button>
+                </div>
+                <div class="modal-body p-4 text-center">
+
+                    <div class="badge badge-success px-3 py-2 font-weight-bold mb-3" style="font-size: 16px;">
+                        Valor: R$ <span id="pix-display-valor">0,00</span>
+                    </div>
+
+                    <!-- Imagem do QR Code -->
+                    <div class="my-2 p-3 bg-white d-inline-block rounded shadow-sm border" style="border-color: #e2e8f0 !important;">
+                        <img id="pix-qr-img" src="" alt="QR Code PIX" style="width: 220px; height: 220px; display: block; margin: 0 auto; object-fit: contain;"/>
+                    </div>
+
+                    <!-- Código Copia e Cola -->
+                    <div class="form-group text-left mb-2">
+                        <label class="small font-weight-bold text-muted mb-1 text-uppercase">Código PIX Copia e Cola:</label>
+                        <textarea id="pix-copiacola" class="form-control font-weight-bold small text-dark" rows="3" readonly style="font-size: 11px; background: #f8fafc; resize: none; border-color: #cbd5e1;"></textarea>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-block font-weight-bold py-2 mb-3 shadow-sm" onclick="copiarPix();" style="border-radius: 6px;">
+                        <i class="fa fa-copy mr-1"></i> Copiar Código PIX
+                    </button>
+
+                    <!-- Indicador com Polling -->
+                    <div class="alert alert-light border py-2 px-3 small font-weight-bold mb-0 text-muted d-flex align-items-center justify-content-center" style="gap: 8px;">
+                        <i class="fa fa-spinner fa-spin text-success fa-lg"></i>
+                        <span>Aguardando confirmação do pagamento... O saldo será creditado automaticamente.</span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    var pixPollInterval = null;
+    var currentPixToken = null;
+
+    function resetPix() {
+        clearInterval(pixPollInterval);
+        $('#pix-step-form').show();
+        $('#pix-step-qrcode').hide();
+        $('#btn-gerar-pix').prop('disabled', false).html('<i class="fa fa-qrcode mr-1"></i> Gerar QR Code PIX');
+    }
+
+    function gerarPix() {
+        var valor = $('#pix-input-valor').val();
+        if (!valor) {
+            swal('Aviso', 'Digite um valor para o depósito.', 'warning');
+            return;
+        }
+
+        $('#btn-gerar-pix').prop('disabled', true).html('<i class="fa fa-spinner fa-spin mr-1"></i> Gerando PIX...');
+
+        $.ajax({
+            url: url('financeiro/deposito/pix'),
+            type: 'POST',
+            data: { valor: valor },
+            dataType: 'json',
+            success: function (res) {
+                $('#btn-gerar-pix').prop('disabled', false).html('<i class="fa fa-qrcode mr-1"></i> Gerar QR Code PIX');
+
+                if (res.result == 1) {
+                    currentPixToken = res.token;
+                    $('#pix-display-valor').text(res.valor);
+                    $('#pix-copiacola').val(res.qrcode);
+
+                    var qrImgUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent(res.qrcode);
+                    $('#pix-qr-img').attr('src', qrImgUrl);
+
+                    $('#pix-step-form').hide();
+                    $('#pix-step-qrcode').show();
+
+                    iniciarPollingPix(res.token);
+                } else {
+                    swal('Erro', res.message || 'Não foi possível gerar a cobrança PIX.', 'error');
+                }
+            },
+            error: function (xhr) {
+                $('#btn-gerar-pix').prop('disabled', false).html('<i class="fa fa-qrcode mr-1"></i> Gerar QR Code PIX');
+                var msg = 'Ocorreu um erro ao comunicar com o servidor.';
+                try {
+                    var json = JSON.parse(xhr.responseText);
+                    if (json && json.message) msg = json.message;
+                } catch (e) {}
+                swal('Erro', msg, 'error');
+            }
+        });
+    }
+
+    function copiarPix() {
+        var textarea = document.getElementById('pix-copiacola');
+        textarea.select();
+        textarea.setSelectionRange(0, 99999);
+        try {
+            navigator.clipboard.writeText(textarea.value);
+        } catch (err) {
+            document.execCommand('copy');
+        }
+        swal('Copiado!', 'Código PIX Copia e Cola copiado com sucesso. Cole no seu aplicativo do banco.', 'success');
+    }
+
+    function iniciarPollingPix(token) {
+        clearInterval(pixPollInterval);
+        pixPollInterval = setInterval(function () {
+            if (!token) return;
+            $.ajax({
+                url: url('financeiro/deposito/status-pix'),
+                type: 'POST',
+                data: { token: token },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.result == 1 && res.aprovado) {
+                        clearInterval(pixPollInterval);
+                        swal({
+                            title: "Depósito Aprovado!",
+                            text: "Seu pagamento foi confirmado com sucesso e o saldo já está disponível na sua conta.",
+                            type: "success"
+                        }, function () {
+                            window.location.reload();
+                        });
+                    }
+                }
+            });
+        }, 3000);
+    }
+
+    $('#modal-deposito-pix').on('hidden.bs.modal', function () {
+        clearInterval(pixPollInterval);
+    });
+</script>

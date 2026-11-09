@@ -1,0 +1,99 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="container-fluid px-lg-4 px-3 py-4">
+        <div class="sb-page-card">
+            <h3 class="sb-page-title"><i class="fa fa-user-circle"></i> Editar Meu Perfil</h3>
+
+            <form class="admpage-form" onsubmit="return false;">
+
+                <div class="mb-4">
+                    <h5 class="text-warning font-weight-bold text-uppercase small mb-3">
+                        <i class="fa fa-info-circle mr-1"></i> Dados Cadastrais
+                    </h5>
+                    <div class="row">
+                        <div class="form-group col-md-6 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">NOME</label>
+                            <input type="text" name="nome" class="form-control bg-dark border-secondary text-white" required/>
+                        </div>
+                        <div class="form-group col-md-3 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">USUÁRIO / LOGIN</label>
+                            <input type="text" name="login" class="form-control bg-dark border-secondary text-white-50" disabled/>
+                        </div>
+                        <div class="form-group col-md-3 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">TELEFONE</label>
+                            <input type="text" name="telefone" class="form-control mask-telefone bg-dark border-secondary text-white"/>
+                        </div>
+                        <div class="form-group col-md-3 col-12 mb-3">
+                            <label class="text-white-50 small font-weight-bold">CELULAR</label>
+                            <input type="text" name="celular" class="form-control mask-telefone bg-dark border-secondary text-white"/>
+                        </div>
+                        <div class="form-group col-12 col-md-3 mb-3">
+                            <label class="text-white-50 small font-weight-bold">WHATSAPP</label>
+                            <input type="text" name="whatsapp" class="form-control mask-telefone bg-dark border-secondary text-white"/>
+                        </div>
+                        <div class="form-group col-12 col-md-6 mb-3">
+                            <label class="text-white-50 small font-weight-bold">E-MAIL</label>
+                            <input type="email" name="email" class="form-control bg-dark border-secondary text-white" required/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="text-warning font-weight-bold text-uppercase small mb-3">
+                        <i class="fa fa-key mr-1"></i> Alterar Senha
+                    </h5>
+                    <div class="row">
+                        <div class="form-group col-12 col-md-6 mb-3">
+                            <label class="text-white-50 small font-weight-bold">NOVA SENHA</label>
+                            <input type="password" name="nsenha" class="form-control bg-dark border-secondary text-white"/>
+                            <small class="text-muted">Preencher somente se desejar alterar a senha</small>
+                        </div>
+                        <div class="form-group col-12 col-md-6 mb-3">
+                            <label class="text-white-50 small font-weight-bold">REPITA A NOVA SENHA</label>
+                            <input type="password" name="nsenhar" class="form-control bg-dark border-secondary text-white"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="text-warning font-weight-bold text-uppercase small mb-3">
+                        <i class="fa fa-lock mr-1"></i> Confirmação
+                    </h5>
+                    <div class="form-group col-12 col-md-6 p-0 mb-3">
+                        <label class="text-white-50 small font-weight-bold">SENHA ATUAL (PARA CONFIRMAR)</label>
+                        <input type="password" name="senha" class="form-control bg-dark border-secondary text-white" required/>
+                    </div>
+                </div>
+
+                <div class="text-right pt-3 border-top" style="border-color: var(--sb-border) !important;">
+                    <button class="sb-btn-bet px-4 py-2 font-weight-bold" style="width: auto; display: inline-flex;" type="submit">
+                        <i class="fa fa-save"></i> Salvar Alterações
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $('.admpage-form')
+            .setValues({{ json(user) }})
+            .adminPage({
+                autoSearch: false,
+                insertAction: 'atualizar',
+                controller: 'perfil',
+                alertSuccess: true,
+                autoReset: false,
+            })
+            .on('success', function (event, e) {
+                if (e.result == 1) {
+                    $('.admpage-form [type=password]').val('');
+                }
+            })
+    </script>
+{% endblock %}

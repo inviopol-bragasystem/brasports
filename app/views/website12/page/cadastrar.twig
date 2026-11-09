@@ -1,0 +1,85 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="gold-card m-3">
+        <div class="gold-card-header">
+            <i class="fa fa-user-plus"></i> Criar Nova Conta
+        </div>
+
+        <p class="text-muted small mb-4">
+            Preencha os campos abaixo para se cadastrar na {{ dados.getBanca()|default('GOLDESPORTEBET') }}.
+        </p>
+
+        <form class="admpage-form" autocomplete="off" method="post" action="{{ url('cadastrar/insert') }}">
+
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label class="small font-weight-bold">NOME COMPLETO *</label>
+                    <input type="text" name="nome" class="form-control" required placeholder="Seu nome completo"/>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label class="small font-weight-bold">CPF *</label>
+                    <input type="text" name="cpf" class="form-control mask-cpf" required placeholder="000.000.000-00"/>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label class="small font-weight-bold">E-MAIL *</label>
+                    <input type="email" name="email" class="form-control" required placeholder="seu@email.com"/>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label class="small font-weight-bold">WHATSAPP / CELULAR *</label>
+                    <input type="text" name="celular" class="form-control mask-telefone" required placeholder="(00) 00000-0000"/>
+                </div>
+
+                <div class="col-md-4 form-group">
+                    <label class="small font-weight-bold">USUÁRIO DE ACESSO *</label>
+                    <input type="text" name="login" class="form-control" required placeholder="Nome de usuário" minlength="4"/>
+                </div>
+
+                <div class="col-md-4 form-group">
+                    <label class="small font-weight-bold">SENHA *</label>
+                    <input type="password" name="senha" class="form-control" required minlength="4" placeholder="Mínimo 4 dígitos"/>
+                </div>
+
+                <div class="col-md-4 form-group">
+                    <label class="small font-weight-bold">CONFIRMAR SENHA *</label>
+                    <input type="password" name="confirmar-senha" class="form-control" required minlength="4" placeholder="Repita a senha"/>
+                </div>
+            </div>
+
+            <hr/>
+
+            <div class="text-right">
+                <a href="{{ url() }}" class="btn btn-secondary mr-2">Cancelar</a>
+                <button type="submit" class="botao">
+                    <i class="fa fa-check"></i> Finalizar Cadastro
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $('.admpage-form')
+            .adminPage({
+                autoSearch: false,
+                controller: 'cadastrar',
+                insertAction: 'insert',
+                alertSuccess: true,
+            })
+            .on("success", function (event, e) {
+                if (e.result == 1) {
+                    swal("Sucesso!", "Cadastro realizado com sucesso!", "success").then(function() {
+                        window.location.href = e.url || '{{ url() }}';
+                    });
+                }
+            });
+    </script>
+{% endblock %}
+

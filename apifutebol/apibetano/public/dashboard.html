@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Betano API · Painel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --bg-elevated: #121820;
+      --bg-card: #161e28;
+      --bg-card-hover: #1c2633;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-strong: rgba(255, 255, 255, 0.12);
+      --text: #e8eef6;
+      --text-muted: #8b9bb0;
+      --text-dim: #5c6b7e;
+      --accent: #00e676;
+      --accent-dim: rgba(0, 230, 118, 0.12);
+      --accent-glow: rgba(0, 230, 118, 0.25);
+      --live: #ff3b5c;
+      --live-dim: rgba(255, 59, 92, 0.15);
+      --blue: #4dabf7;
+      --orange: #ffa94d;
+      --radius: 14px;
+      --radius-sm: 10px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      --font: "DM Sans", system-ui, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0, 230, 118, 0.08), transparent 50%),
+        radial-gradient(ellipse 60% 40% at 90% 10%, rgba(77, 171, 247, 0.06), transparent 45%),
+        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(255, 59, 92, 0.04), transparent 40%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.25rem 1.25rem 3rem;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, var(--accent), #00b894);
+      display: grid;
+      place-items: center;
+      font-size: 1.35rem;
+      box-shadow: 0 0 24px var(--accent-glow);
+    }
+
+    .brand h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .status-pill .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-dim);
+    }
+
+    .status-pill.ok .dot {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .status-pill.err .dot {
+      background: var(--live);
+      box-shadow: 0 0 8px var(--live);
+    }
+
+    .status-pill.loading .dot {
+      background: var(--orange);
+      animation: pulse 1s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    button, .btn {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    }
+
+    button:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #04120a;
+      padding: 0.55rem 1rem;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .btn-primary:hover { filter: brightness(1.08); }
+
+    .btn-ghost {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.9rem;
+    }
+
+    .btn-ghost:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-strong);
+    }
+
+    /* ── Stats ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 800px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      filter: blur(30px);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .stat-card.live::after { background: var(--live); }
+    .stat-card.today::after { background: var(--accent); }
+    .stat-card.top::after { background: var(--blue); }
+    .stat-card.api::after { background: var(--orange); }
+
+    .stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 1.85rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-top: 0.25rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-card.live .stat-value { color: var(--live); }
+    .stat-card.today .stat-value { color: var(--accent); }
+    .stat-card.top .stat-value { color: var(--blue); }
+
+    .stat-hint {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 0.2rem;
+    }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .tabs {
+      display: flex;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 2px;
+    }
+
+    .tab {
+      padding: 0.5rem 1rem;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.82rem;
+      border: none;
+    }
+
+    .tab:hover { color: var(--text); }
+
+    .tab.active {
+      background: var(--bg-card);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .tab.active.live-tab {
+      background: var(--live-dim);
+      color: #ff7a90;
+    }
+
+    .toolbar-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-left: auto;
+      align-items: center;
+    }
+
+    select, input[type="search"] {
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: var(--text);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.85rem;
+      outline: none;
+    }
+
+    select:focus, input[type="search"]:focus {
+      border-color: rgba(0, 230, 118, 0.4);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+
+    input[type="search"] {
+      min-width: 200px;
+      width: 240px;
+    }
+
+    input[type="search"]::placeholder { color: var(--text-dim); }
+
+    /* ── Sections ── */
+    .panel {
+      display: none;
+    }
+
+    .panel.active { display: block; }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+      gap: 0.75rem;
+    }
+
+    .section-head h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .badge.live {
+      background: var(--live-dim);
+      color: #ff7a90;
+    }
+
+    /* ── Event cards ── */
+    .events-grid {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .event-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.85rem 1.25rem;
+      align-items: center;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    }
+
+    .event-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-strong);
+    }
+
+    .event-card.is-live {
+      border-color: rgba(255, 59, 92, 0.25);
+      background: linear-gradient(90deg, rgba(255, 59, 92, 0.06), var(--bg-card) 40%);
+    }
+
+    .event-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem 0.7rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .league {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .time-chip {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.15rem 0.45rem;
+      border-radius: 5px;
+    }
+
+    .live-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #ff7a90;
+      background: var(--live-dim);
+      padding: 0.18rem 0.5rem;
+      border-radius: 5px;
+    }
+
+    .live-chip::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--live);
+      animation: pulse 1.2s ease infinite;
+    }
+
+    .matchup {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .team-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .team-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: -0.01em;
+    }
+
+    .score {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 1.05rem;
+      min-width: 1.4rem;
+      text-align: right;
+      color: var(--text);
+    }
+
+    .score.dim { color: var(--text-dim); }
+
+    .period-info {
+      font-size: 0.72rem;
+      color: var(--live);
+      margin-top: 0.35rem;
+      font-weight: 500;
+    }
+
+    .countdown {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 0.35rem;
+    }
+
+    /* Odds */
+    .odds-row {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .odd {
+      min-width: 64px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4rem 0.5rem;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .odd:hover {
+      border-color: rgba(0, 230, 118, 0.35);
+      background: var(--accent-dim);
+    }
+
+    .odd-label {
+      display: block;
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 0.15rem;
+    }
+
+    .odd-value {
+      font-family: var(--mono);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .odd-value.empty { color: var(--text-dim); font-size: 0.8rem; }
+
+    /* ── League groups ── */
+    .block-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .block-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+      padding-left: 0.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .block-title span {
+      font-weight: 500;
+      color: var(--text-dim);
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 0.75rem;
+    }
+
+    /* ── Empty / loading / error ── */
+    .state-box {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius);
+    }
+
+    .state-box .icon { font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.7; }
+
+    .state-box h3 {
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .state-box p { font-size: 0.85rem; max-width: 360px; margin: 0 auto; }
+
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 2.5px solid var(--border-strong);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 0.85rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-box {
+      background: rgba(255, 59, 92, 0.08);
+      border: 1px solid rgba(255, 59, 92, 0.25);
+      color: #ffb3c0;
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 2.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.5rem;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    footer a:hover { color: var(--accent); }
+
+    .refresh-info {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+    }
+
+    /* ── Modal ── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 18px 18px 12px 12px;
+      width: min(560px, 100%);
+      max-height: min(85vh, 720px);
+      overflow: auto;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.25s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(24px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.15rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg-elevated);
+      z-index: 1;
+    }
+
+    .modal-head h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .modal-head p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .modal-close {
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      line-height: 1;
+      padding: 0.2rem 0.4rem;
+      border: none;
+    }
+
+    .modal-close:hover { color: var(--text); }
+
+    .modal-body { padding: 1.15rem 1.25rem 1.5rem; }
+
+    .odds-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .odds-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem;
+    }
+
+    .odds-block h4 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .odds-block .lines {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .odds-block .line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+    }
+
+    .odds-block .line span:last-child {
+      font-family: var(--mono);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .event-card { cursor: pointer; }
+
+    @media (max-width: 640px) {
+      .event-card {
+        grid-template-columns: 1fr;
+      }
+      .odds-row { justify-content: flex-start; }
+      input[type="search"] { width: 100%; min-width: 0; }
+      .toolbar-right { width: 100%; margin-left: 0; }
+      .tabs { width: 100%; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">⚽</div>
+        <div>
+          <h1>Betano Sports Panel</h1>
+          <p>Painel visual da sua API local</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="status-pill loading" id="apiStatus">
+          <span class="dot"></span>
+          <span id="apiStatusText">Conectando…</span>
+        </div>
+        <button type="button" class="btn-ghost" id="btnRefresh" title="Atualizar agora">↻ Atualizar</button>
+        <a class="btn-ghost" href="/api" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">API Docs</a>
+      </div>
+    </header>
+
+    <div class="stats">
+      <div class="stat-card live">
+        <div class="stat-label">Ao vivo</div>
+        <div class="stat-value" id="statLive">—</div>
+        <div class="stat-hint">eventos em andamento</div>
+      </div>
+      <div class="stat-card today">
+        <div class="stat-label">Hoje</div>
+        <div class="stat-value" id="statToday">—</div>
+        <div class="stat-hint" id="statTodayHint">futebol · jogos do dia</div>
+      </div>
+      <div class="stat-card top">
+        <div class="stat-label">Destaques</div>
+        <div class="stat-value" id="statTop">—</div>
+        <div class="stat-hint">top events home</div>
+      </div>
+      <div class="stat-card api">
+        <div class="stat-label">API</div>
+        <div class="stat-value" id="statApi" style="font-size:1.15rem;margin-top:0.45rem">—</div>
+        <div class="stat-hint" id="statApiHint">healthcheck</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab live-tab active" data-tab="live">🔴 Ao vivo</button>
+        <button type="button" class="tab" data-tab="today">📅 Hoje</button>
+        <button type="button" class="tab" data-tab="top">⭐ Destaques</button>
+        <button type="button" class="tab" data-tab="search">🔍 Busca</button>
+      </div>
+      <div class="toolbar-right">
+        <select id="sportSelect" title="Esporte (aba Hoje)">
+          <option value="futebol">⚽ Futebol</option>
+          <option value="basquete">🏀 Basquete</option>
+          <option value="tenis">🎾 Tênis</option>
+          <option value="voleibol">🏐 Vôlei</option>
+          <option value="mma">🥊 MMA</option>
+          <option value="esports">🎮 Esports</option>
+          <option value="futsal">⚽ Futsal</option>
+          <option value="tenis-de-mesa">🏓 Tênis de Mesa</option>
+        </select>
+        <select id="liveSportSelect" title="Filtro live">
+          <option value="">Todos ao vivo</option>
+          <option value="FOOT">Futebol</option>
+          <option value="BASK">Basquete</option>
+          <option value="TENN">Tênis</option>
+          <option value="VOLL">Vôlei</option>
+          <option value="MMAF">MMA</option>
+          <option value="ESPS">Esports</option>
+          <option value="TABL">Tênis de Mesa</option>
+        </select>
+        <label style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.78rem;color:var(--text-muted);cursor:pointer">
+          <input type="checkbox" id="autoRefresh" checked />
+          Auto 15s
+        </label>
+      </div>
+    </div>
+
+    <div id="globalError" class="error-box" style="display:none"></div>
+
+    <!-- LIVE -->
+    <section class="panel active" id="panel-live">
+      <div class="section-head">
+        <h2>Ao vivo <span class="badge live" id="liveCount">0</span></h2>
+      </div>
+      <div id="liveContent">
+        <div class="state-box"><div class="spinner"></div><p>Carregando eventos ao vivo…</p></div>
+      </div>
+    </section>
+
+    <!-- TODAY -->
+    <section class="panel" id="panel-today">
+      <div class="section-head">
+        <h2>Jogos de hoje <span class="badge" id="todayCount">0</span></h2>
+      </div>
+      <div id="todayContent">
+        <div class="state-box"><div class="spinner"></div><p>Carregando agenda…</p></div>
+      </div>
+    </section>
+
+    <!-- TOP -->
+    <section class="panel" id="panel-top">
+      <div class="section-head">
+        <h2>Destaques <span class="badge" id="topCount">0</span></h2>
+      </div>
+      <div id="topContent">
+        <div class="state-box"><div class="spinner"></div><p>Carregando destaques…</p></div>
+      </div>
+    </section>
+
+    <!-- SEARCH -->
+    <section class="panel" id="panel-search">
+      <div class="section-head">
+        <h2>Busca</h2>
+      </div>
+      <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap">
+        <input type="search" id="searchInput" placeholder="Time, liga, evento…" autocomplete="off" />
+        <button type="button" class="btn-primary" id="btnSearch">Buscar</button>
+      </div>
+      <div id="searchContent">
+        <div class="state-box">
+          <div class="icon">🔍</div>
+          <h3>Busque na API</h3>
+          <p>Digite o nome de um time ou evento e pressione Enter.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div>
+        Dados via <a href="/api" target="_blank">API Betano Sports</a> · uso pessoal / estudo · 18+
+      </div>
+      <div class="refresh-info" id="lastRefresh">—</div>
+    </footer>
+  </div>
+
+  <!-- Modal detalhe -->
+  <div class="modal-backdrop" id="modal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h3 id="modalTitle">Evento</h3>
+          <p id="modalSub"></p>
+        </div>
+        <button type="button" class="modal-close" id="modalClose" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    const API = ""; // same origin
+
+    const state = {
+      tab: "live",
+      liveEvents: [],
+      todayEvents: [],
+      topEvents: [],
+      timer: null,
+    };
+
+    /* ── Helpers ── */
+    async function api(path) {
+      const res = await fetch(API + path, { headers: { Accept: "application/json" } });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || json.success === false) {
+        throw new Error(json.error || json.message || `HTTP ${res.status}`);
+      }
+      return json.data ?? json;
+    }
+
+    function esc(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function pickOdds(ev) {
+      // main_odds or odds.match_result / odds.all_main.match_result
+      const o = ev.main_odds || ev.odds?.match_result || ev.odds?.all_main?.match_result || {};
+      const nested = o.odds || o;
+      const get = (...keys) => {
+        for (const k of keys) {
+          if (nested[k] != null && nested[k] !== "") return nested[k];
+          if (o[k] != null && o[k] !== "") return o[k];
+        }
+        return null;
+      };
+      return {
+        home: get("1", "home", "Home"),
+        draw: get("X", "x", "draw", "Draw"),
+        away: get("2", "away", "Away"),
+      };
+    }
+
+    function fmtOdd(v) {
+      if (v == null || v === "") return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n.toFixed(2) : String(v);
+    }
+
+    function extractEvents(data) {
+      if (!data) return [];
+      if (Array.isArray(data.events)) return data.events;
+      if (Array.isArray(data)) return data;
+      // live sometimes groups by sport
+      if (Array.isArray(data.sports)) {
+        const all = [];
+        for (const s of data.sports) {
+          if (Array.isArray(s.events)) all.push(...s.events);
+          if (Array.isArray(s.blocks)) {
+            for (const b of s.blocks) {
+              if (Array.isArray(b.events)) all.push(...b.events);
+            }
+          }
+        }
+        if (all.length) return all;
+      }
+      if (Array.isArray(data.blocks)) {
+        const all = [];
+        for (const b of data.blocks) {
+          if (Array.isArray(b.events)) all.push(...b.events);
+        }
+        return all;
+      }
+      return [];
+    }
+
+    function eventCard(ev) {
+      const isLive = !!(ev.is_live || ev.live || ev.schedule?.is_live_now);
+      const live = ev.live || {};
+      const score = live.score || {};
+      const odds = pickOdds(ev);
+      const period = [live.period, live.clock].filter(Boolean).join(" · ");
+      const countdown = ev.schedule?.starts_in_human || "";
+      const league = ev.league_name || ev.region_name || "";
+      const timeBr = ev.time_br || ev.schedule?.time_br || "";
+      const dateBr = ev.date_br || ev.schedule?.date_br || "";
+
+      const home = esc(ev.home || ev.participants?.[0]?.name || "—");
+      const away = esc(ev.away || ev.participants?.[1]?.name || "—");
+
+      const o1 = fmtOdd(odds.home);
+      const ox = fmtOdd(odds.draw);
+      const o2 = fmtOdd(odds.away);
+
+      return `
+        <article class="event-card ${isLive ? "is-live" : ""}" data-id="${esc(ev.id)}" data-slug="${esc(ev.slug || "")}" role="button" tabindex="0">
+          <div>
+            <div class="event-meta">
+              ${isLive ? '<span class="live-chip">Live</span>' : ""}
+              ${league ? `<span class="league">${esc(league)}</span>` : ""}
+              ${!isLive && (timeBr || dateBr) ? `<span class="time-chip">${esc(dateBr ? dateBr + " · " : "")}${esc(timeBr)}</span>` : ""}
+            </div>
+            <div class="matchup">
+              <div class="team-row">
+                <span class="team-name">${home}</span>
+                ${isLive ? `<span class="score">${esc(score.home ?? "0")}</span>` : `<span class="score dim">—</span>`}
+              </div>
+              <div class="team-row">
+                <span class="team-name">${away}</span>
+                ${isLive ? `<span class="score">${esc(score.away ?? "0")}</span>` : `<span class="score dim">—</span>`}
+              </div>
+            </div>
+            ${isLive && period ? `<div class="period-info">${esc(period)}</div>` : ""}
+            ${!isLive && countdown ? `<div class="countdown">${esc(countdown)}</div>` : ""}
+          </div>
+          <div class="odds-row">
+            <div class="odd"><span class="odd-label">1</span><span class="odd-value ${o1 ? "" : "empty"}">${o1 ?? "—"}</span></div>
+            <div class="odd"><span class="odd-label">X</span><span class="odd-value ${ox ? "" : "empty"}">${ox ?? "—"}</span></div>
+            <div class="odd"><span class="odd-label">2</span><span class="odd-value ${o2 ? "" : "empty"}">${o2 ?? "—"}</span></div>
+          </div>
+        </article>
+      `;
+    }
+
+    function emptyState(icon, title, msg) {
+      return `<div class="state-box"><div class="icon">${icon}</div><h3>${esc(title)}</h3><p>${esc(msg)}</p></div>`;
+    }
+
+    function loadingState(msg) {
+      return `<div class="state-box"><div class="spinner"></div><p>${esc(msg)}</p></div>`;
+    }
+
+    function renderEventList(container, events, emptyMsg) {
+      if (!events.length) {
+        container.innerHTML = emptyState("📭", "Nada por aqui", emptyMsg);
+        return;
+      }
+
+      // group by league when possible
+      const groups = new Map();
+      for (const ev of events) {
+        const key = ev.league_name || ev.region_name || "Outros";
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(ev);
+      }
+
+      if (groups.size <= 1) {
+        container.innerHTML = `<div class="events-grid">${events.map(eventCard).join("")}</div>`;
+      } else {
+        let html = "";
+        for (const [name, list] of groups) {
+          html += `<div class="block-group">
+            <div class="block-title">${esc(name)} <span>${list.length}</span></div>
+            <div class="events-grid">${list.map(eventCard).join("")}</div>
+          </div>`;
+        }
+        container.innerHTML = html;
+      }
+
+      container.querySelectorAll(".event-card").forEach((el) => {
+        el.addEventListener("click", () => openEvent(el.dataset.id, el.dataset.slug));
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openEvent(el.dataset.id, el.dataset.slug);
+          }
+        });
+      });
+    }
+
+    /* ── Loaders ── */
+    async function loadHealth() {
+      const pill = document.getElementById("apiStatus");
+      const text = document.getElementById("apiStatusText");
+      try {
+        const data = await api("/api/health");
+        pill.className = "status-pill ok";
+        text.textContent = `Online · v${data.version || "?"}`;
+        document.getElementById("statApi").textContent = "OK";
+        document.getElementById("statApiHint").textContent = data.timezone || "health ok";
+      } catch (e) {
+        pill.className = "status-pill err";
+        text.textContent = "Offline";
+        document.getElementById("statApi").textContent = "ERR";
+        document.getElementById("statApiHint").textContent = e.message;
+        throw e;
+      }
+    }
+
+    async function loadLive() {
+      const sport = document.getElementById("liveSportSelect").value;
+      const path = sport ? `/api/live/${sport}` : "/api/live";
+      const content = document.getElementById("liveContent");
+      try {
+        const data = await api(path);
+        const events = extractEvents(data);
+        state.liveEvents = events;
+        document.getElementById("statLive").textContent = data.events_count ?? events.length;
+        document.getElementById("liveCount").textContent = events.length;
+        renderEventList(content, events, "Nenhum jogo ao vivo no momento.");
+      } catch (e) {
+        content.innerHTML = emptyState("⚠️", "Erro ao carregar live", e.message);
+        document.getElementById("statLive").textContent = "—";
+      }
+    }
+
+    async function loadToday() {
+      const slug = document.getElementById("sportSelect").value;
+      const content = document.getElementById("todayContent");
+      const label = document.getElementById("sportSelect").selectedOptions[0]?.text || slug;
+      document.getElementById("statTodayHint").textContent = `${label} · jogos do dia`;
+      try {
+        const data = await api(`/api/sports/${encodeURIComponent(slug)}/today`);
+        const events = extractEvents(data);
+        state.todayEvents = events;
+        document.getElementById("statToday").textContent = data.events_count ?? events.length;
+        document.getElementById("todayCount").textContent = events.length;
+        renderEventList(content, events, "Sem jogos para este esporte hoje.");
+      } catch (e) {
+        content.innerHTML = emptyState("⚠️", "Erro ao carregar hoje", e.message);
+        document.getElementById("statToday").textContent = "—";
+      }
+    }
+
+    async function loadTop() {
+      const content = document.getElementById("topContent");
+      try {
+        const data = await api("/api/events/top");
+        const events = extractEvents(data);
+        state.topEvents = events;
+        document.getElementById("statTop").textContent = data.events_count ?? events.length;
+        document.getElementById("topCount").textContent = events.length;
+        renderEventList(content, events, "Nenhum destaque disponível.");
+      } catch (e) {
+        content.innerHTML = emptyState("⚠️", "Erro ao carregar destaques", e.message);
+        document.getElementById("statTop").textContent = "—";
+      }
+    }
+
+    async function doSearch() {
+      const q = document.getElementById("searchInput").value.trim();
+      const content = document.getElementById("searchContent");
+      if (!q) {
+        content.innerHTML = emptyState("🔍", "Busque na API", "Digite algo para pesquisar.");
+        return;
+      }
+      content.innerHTML = loadingState(`Buscando “${q}”…`);
+      try {
+        const data = await api(`/api/search?q=${encodeURIComponent(q)}&limit=40`);
+        const events = extractEvents(data);
+        // search may return different shape
+        const list = events.length ? events : (Array.isArray(data.results) ? data.results : []);
+        renderEventList(content, list, `Nenhum resultado para “${q}”.`);
+      } catch (e) {
+        content.innerHTML = emptyState("⚠️", "Erro na busca", e.message);
+      }
+    }
+
+    async function openEvent(id, slug) {
+      if (!id) return;
+      const modal = document.getElementById("modal");
+      const body = document.getElementById("modalBody");
+      document.getElementById("modalTitle").textContent = "Carregando…";
+      document.getElementById("modalSub").textContent = `ID ${id}`;
+      body.innerHTML = loadingState("Buscando mercados…");
+      modal.classList.add("open");
+
+      try {
+        let path = `/api/events/${encodeURIComponent(id)}?markets=popular`;
+        if (slug) path += `&slug=${encodeURIComponent(slug)}`;
+        const ev = await api(path);
+
+        document.getElementById("modalTitle").textContent = ev.name || `${ev.home || "?"} × ${ev.away || "?"}`;
+        const bits = [
+          ev.league_name,
+          ev.date_br && ev.time_br ? `${ev.date_br} ${ev.time_br}` : null,
+          ev.schedule?.starts_in_human,
+          ev.is_live ? "AO VIVO" : null,
+        ].filter(Boolean);
+        document.getElementById("modalSub").textContent = bits.join(" · ");
+
+        const odds = ev.odds?.all_main || ev.odds || {};
+        const blocks = [];
+
+        const addBlock = (title, obj) => {
+          if (!obj || typeof obj !== "object") return;
+          const lines = [];
+          const src = obj.odds || obj;
+          for (const [k, v] of Object.entries(src)) {
+            if (v != null && typeof v !== "object") {
+              lines.push(`<div class="line"><span>${esc(k)}</span><span>${esc(fmtOdd(v) ?? v)}</span></div>`);
+            }
+          }
+          if (lines.length) {
+            blocks.push(`<div class="odds-block"><h4>${esc(title)}</h4><div class="lines">${lines.join("")}</div></div>`);
+          }
+        };
+
+        if (odds.match_result || odds.all_main?.match_result) {
+          addBlock("Resultado (1X2)", odds.match_result || odds.all_main.match_result);
+        } else {
+          addBlock("Resultado (1X2)", pickOdds(ev));
+        }
+        addBlock("Total de gols", odds.total_goals || odds.all_main?.total_goals);
+        addBlock("Ambas marcam", odds.both_teams_score || odds.all_main?.both_teams_score);
+        addBlock("Chance dupla", odds.double_chance || odds.all_main?.double_chance);
+        addBlock("Handicap", odds.handicap || odds.all_main?.handicap);
+
+        // markets list fallback
+        let marketsHtml = "";
+        if (Array.isArray(ev.markets) && ev.markets.length) {
+          const top = ev.markets.slice(0, 12);
+          marketsHtml = `<div style="margin-top:1rem">
+            <div class="block-title" style="margin-bottom:0.5rem">Mercados <span>${ev.markets_returned ?? top.length}${ev.total_markets_available ? " / " + ev.total_markets_available : ""}</span></div>
+            <div class="odds-grid">
+              ${top.map((m) => {
+                const sels = (m.selections || []).slice(0, 6).map((s) =>
+                  `<div class="line"><span>${esc(s.name || s.short_name || s.id)}</span><span>${esc(fmtOdd(s.price) ?? "—")}</span></div>`
+                ).join("");
+                return `<div class="odds-block"><h4>${esc(m.name || m.type || "Mercado")}</h4><div class="lines">${sels || "<div class='line'><span>sem seleções</span></div>"}</div></div>`;
+              }).join("")}
+            </div>
+          </div>`;
+        }
+
+        const liveScore = ev.live?.score?.display
+          ? `<p style="margin-bottom:0.75rem;color:var(--live);font-weight:600">Placar: ${esc(ev.live.score.display)}${ev.live.period ? " · " + esc(ev.live.period) : ""}</p>`
+          : "";
+
+        body.innerHTML = `
+          ${liveScore}
+          <div class="odds-grid">${blocks.join("") || emptyState("—", "Sem odds resumidas", "Tente markets=all na API.")}</div>
+          ${marketsHtml}
+          ${ev.betano_url ? `<p style="margin-top:1rem;font-size:0.8rem"><a href="${esc(ev.betano_url)}" target="_blank" rel="noopener" style="color:var(--accent)">Abrir na Betano ↗</a></p>` : ""}
+        `;
+      } catch (e) {
+        body.innerHTML = emptyState("⚠️", "Não foi possível carregar", e.message + " — tente passar ?slug= se o id for antigo.");
+      }
+    }
+
+    function closeModal() {
+      document.getElementById("modal").classList.remove("open");
+    }
+
+    /* ── Tabs ── */
+    function setTab(name) {
+      state.tab = name;
+      document.querySelectorAll(".tab").forEach((t) => {
+        t.classList.toggle("active", t.dataset.tab === name);
+      });
+      document.querySelectorAll(".panel").forEach((p) => {
+        p.classList.toggle("active", p.id === `panel-${name}`);
+      });
+    }
+
+    /* ── Refresh ── */
+    async function refreshAll() {
+      const err = document.getElementById("globalError");
+      err.style.display = "none";
+      document.getElementById("btnRefresh").disabled = true;
+      try {
+        await loadHealth();
+        await Promise.all([loadLive(), loadToday(), loadTop()]);
+        document.getElementById("lastRefresh").textContent =
+          "atualizado " + new Date().toLocaleTimeString("pt-BR");
+      } catch (e) {
+        err.style.display = "block";
+        err.textContent = "Falha ao falar com a API: " + e.message + " — confira se o servidor está em http://127.0.0.1:8080";
+      } finally {
+        document.getElementById("btnRefresh").disabled = false;
+      }
+    }
+
+    function setupAutoRefresh() {
+      if (state.timer) clearInterval(state.timer);
+      state.timer = setInterval(() => {
+        if (!document.getElementById("autoRefresh").checked) return;
+        // live always; today/top lighter
+        loadLive().catch(() => {});
+        if (state.tab === "today") loadToday().catch(() => {});
+        if (state.tab === "top") loadTop().catch(() => {});
+        loadHealth().catch(() => {});
+        document.getElementById("lastRefresh").textContent =
+          "atualizado " + new Date().toLocaleTimeString("pt-BR");
+      }, 15000);
+    }
+
+    /* ── Bind ── */
+    document.querySelectorAll(".tab").forEach((t) => {
+      t.addEventListener("click", () => setTab(t.dataset.tab));
+    });
+
+    document.getElementById("btnRefresh").addEventListener("click", () => refreshAll());
+    document.getElementById("sportSelect").addEventListener("change", () => {
+      document.getElementById("todayContent").innerHTML = loadingState("Carregando…");
+      loadToday();
+      setTab("today");
+    });
+    document.getElementById("liveSportSelect").addEventListener("change", () => {
+      document.getElementById("liveContent").innerHTML = loadingState("Carregando…");
+      loadLive();
+      setTab("live");
+    });
+    document.getElementById("btnSearch").addEventListener("click", doSearch);
+    document.getElementById("searchInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") doSearch();
+    });
+    document.getElementById("modalClose").addEventListener("click", closeModal);
+    document.getElementById("modal").addEventListener("click", (e) => {
+      if (e.target.id === "modal") closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
+
+    refreshAll();
+    setupAutoRefresh();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1021 @@
+/* ==========================================================================
+   TEMA 8: SUPERBET (superbet.paineldemonstrativo.com.br/esportes)
+   Estilo: Deep Forest Green (#001510 & #003628), Glowing Emerald (#06e05b) & SuperOdds
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700;900&display=swap');
+
+:root {
+  --sb-bg-dark: #001510;
+  --sb-bg-soft: #002e22;
+  --sb-bg-card: #0c261e;
+  --sb-bg-card-alt: #13332a;
+  --sb-bg-hover: #194035;
+  --sb-border: #18473a;
+  --sb-border-light: #225e4d;
+  --sb-primary: #06e05b;
+  --sb-primary-bright: #00ea64;
+  --sb-primary-glow: 0 0 16px rgba(6, 224, 91, 0.45);
+  --sb-odd-bg: #0b221c;
+  --sb-odd-border: #18473a;
+  --sb-odd-hover: #164034;
+  --sb-text-white: #f5f7fb;
+  --sb-text-muted: #85ad9d;
+  --sb-text-gray: #a8cfc0;
+  --sb-yellow: #facc15;
+  --sb-danger: #fb7185;
+}
+
+html, body {
+  background-color: var(--sb-bg-dark) !important;
+  color: var(--sb-text-white);
+  font-family: 'Barlow', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--sb-text-white);
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: var(--sb-primary);
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   HEADER SUPERBET
+   ========================================================================== */
+.sb-header {
+  background: var(--sb-bg-soft);
+  border-bottom: 2px solid var(--sb-primary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 2px 10px rgba(6, 224, 91, 0.15);
+  position: relative;
+  z-index: 100;
+}
+
+/* Top Notification / Ticker Bar */
+.sb-top-ticker {
+  background: #001f18;
+  border-bottom: 1px solid var(--sb-border);
+  padding: 5px 0;
+  font-size: 11px;
+  color: var(--sb-text-muted);
+  font-weight: 600;
+}
+
+.sb-top-ticker .badge-pix {
+  background: var(--sb-primary);
+  color: #001510;
+  font-weight: 900;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+.sb-header-top {
+  padding: 10px 0;
+}
+
+.sb-logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.sb-logo-container .brand-img {
+  max-height: 44px;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+.sb-logo {
+  font-family: 'Barlow', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+}
+
+.sb-logo .super-highlight {
+  color: var(--sb-primary);
+  text-shadow: var(--sb-primary-glow);
+}
+
+.sb-logo .bet-highlight {
+  color: #ffffff;
+}
+
+.sb-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sb-top-nav li a {
+  color: var(--sb-text-gray);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.sb-top-nav li a:hover {
+  color: #ffffff;
+  background-color: var(--sb-bg-hover);
+}
+
+.sb-btn-login {
+  background-color: var(--sb-bg-card) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--sb-border-light) !important;
+  padding: 7px 16px !important;
+  border-radius: 6px !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+}
+
+.sb-btn-login:hover {
+  background-color: var(--sb-bg-hover) !important;
+  border-color: var(--sb-primary) !important;
+  color: var(--sb-primary) !important;
+}
+
+.sb-btn-register {
+  background: var(--sb-primary) !important;
+  color: #001510 !important;
+  border: none !important;
+  padding: 7px 18px !important;
+  border-radius: 6px !important;
+  font-weight: 900 !important;
+  font-size: 13px !important;
+  box-shadow: var(--sb-primary-glow) !important;
+}
+
+.sb-btn-register:hover {
+  background: var(--sb-primary-bright) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 0 20px rgba(6, 224, 91, 0.7) !important;
+}
+
+.sb-user-balance {
+  background: var(--sb-bg-card);
+  border: 1px solid var(--sb-border);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.sb-user-balance .val {
+  color: var(--sb-primary);
+  font-weight: 800;
+  margin-left: 4px;
+}
+
+/* Submenu Esportes Superbet */
+.sb-subnav {
+  background-color: #002219;
+  padding: 0;
+  border-top: 1px solid var(--sb-border);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.sb-subnav ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 2px;
+}
+
+.sb-subnav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sb-text-gray);
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.sb-subnav ul li a:hover,
+.sb-subnav ul li.active a {
+  color: #ffffff;
+  border-bottom-color: var(--sb-primary);
+  background: rgba(6, 224, 91, 0.08);
+}
+
+.sb-subnav ul li.active a i {
+  color: var(--sb-primary);
+}
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL SUPERBET
+   ========================================================================== */
+.sb-main-wrapper {
+  padding: 20px 0 40px;
+}
+
+.sb-layout-grid {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.sb-col-left {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.sb-col-center {
+  flex: 1;
+  min-width: 0;
+}
+
+.sb-col-right {
+  width: 320px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1200px) {
+  .sb-col-left { width: 220px; }
+  .sb-col-right { width: 300px; }
+}
+
+@media (max-width: 991px) {
+  .sb-layout-grid { flex-direction: column; }
+  .sb-col-left, .sb-col-right { width: 100%; }
+}
+
+/* Cards & Sidebars */
+.sb-card {
+  background-color: var(--sb-bg-card);
+  border: 1px solid var(--sb-border);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.sb-card-header {
+  background: linear-gradient(180deg, #13382c 0%, #0c261e 100%);
+  border-bottom: 1px solid var(--sb-border);
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sb-menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+
+.sb-menu-list li a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  color: var(--sb-text-gray);
+  font-size: 13px;
+  font-weight: 600;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.sb-menu-list li a:hover,
+.sb-menu-list li a.active {
+  color: #ffffff;
+  background-color: var(--sb-bg-hover);
+  border-left-color: var(--sb-primary);
+}
+
+.sb-menu-list li a i {
+  color: var(--sb-primary);
+  margin-right: 8px;
+}
+
+/* Toolbar de Filtros */
+.sb-toolbar {
+  background: var(--sb-bg-card);
+  border: 1px solid var(--sb-border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.sb-toolbar input,
+.sb-toolbar select {
+  background-color: #071c15 !important;
+  border: 1px solid var(--sb-border) !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+}
+
+.sb-toolbar input:focus,
+.sb-toolbar select:focus {
+  border-color: var(--sb-primary) !important;
+  box-shadow: var(--sb-primary-glow) !important;
+}
+
+/* ==========================================================================
+   PARTIDAS & MERCADOS SUPERBET (SuperOdds)
+   ========================================================================== */
+.sb-league-section {
+  background-color: var(--sb-bg-card);
+  border: 1px solid var(--sb-border);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.sb-league-header {
+  background: linear-gradient(90deg, #163f33 0%, #0d2820 100%);
+  border-bottom: 2px solid var(--sb-primary);
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sb-league-title {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sb-league-title i {
+  color: var(--sb-primary);
+}
+
+.sb-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.sb-table thead th {
+  background-color: #071c15;
+  color: var(--sb-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--sb-border);
+  text-align: center;
+}
+
+.sb-match-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background-color 0.15s ease;
+}
+
+.sb-match-row:hover {
+  background-color: var(--sb-bg-hover);
+}
+
+.sb-teams {
+  padding: 10px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sb-times-box {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.35;
+  max-width: 100%;
+}
+
+.sb-time-casa,
+.sb-time-fora {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  gap: 5px;
+  color: #ffffff;
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 200px;
+}
+
+.sb-team-name {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.sb-versus {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--sb-primary);
+  font-weight: 700;
+  opacity: 0.95;
+  flex-shrink: 0;
+  padding: 0 4px;
+}
+
+.sb-team-flag {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 3px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+  vertical-align: middle;
+  background-color: rgba(255, 255, 255, 0.04);
+  padding: 1px;
+}
+
+.sb-league-flag {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  object-fit: contain;
+  border-radius: 2px;
+  vertical-align: middle;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.sb-match-time {
+  font-size: 11px;
+  color: var(--sb-text-muted);
+  font-weight: 500;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Botões de Cotação Superbet */
+.sb-odd-btn {
+  background: var(--sb-odd-bg);
+  border: 1px solid var(--sb-odd-border);
+  border-radius: 8px;
+  padding: 8px 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 62px;
+  user-select: none;
+}
+
+.sb-odd-btn:hover {
+  background-color: var(--sb-odd-hover);
+  border-color: var(--sb-primary);
+  transform: translateY(-1px);
+}
+
+.sb-odd-btn.active {
+  background: var(--sb-primary) !important;
+  border-color: var(--sb-primary-bright) !important;
+  box-shadow: var(--sb-primary-glow);
+}
+
+.sb-odd-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--sb-text-muted);
+  text-transform: uppercase;
+}
+
+.sb-odd-btn.active .sb-odd-label {
+  color: #002219;
+}
+
+.sb-odd-val {
+  font-size: 13px;
+  font-weight: 900;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+.sb-odd-btn.active .sb-odd-val {
+  color: #001510;
+}
+
+.sb-more-odds-btn {
+  background: transparent;
+  border: 1px solid var(--sb-border);
+  color: var(--sb-primary);
+  font-weight: 800;
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sb-more-odds-btn:hover,
+.sb-more-odds-btn.active {
+  background-color: var(--sb-bg-hover);
+  border-color: var(--sb-primary);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   BOLETIM DE APOSTAS SUPERBET
+   ========================================================================== */
+.sb-betslip {
+  background-color: var(--sb-bg-card);
+  border: 1px solid var(--sb-border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.sb-betslip-header {
+  background: linear-gradient(135deg, #133d30 0%, #0a261e 100%);
+  border-bottom: 2px solid var(--sb-primary);
+  padding: 14px 16px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sb-betslip-header h4 {
+  margin: 0;
+  font-family: 'Barlow', sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sb-betslip-badge {
+  background: var(--sb-primary);
+  color: #001510;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.sb-betslip-body {
+  padding: 16px;
+}
+
+.sb-selection-item {
+  background: #081d16;
+  border: 1px solid var(--sb-border);
+  border-left: 3px solid var(--sb-primary);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.sb-selection-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--sb-text-muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.sb-selection-remove:hover {
+  color: var(--sb-danger);
+}
+
+.sb-selection-teams {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  padding-right: 20px;
+}
+
+.sb-selection-market {
+  font-size: 11px;
+  color: var(--sb-text-muted);
+  margin: 3px 0;
+}
+
+.sb-selection-odd-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.sb-selection-odd-row .rate {
+  font-weight: 800;
+  color: var(--sb-primary);
+}
+
+/* Quick Stake Chips */
+.sb-quick-stakes {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.sb-chip-btn {
+  flex: 1;
+  background-color: #081d16;
+  border: 1px solid var(--sb-border);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.sb-chip-btn:hover {
+  background-color: var(--sb-primary);
+  border-color: var(--sb-primary);
+  color: #001510;
+}
+
+.sb-betslip-summary {
+  background: #081d16;
+  border: 1px solid var(--sb-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.sb-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--sb-text-gray);
+  margin-bottom: 6px;
+}
+
+.sb-summary-row.total-return {
+  border-top: 1px dashed var(--sb-border);
+  padding-top: 8px;
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.sb-summary-row.total-return .val {
+  color: var(--sb-primary);
+  font-size: 17px;
+  font-weight: 900;
+  text-shadow: var(--sb-primary-glow);
+}
+
+.sb-btn-bet {
+  width: 100%;
+  background: var(--sb-primary);
+  color: #001510;
+  border: none;
+  border-radius: 8px;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: var(--sb-primary-glow);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sb-btn-bet:hover:not(:disabled) {
+  background: var(--sb-primary-bright);
+  transform: translateY(-1px);
+  box-shadow: 0 0 24px rgba(6, 224, 91, 0.7);
+}
+
+.sb-btn-bet:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sb-btn-clear {
+  width: 100%;
+  background: transparent;
+  color: var(--sb-text-muted);
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px;
+  margin-top: 6px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.sb-btn-clear:hover {
+  color: var(--sb-danger);
+}
+
+/* ==========================================================================
+   RODAPÉ SUPERBET
+   ========================================================================== */
+.sb-footer {
+  background-color: #00110c;
+  border-top: 1px solid var(--sb-border);
+  padding: 30px 0;
+  color: var(--sb-text-muted);
+  font-size: 12px;
+}
+
+.sb-footer a {
+  color: var(--sb-text-gray);
+  margin-right: 15px;
+}
+
+.sb-footer a:hover {
+  color: var(--sb-primary);
+}
+
+.sb-age-badge {
+  display: inline-block;
+  background: var(--sb-primary);
+  color: #001510;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+/* Mobile Drawer */
+.sb-menu-mobile {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100vh;
+  background-color: #002219;
+  border-right: 2px solid var(--sb-primary);
+  z-index: 99999;
+  transition: left 0.3s ease;
+  padding: 20px 0;
+  overflow-y: auto;
+}
+
+html.show-menu .sb-menu-mobile {
+  left: 0;
+}
+
+.sb-menu-mobile-header {
+  padding: 0 20px 15px;
+  border-bottom: 1px solid var(--sb-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.sb-menu-mobile ul {
+  list-style: none;
+  margin: 15px 0 0;
+  padding: 0;
+}
+
+.sb-menu-mobile ul li a {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: var(--sb-text-gray);
+  font-size: 14px;
+  font-weight: 600;
+  border-left: 3px solid transparent;
+}
+
+.sb-menu-mobile ul li a:hover {
+  color: #ffffff;
+  background: var(--sb-bg-hover);
+  border-left-color: var(--sb-primary);
+}
+
+.sb-menu-mobile ul li a i {
+  color: var(--sb-primary);
+  margin-right: 12px;
+  width: 18px;
+  text-align: center;
+}
+
+/* Subpage Cards */
+.sb-page-card {
+  background-color: var(--sb-bg-card);
+  border: 1px solid var(--sb-border);
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.sb-page-title {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--sb-border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   AJUSTES RESPONSIVOS COMPACTOS (MOBILE JOGOS E ODDS)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .sb-league-section {
+    margin-bottom: 8px !important;
+    border-radius: 4px !important;
+  }
+
+  .sb-league-header {
+    padding: 6px 10px !important;
+  }
+
+  .sb-league-title {
+    font-size: 12px !important;
+    gap: 5px !important;
+  }
+
+  .sb-table {
+    width: 100% !important;
+  }
+
+  .sb-table thead th {
+    padding: 4px 2px !important;
+    font-size: 9.5px !important;
+    letter-spacing: 0 !important;
+  }
+
+  .sb-table thead th:first-child,
+  .sb-table tbody td:first-child {
+    min-width: 0 !important;
+    width: auto !important;
+    padding-left: 6px !important;
+  }
+
+  .sb-table thead th:not(:first-child):not(:last-child) {
+    width: 46px !important;
+    min-width: 42px !important;
+    max-width: 48px !important;
+  }
+
+  .sb-table thead th:last-child {
+    width: 36px !important;
+    min-width: 32px !important;
+    max-width: 38px !important;
+  }
+
+  .sb-match-row td {
+    padding: 4px 2px !important;
+  }
+
+  .sb-teams {
+    padding: 2px 4px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+
+  .sb-times-box {
+    display: inline-flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    font-size: 11px !important;
+    gap: 3px !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+  }
+
+  .sb-time-casa,
+  .sb-time-fora {
+    display: inline-flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    max-width: 95px !important;
+    gap: 3px !important;
+  }
+
+  .sb-team-name {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .sb-team-flag {
+    width: 15px !important;
+    height: 15px !important;
+    min-width: 15px !important;
+  }
+
+  .sb-versus {
+    font-size: 10px !important;
+    padding: 0 1px !important;
+  }
+
+  .sb-match-time {
+    font-size: 9px !important;
+    margin-top: 1px !important;
+    gap: 3px !important;
+  }
+
+  .sb-odd-btn {
+    min-width: 40px !important;
+    width: 100% !important;
+    max-width: 48px !important;
+    padding: 3px 1px !important;
+    margin: 0 auto !important;
+    border-radius: 4px !important;
+  }
+
+  .sb-odd-label {
+    font-size: 8px !important;
+    margin-bottom: 1px !important;
+    line-height: 1 !important;
+  }
+
+  .sb-odd-val {
+    font-size: 11.5px !important;
+    line-height: 1.1 !important;
+    font-weight: 800 !important;
+  }
+
+  .sb-more-odds-btn {
+    min-width: 30px !important;
+    width: 100% !important;
+    max-width: 36px !important;
+    padding: 5px 1px !important;
+    font-size: 10px !important;
+    border-radius: 4px !important;
+  }
+
+  .sb-toolbar {
+    padding: 8px 10px !important;
+    margin-bottom: 10px !important;
+  }
+}

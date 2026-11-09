@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+
+    {{ seo_header() }}
+
+    <link rel="stylesheet" href="css/bootstrap4.css"/>
+    <link rel="stylesheet" href="css/site3.css?v=0.0.3"/>
+    <link rel="stylesheet" href="css/loading.css"/>
+
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="node_modules/owl.carousel2/dist/assets/owl.carousel.min.css"/>
+    <link rel="stylesheet" href="node_modules/owl.carousel2/dist/assets/owl.theme.default.min.css"/>
+
+    <style>
+        .header, .header-scroll {
+            background-image: url('{{ dados.imgCapa(true, 'background').getSource(true) }}');
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+
+    {{ dados.getHtmlHead()|raw }}
+    {% include 'website/inc/personalizacao-css.twig' %}
+
+</head>
+<body>
+
+<nav id="menu-mobile" class="menu-mobile d-block d-md-none" onclick="$('html').removeClass('show-menu');">
+    <div class="title">
+        <i class="fa fa-bars"></i> Menu
+    </div>
+    <ul>
+        {% if user %}
+            <li class="py-3">
+                <div class="text-center">
+                    <img src="{{ user.imgCapa().redimensiona(150,150) }}" class="img-fluid rounded-circle"/>
+                </div>
+            </li>
+            <li>
+                <a href="{{ url('apostas') }}">
+                    Minhas apostas
+                </a>
+            </li>
+        {% else %}
+            {% if dados.getExibirLogin() %}
+                <li>
+                    <a href="#modal-login" data-toggle="modal">
+                        <i class="fa fa-sign-in"></i> Entrar
+                    </a>
+                </li>
+            {% endif %}
+            {% if dados.getExibirRegistro() %}
+                <li>
+                    <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}">
+                        <i class="fa fa-user-plus"></i> Cadastrar
+                    </a>
+                </li>
+            {% endif %}
+        {% endif %}
+        <li>
+            <a href="{{ url() }}">
+                Início
+            </a>
+        </li>
+        {% if dados.getExibirCassino() %}
+            <li>
+                <a href="{{ url('cassino') }}">
+                    <i class="fa fa-gamepad text-warning"></i> Cassino
+                </a>
+            </li>
+        {% endif %}
+        {% if dados.getExibirBilhete() %}
+            <li>
+                <a href="{{ url('bilhete') }}">
+                    Consultar bilhete
+                </a>
+            </li>
+        {% endif %}
+        {% if dados.getExibirRegras() %}
+            <li>
+                <a href="{{ url('regras') }}">
+                    Regulamento
+                </a>
+            </li>
+        {% endif %}
+        {% if dados.getExibirApp() %}
+            <li>
+                <a href="{{ dados.getApp()|default('app.apk') }}" target="_blank">
+                    Downloads
+                </a>
+            </li>
+        {% endif %}
+        {% if dados.getExibirComunicados() %}
+            <li>
+                <a href="{{ url('comunicados') }}">
+                    Comunicados
+                </a>
+            </li>
+        {% endif %}
+        {% if dados.getExibirContato() %}
+            <li>
+                <a href="{{ url('contato') }}">
+                    Contato
+                </a>
+            </li>
+        {% endif %}
+        {% if user %}
+            <li>
+                <a href="{{ url("financeiro/extrato") }}">Extrato</a>
+            </li>
+            <li>
+                <a href="{{ url("financeiro/deposito") }}">Depósito</a>
+            </li>
+            <li>
+                <a href="{{ url("financeiro/transferencia") }}">Transferencia</a>
+            </li>
+            <li>
+                <a href="{{ url("financeiro/saque") }}">Saque</a>
+            </li>
+            <li>
+                <a href="{{ url("sair") }}" class="text-danger">Sair</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+<header class="header-scroll">
+    <div class="container-fluid text-center">
+        <div class="row align-items-center">
+            <div class="col text-left">
+                <div class="btn btn-primary btn-lg" onclick="$('html').toggleClass('show-menu');">
+                    <i class="fa fa-bars"></i>
+                </div>
+            </div>
+            <div class="col-auto py-2">
+                <img src="{{ dados.imgCapa(true, 'logo').getSource(true) }}" height="80"/>
+            </div>
+            <div class="col">
+
+            </div>
+        </div>
+    </div>
+</header>
+
+<header class="header">
+    <div class="row-top">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-auto">
+                    <a href="javascript:;" onclick="$('html').toggleClass('show-menu');"
+                       class="btn btn-link text-white d-block d-md-none">
+                        <i class="fa fa-bars"></i> Menu
+                    </a>
+                </div>
+                <div class="col-auto text-white">
+                    {% if user %}
+                        {{ user.getNome() }} (<a href="{{ url('logout') }}" class="text-warning btn-link btn">Sair</a>)
+                    {% else %}
+                        {% if dados.getExibirLogin() %}
+                            <a href="#modal-login" data-toggle="modal" class="btn btn-link text-warning">
+                                Entrar <i class="fa fa-sign-in"></i>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row-logo">
+        <div class="container py-3">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-12 text-center">
+                    <a href="{{ url() }}">
+                        <img src="{{ dados.imgCapa(true, 'logo').getSource(true) }}" class="img-fluid"/>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row-menu d-none d-md-block">
+        <div class="container">
+            <ul class="menu">
+                <li>
+                    <a href="{{ url() }}">
+                        Início
+                    </a>
+                </li>
+        {% if dados.getExibirCassino() %}
+            <li>
+                <a href="{{ url('cassino') }}">
+                    <i class="fa fa-gamepad text-warning"></i> Cassino
+                </a>
+            </li>
+        {% endif %}
+                {% if dados.getExibirBilhete() %}
+                    <li>
+                        <a href="{{ url('bilhete') }}">
+                            Consultar bilhete
+                        </a>
+                    </li>
+                {% endif %}
+                {% if user %}
+                    <li>
+                        <a href="{{ url('apostas') }}">
+                            Apostas
+                        </a>
+                    </li>
+                {% endif %}
+                {% if dados.getExibirComunicados() %}
+                    <li>
+                        <a href="{{ url('comunicados') }}">
+                            Comunicados
+                        </a>
+                    </li>
+                {% endif %}
+                {% if dados.getExibirApp() %}
+                    <li>
+                        <a href="{{ dados.getApp()|default('app.apk') }}" target="_blank">
+                            Downloads
+                        </a>
+                    </li>
+                {% endif %}
+                {% if dados.getExibirContato() %}
+                    <li>
+                        <a href="{{ url('contato') }}">
+                            Contato
+                        </a>
+                    </li>
+                {% endif %}
+                {% if user %}
+                    <li>
+                        <a href="javascript:;" class="btn btn-warning d-block">
+                            Saldo: <b>R$ {{ user.getCredito(true) }}</b>
+                        </a>
+                        <ul class="submenu">
+                            <li>
+                                <a href="{{ url("financeiro/extrato") }}">Extrato</a>
+                            </li>
+                            <li>
+                                <a href="{{ url("financeiro/deposito") }}">Depósito</a>
+                            </li>
+                            <li>
+                                <a href="{{ url("financeiro/transferencia") }}">Transferencia</a>
+                            </li>
+                            <li>
+                                <a href="{{ url("financeiro/saque") }}">Saque</a>
+                            </li>
+                            <li>
+                                <a href="{{ url("sair") }}" class="text-danger">Sair</a>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% set slideshow = banners('site-slideshow') %}
+    {% if slideshow %}
+        <div class="row-slideshow">
+            <div class="container py-4">
+                <div class="owl-slideshow owl-carousel owl-theme">
+                    {% for v in slideshow %}
+                        <div>
+                            <a {{ v.getLinkUrl() ? 'href="' ~ v.getLinkUrl() ~ '" target="' ~ v.getLinkTarget() ~ '"' }}>
+                                <picture>
+                                    <source srcset="{{ v.imgCapa(true, 'mobile').getSource(true) }}"
+                                            media="(max-width: 768px)"/>
+                                    <img src="{{ v.imgCapa(true, 'desktop').getSource(true) }}" class="w-100"/>
+                                </picture>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</header>
+
+<main class="pt-3" id="main">
+    {% block main %}
+        <div class="alert alert-info">
+            <i class="fa fa-cogs"></i> Página em construção
+        </div>
+    {% endblock %}
+</main>
+
+<footer class="rodape py-3">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-auto">
+                ©2019 Todos os direitos reservados.
+            </div>
+            <div class="col-auto d-none d-md-block">
+                <ul>
+                    <li>
+                        <a href="{{ url('termos-de-uso') }}">
+                            Termos de uso
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('regras') }}">
+                            Regras
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('cotacoes') }}">
+                            Cotações
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('perguntas-frequentes') }}">
+                            Perguntas frequentes
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+{{ seo_footer() }}
+
+<script type="text/javascript" src="node_modules/owl.carousel2/dist/owl.carousel.min.js"></script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="node_modules/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.mask.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.form.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.serializeObject.js"></script>
+<script type="text/javascript" src="cdn/js/fastclick.js"></script>
+<script type="text/javascript" src="cdn/js/modernizr.min.js"></script>
+<script type="text/javascript" src="cdn/js/mask.js"></script>
+<script type="text/javascript" src="cdn/js/string.js"></script>
+<script type="text/javascript" src="node_modules/owl.carousel2/dist/owl.carousel.js"></script>
+<script type="text/javascript" src="cdn/js/clipboard.min.js"></script>
+<script type="text/javascript" src="cdn/js/admin.js"></script>
+<script type="text/javascript" src="js/site.js?v=1.0.0"></script>
+
+{% include 'website/modals/login.twig' with {class: 'primary'} %}
+
+{% block script %}{% endblock %}
+
+{{ dados.getHtmlFooter()|raw }}
+
+<script>
+
+    $('.owl-slideshow')
+        .owlCarousel({
+            items: 1,
+            dots: true,
+            autoplay: true,
+        });
+
+    $(window)
+        .scroll(function () {
+            var top = $(this).scrollTop();
+            if (top > 300) {
+                $('html').addClass("page-scroll");
+            } else {
+                $('html').removeClass("page-scroll");
+            }
+        });
+
+</script>
+
+</body>
+</html>

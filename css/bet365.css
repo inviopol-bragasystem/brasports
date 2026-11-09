@@ -1,0 +1,1230 @@
+/* ==========================================================================
+   TEMA BET365 - BANCA ESPORTIVA
+   Design Style: Bet365 Sportsbook Dark Green & Slate
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+
+:root {
+  --b365-green: #126e51;
+  --b365-green-dark: #0a4f3a;
+  --b365-green-light: #168a66;
+  --b365-green-active: #0c5941;
+  --b365-yellow: #ffdf1b;
+  --b365-yellow-hover: #ffd000;
+  --b365-bg-body: #162021;
+  --b365-bg-dark: #121a1b;
+  --b365-bg-card: #1f2d2e;
+  --b365-bg-card-alt: #243536;
+  --b365-bg-hover: #2a3c3e;
+  --b365-border: #2c3e40;
+  --b365-border-light: #3a5052;
+  --b365-odd-bg: #2d3e40;
+  --b365-odd-border: #3c5154;
+  --b365-odd-hover: #374d50;
+  --b365-text-white: #ffffff;
+  --b365-text-gray: #a2b4b6;
+  --b365-text-muted: #6e8284;
+}
+
+html, body {
+  background-color: var(--b365-bg-body) !important;
+  color: var(--b365-text-white);
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--b365-text-white);
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: var(--b365-yellow);
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   HEADER BET365
+   ========================================================================== */
+.b365-header {
+  background: linear-gradient(180deg, var(--b365-green) 0%, var(--b365-green-dark) 100%);
+  border-bottom: 2px solid var(--b365-green-dark);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 100;
+}
+
+.b365-header-top {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.b365-logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.b365-logo-container .brand-img {
+  max-height: 48px;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+.b365-logo-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.b365-logo-badge .highlight {
+  color: var(--b365-yellow);
+  margin-left: 2px;
+}
+
+/* Header Links / Top Menu */
+.b365-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.b365-top-nav li {
+  display: inline-flex;
+  align-items: center;
+}
+
+.b365-top-nav a {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.b365-top-nav a:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--b365-yellow);
+}
+
+/* Botões Login / Registro */
+.b365-btn-login {
+  background-color: rgba(0, 0, 0, 0.25);
+  color: #ffffff !important;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.b365-btn-login:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: #ffffff;
+}
+
+.b365-btn-register {
+  background: linear-gradient(180deg, var(--b365-yellow) 0%, #e6be00 100%);
+  color: #111111 !important;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 7px 16px;
+  border-radius: 4px;
+  border: none;
+  box-shadow: 0 2px 6px rgba(255, 223, 27, 0.35);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.b365-btn-register:hover {
+  background: linear-gradient(180deg, #ffe545 0%, var(--b365-yellow) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(255, 223, 27, 0.5);
+  color: #000000 !important;
+}
+
+/* User Balance Badge */
+.b365-user-balance {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 5px 12px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.b365-user-balance .val {
+  color: var(--b365-yellow);
+  font-weight: 700;
+}
+
+/* Sports Sub-Navigation Bar */
+.b365-subnav {
+  background-color: var(--b365-bg-dark);
+  border-bottom: 1px solid var(--b365-border);
+}
+
+.b365-subnav ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.b365-subnav li a {
+  display: block;
+  padding: 12px 18px;
+  color: var(--b365-text-gray);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.b365-subnav li a:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.b365-subnav li a.active,
+.b365-subnav li.active a {
+  color: var(--b365-yellow);
+  border-bottom-color: var(--b365-yellow);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* ==========================================================================
+   PAGE LAYOUT: APOSTAR (3 COLUNAS)
+   ========================================================================== */
+#pg-aposta-b365 {
+  padding: 18px 0;
+}
+
+/* --- COLUNA ESQUERDA: CAMPEONATOS --- */
+.b365-col-left {
+  width: 280px;
+  flex: 0 0 280px;
+}
+
+.b365-card {
+  background-color: var(--b365-bg-card);
+  border: 1px solid var(--b365-border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.b365-card-header {
+  background: linear-gradient(90deg, var(--b365-green-dark) 0%, var(--b365-green) 100%);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--b365-border);
+}
+
+.b365-card-header i {
+  color: var(--b365-yellow);
+  font-size: 15px;
+}
+
+.b365-card-body {
+  padding: 10px;
+}
+
+/* Conferir Bilhete Form */
+.b365-form-bilhete {
+  padding: 12px;
+  background-color: var(--b365-bg-card);
+}
+
+.b365-form-bilhete .form-control {
+  background-color: var(--b365-bg-dark);
+  border: 1px solid var(--b365-border-light);
+  color: #ffffff !important;
+  font-size: 13px;
+  border-radius: 4px;
+}
+
+.b365-form-bilhete .form-control:focus {
+  border-color: var(--b365-green);
+  box-shadow: 0 0 0 2px rgba(18, 110, 81, 0.3);
+}
+
+.b365-form-bilhete .btn-submit {
+  background-color: var(--b365-green);
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.b365-form-bilhete .btn-submit:hover {
+  background-color: var(--b365-green-light);
+}
+
+/* Menu de Campeonatos */
+.b365-menu-campeonatos ul {
+  list-style: none;
+  padding: 8px;
+  margin: 0;
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
+}
+
+.b365-menu-campeonatos li {
+  margin-bottom: 4px;
+}
+
+.b365-menu-campeonatos a {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: var(--b365-bg-card-alt);
+  color: var(--b365-text-white);
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.b365-menu-campeonatos a i {
+  color: var(--b365-text-muted);
+  margin-right: 8px;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.b365-menu-campeonatos a:hover {
+  background-color: var(--b365-bg-hover);
+  color: #ffffff;
+  border-color: var(--b365-border-light);
+  padding-left: 15px;
+}
+
+.b365-menu-campeonatos a:hover i {
+  color: var(--b365-yellow);
+}
+
+.b365-menu-campeonatos a.active {
+  background: linear-gradient(90deg, #165640 0%, var(--b365-bg-card-alt) 100%);
+  color: var(--b365-yellow) !important;
+  font-weight: 700;
+  border-left: 4px solid var(--b365-yellow) !important;
+  border-color: rgba(255, 223, 27, 0.2);
+}
+
+.b365-menu-campeonatos a.active i {
+  color: var(--b365-yellow) !important;
+}
+
+/* --- COLUNA CENTRAL: JOGOS & COTAÇÕES --- */
+.b365-col-center {
+  flex: 1;
+  min-width: 0;
+  padding: 0 15px;
+}
+
+/* Filtros Bar */
+.b365-toolbar {
+  background-color: var(--b365-bg-card);
+  border: 1px solid var(--b365-border);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.b365-toolbar .form-control {
+  background-color: var(--b365-bg-dark);
+  border: 1px solid var(--b365-border);
+  color: #ffffff;
+  font-size: 13px;
+  border-radius: 4px;
+}
+
+.b365-toolbar .form-control:focus {
+  border-color: var(--b365-green);
+  box-shadow: 0 0 0 2px rgba(18, 110, 81, 0.25);
+}
+
+.b365-toolbar .form-control::placeholder {
+  color: var(--b365-text-muted);
+}
+
+.b365-btn-filter {
+  background-color: var(--b365-bg-card-alt);
+  color: var(--b365-text-white);
+  border: 1px solid var(--b365-border);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.b365-btn-filter:hover {
+  background-color: var(--b365-bg-hover);
+  color: var(--b365-yellow);
+}
+
+.b365-btn-filter.active {
+  background-color: var(--b365-green);
+  border-color: var(--b365-green-light);
+  color: #ffffff;
+}
+
+/* Tabela de Jogos */
+.b365-league-section {
+  background-color: var(--b365-bg-card);
+  border: 1px solid var(--b365-border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.b365-league-header {
+  background: linear-gradient(90deg, #104e3b 0%, #173830 100%);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--b365-border);
+}
+
+.b365-league-title {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.b365-league-title i {
+  color: var(--b365-yellow);
+}
+
+.b365-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.b365-table thead th {
+  background-color: var(--b365-bg-dark);
+  color: var(--b365-text-gray);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--b365-border);
+}
+
+.b365-table thead th.text-left {
+  text-align: left;
+}
+
+.b365-match-row {
+  border-bottom: 1px solid var(--b365-border);
+  transition: background 0.15s;
+}
+
+.b365-match-row:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.015);
+}
+
+.b365-match-row:hover {
+  background-color: var(--b365-bg-hover);
+}
+
+.b365-match-row td {
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+
+.b365-teams {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.b365-times-box {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.35;
+  max-width: 100%;
+}
+
+.b365-time-casa,
+.b365-time-fora {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  gap: 5px;
+  color: #ffffff;
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 200px;
+}
+
+.b365-team-name {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.b365-versus {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--b365-yellow);
+  font-weight: 700;
+  opacity: 0.95;
+  flex-shrink: 0;
+  padding: 0 4px;
+}
+
+.b365-team-flag {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 3px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+  vertical-align: middle;
+  background-color: rgba(255, 255, 255, 0.04);
+  padding: 1px;
+}
+
+.b365-league-flag {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  object-fit: contain;
+  border-radius: 2px;
+  vertical-align: middle;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.b365-match-time {
+  color: var(--b365-text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.b365-match-time i {
+  font-size: 10px;
+}
+
+/* Botões de Cotação Estilo Bet365 */
+.b365-odd-btn {
+  background-color: var(--b365-odd-bg);
+  border: 1px solid var(--b365-odd-border);
+  border-radius: 4px;
+  padding: 6px 4px;
+  min-width: 58px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  display: block;
+  user-select: none;
+}
+
+.b365-odd-label {
+  display: block;
+  font-size: 10px;
+  color: var(--b365-text-muted);
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+
+.b365-odd-val {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--b365-yellow);
+  line-height: 1.1;
+  font-family: 'Roboto', monospace, sans-serif;
+}
+
+.b365-odd-btn:hover {
+  background-color: var(--b365-odd-hover);
+  border-color: var(--b365-yellow);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.b365-odd-btn:hover .b365-odd-val {
+  color: #ffffff;
+}
+
+/* Cotação Ativa / Selecionada */
+.b365-odd-btn.active {
+  background: linear-gradient(135deg, var(--b365-yellow) 0%, #e6be00 100%) !important;
+  border-color: var(--b365-yellow) !important;
+  box-shadow: 0 2px 8px rgba(255, 223, 27, 0.4) !important;
+  transform: scale(1.02);
+}
+
+.b365-odd-btn.active .b365-odd-label {
+  color: #333333 !important;
+  font-weight: 700;
+}
+
+.b365-odd-btn.active .b365-odd-val {
+  color: #000000 !important;
+  font-weight: 900;
+}
+
+/* Botão Mais Cotações (+X) */
+.b365-more-odds-btn {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--b365-border);
+  border-radius: 4px;
+  padding: 8px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--b365-text-gray);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.b365-more-odds-btn:hover,
+.b365-more-odds-btn.active {
+  background-color: var(--b365-green);
+  border-color: var(--b365-green-light);
+  color: #ffffff;
+}
+
+/* --- COLUNA DIREITA: CUPOM DE APOSTAS (BET SLIP) --- */
+.b365-col-right {
+  width: 310px;
+  flex: 0 0 310px;
+}
+
+.b365-betslip {
+  background-color: var(--b365-bg-card);
+  border: 1px solid var(--b365-border);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  position: -webkit-sticky;
+  position: sticky;
+  top: 15px;
+}
+
+.b365-betslip-header {
+  background: linear-gradient(90deg, var(--b365-green-dark) 0%, var(--b365-green) 100%);
+  color: #ffffff;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--b365-green-dark);
+}
+
+.b365-betslip-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.b365-betslip-header i {
+  color: var(--b365-yellow);
+}
+
+.b365-betslip-badge {
+  background-color: var(--b365-yellow);
+  color: #000000;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.b365-betslip-body {
+  padding: 14px;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+}
+
+.b365-betslip-empty {
+  text-align: center;
+  padding: 24px 10px;
+  color: var(--b365-text-muted);
+}
+
+.b365-betslip-empty i {
+  font-size: 32px;
+  margin-bottom: 10px;
+  display: block;
+  opacity: 0.5;
+}
+
+/* Lista de Apostas Selecionadas */
+.b365-selection-item {
+  background-color: var(--b365-bg-card-alt);
+  border: 1px solid var(--b365-border);
+  border-left: 3px solid var(--b365-yellow);
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.b365-selection-item:hover {
+  border-color: var(--b365-border-light);
+}
+
+.b365-selection-teams {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  padding-right: 20px;
+}
+
+.b365-selection-market {
+  color: var(--b365-text-gray);
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.b365-selection-odd {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.b365-selection-odd .rate {
+  color: var(--b365-yellow);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.b365-selection-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--b365-text-muted);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.b365-selection-remove:hover {
+  color: #ef4444;
+}
+
+/* Resumo do Bilhete */
+.b365-betslip-summary {
+  background-color: var(--b365-bg-dark);
+  border-radius: 4px;
+  padding: 12px;
+  margin: 12px 0;
+  border: 1px solid var(--b365-border);
+}
+
+.b365-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--b365-text-gray);
+  margin-bottom: 6px;
+}
+
+.b365-summary-row:last-child {
+  margin-bottom: 0;
+}
+
+.b365-summary-row.total-return {
+  border-top: 1px solid var(--b365-border);
+  padding-top: 8px;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.b365-summary-row.total-return .val {
+  color: #10b981;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+/* Botões de Ação do Cupom */
+.b365-btn-bet {
+  background: linear-gradient(180deg, var(--b365-yellow) 0%, #eab308 100%);
+  color: #111111 !important;
+  font-weight: 900;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px;
+  border-radius: 4px;
+  border: none;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(255, 223, 27, 0.35);
+  transition: all 0.2s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.b365-btn-bet:hover:not(:disabled) {
+  background: linear-gradient(180deg, #ffe545 0%, var(--b365-yellow) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 223, 27, 0.5);
+}
+
+.b365-btn-bet:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.b365-btn-clear {
+  background-color: var(--b365-bg-card-alt);
+  color: var(--b365-text-gray);
+  border: 1px solid var(--b365-border);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px;
+  border-radius: 4px;
+  width: 100%;
+  margin-top: 8px;
+  transition: all 0.2s;
+}
+
+.b365-btn-clear:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+/* ==========================================================================
+   FOOTER BET365
+   ========================================================================== */
+.b365-footer {
+  background-color: var(--b365-bg-dark);
+  border-top: 3px solid var(--b365-green);
+  color: var(--b365-text-gray);
+  padding: 30px 0 20px;
+  margin-top: 40px;
+  font-size: 13px;
+}
+
+.b365-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.b365-footer-links a {
+  color: var(--b365-text-gray);
+  font-weight: 500;
+}
+
+.b365-footer-links a:hover {
+  color: var(--b365-yellow);
+}
+
+.b365-footer-disclaimer {
+  color: var(--b365-text-muted);
+  font-size: 11px;
+  line-height: 1.6;
+  border-top: 1px solid var(--b365-border);
+  padding-top: 16px;
+}
+
+.b365-age-badge {
+  display: inline-block;
+  background-color: #dc2626;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-right: 6px;
+}
+
+/* ==========================================================================
+   MOBILE MENU DRAWER
+   ========================================================================== */
+.b365-menu-mobile {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100vh;
+  background-color: var(--b365-bg-dark);
+  z-index: 1050;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+
+html.show-menu .b365-menu-mobile {
+  left: 0;
+}
+
+.b365-menu-mobile-header {
+  background: linear-gradient(90deg, var(--b365-green-dark) 0%, var(--b365-green) 100%);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.b365-menu-mobile-header .close-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.b365-menu-mobile ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.b365-menu-mobile li {
+  border-bottom: 1px solid var(--b365-border);
+}
+
+.b365-menu-mobile a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  color: var(--b365-text-white);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.b365-menu-mobile a i {
+  color: var(--b365-yellow);
+  width: 20px;
+  text-align: center;
+}
+
+.b365-menu-mobile a:hover {
+  background-color: var(--b365-bg-hover);
+  color: var(--b365-yellow);
+}
+
+/* ==========================================================================
+   MODAIS (MAIS COTAÇÕES, LOGIN)
+   ========================================================================== */
+.modal-content {
+  background-color: var(--b365-bg-card);
+  border: 1px solid var(--b365-border);
+  color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.modal-header {
+  background: linear-gradient(90deg, var(--b365-green-dark) 0%, var(--b365-green) 100%);
+  border-bottom: 1px solid var(--b365-border);
+  color: #ffffff;
+}
+
+.modal-header .close {
+  color: #ffffff;
+  text-shadow: none;
+  opacity: 0.8;
+}
+
+.modal-header .close:hover {
+  opacity: 1;
+}
+
+.modal-body {
+  background-color: var(--b365-bg-card);
+}
+
+.modal-footer {
+  border-top: 1px solid var(--b365-border);
+  background-color: var(--b365-bg-dark);
+}
+
+/* Outras Páginas (Minhas Apostas, Bilhete, Perfil, Cadastrar, etc.) */
+.b365-page-card {
+  background-color: var(--b365-bg-card);
+  border: 1px solid var(--b365-border);
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.b365-page-title {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--b365-green);
+}
+
+.b365-page-title i {
+  color: var(--b365-yellow);
+}
+
+/* Estilização de Tabelas Gerais */
+.table {
+  color: #ffffff;
+}
+
+.table th {
+  background-color: var(--b365-bg-dark);
+  color: var(--b365-text-gray);
+  border-color: var(--b365-border);
+}
+
+.table td {
+  border-color: var(--b365-border);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.table-hover tbody tr:hover {
+  background-color: var(--b365-bg-hover);
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE (MOBILE & TABLET)
+   ========================================================================== */
+@media (max-width: 991px) {
+  .b365-col-left {
+    display: none;
+  }
+  .b365-col-right {
+    width: 100%;
+    flex: 0 0 100%;
+    margin-top: 20px;
+  }
+}
+
+/* ==========================================================================
+   AJUSTES RESPONSIVOS COMPACTOS (MOBILE JOGOS E ODDS)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .b365-league-section {
+    margin-bottom: 8px !important;
+    border-radius: 4px !important;
+  }
+
+  .b365-league-header {
+    padding: 6px 10px !important;
+  }
+
+  .b365-league-title {
+    font-size: 12px !important;
+    gap: 5px !important;
+  }
+
+  .b365-table {
+    width: 100% !important;
+  }
+
+  .b365-table thead th {
+    padding: 4px 2px !important;
+    font-size: 9.5px !important;
+    letter-spacing: 0 !important;
+  }
+
+  .b365-table thead th:first-child,
+  .b365-table tbody td:first-child {
+    min-width: 0 !important;
+    width: auto !important;
+    padding-left: 6px !important;
+  }
+
+  .b365-table thead th:not(:first-child):not(:last-child) {
+    width: 46px !important;
+    min-width: 42px !important;
+    max-width: 48px !important;
+  }
+
+  .b365-table thead th:last-child {
+    width: 36px !important;
+    min-width: 32px !important;
+    max-width: 38px !important;
+  }
+
+  .b365-match-row td {
+    padding: 4px 2px !important;
+  }
+
+  .b365-teams {
+    padding: 2px 4px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+
+  .b365-times-box {
+    display: inline-flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    font-size: 11px !important;
+    gap: 3px !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+  }
+
+  .b365-time-casa,
+  .b365-time-fora {
+    display: inline-flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    max-width: 95px !important;
+    gap: 3px !important;
+  }
+
+  .b365-team-name {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .b365-versus {
+    font-size: 10px !important;
+    padding: 0 1px !important;
+  }
+
+  .b365-team-flag {
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    max-width: 14px !important;
+  }
+
+  .b365-match-time {
+    font-size: 9px !important;
+    margin-top: 1px !important;
+    gap: 3px !important;
+  }
+
+  .b365-odd-btn {
+    min-width: 40px !important;
+    width: 100% !important;
+    max-width: 48px !important;
+    padding: 3px 1px !important;
+    margin: 0 auto !important;
+    border-radius: 4px !important;
+  }
+
+  .b365-odd-label {
+    font-size: 8px !important;
+    margin-bottom: 1px !important;
+    line-height: 1 !important;
+  }
+
+  .b365-odd-val {
+    font-size: 11.5px !important;
+    line-height: 1.1 !important;
+    font-weight: 800 !important;
+  }
+
+  .b365-more-odds-btn {
+    min-width: 30px !important;
+    width: 100% !important;
+    max-width: 36px !important;
+    padding: 5px 1px !important;
+    font-size: 10px !important;
+    border-radius: 4px !important;
+  }
+
+  .b365-toolbar {
+    padding: 8px 10px !important;
+    margin-bottom: 10px !important;
+  }
+}

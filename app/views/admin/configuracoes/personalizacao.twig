@@ -1,0 +1,422 @@
+{% extends layout %}
+
+{% block main %}
+
+    <form class="admpage-form" method="POST" enctype="multipart/form-data">
+
+        <!-- 1. Temas do Site -->
+        <div class="panel info-box panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title"><i class="fa fa-paint-brush text-primary"></i> Tema do Sistema & Escudos</h4>
+            </div>
+            <div class="panel-body p-b-10">
+                <div class="row">
+                    <div class="form-group col-md-4 col-sm-6 col-xs-12">
+                        <label>Tema ativo</label>
+                        <select name="tema" class="form-control font-weight-bold">
+                            {% for chave, titulo in temas %}
+                                <option value="{{ chave }}">{{ titulo }}{% if chave == temaPadrao %} (Padrão){% endif %}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="help-block">
+                            Altere o tema visual da plataforma (13 opções de design esportivo moderno, incluindo 99Play).
+                        </small>
+                    </div>
+                    <div class="form-group col-md-4 col-sm-6 col-xs-12">
+                        <label><i class="fa fa-gamepad text-success"></i> Habilitar módulo cassino</label>
+                        <select name="exibircassino" class="form-control font-weight-bold" style="border-color: #23a73d;">
+                            <option value="1">Sim (Habilitar módulo cassino em todos os temas)</option>
+                            <option value="0">Não (Desabilitar cassino em todos os temas)</option>
+                        </select>
+                        <small class="help-block">
+                            Ativa ou desativa a aba, links e jogos de cassino em todos os 13 temas da banca.
+                        </small>
+                    </div>
+                    <div class="form-group col-md-4 col-sm-6 col-xs-12">
+                        <label><i class="fa fa-shield text-warning"></i> Exibir Escudos dos Times</label>
+                        <select name="exibirescudos" class="form-control font-weight-bold">
+                            <option value="1">Sim (Exibir escudos nos confrontos)</option>
+                            <option value="0">Não (Ocultar escudos em todos os temas)</option>
+                        </select>
+                        <small class="help-block">
+                            Ativa ou desativa os escudos/bandeiras dos clubes ao lado dos nomes nos confrontos em todos os temas.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Carrossel / Slides da Página Principal (Home) -->
+        <div class="panel info-box panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title"><i class="fa fa-sliders text-danger"></i> Carrossel / Slides da Página Principal</h4>
+            </div>
+            <div class="panel-body p-b-10">
+                <div class="row">
+                    <div class="form-group col-md-6 col-sm-12 col-xs-12">
+                        <label class="font-weight-bold">Conteúdo dos Slides do Topo</label>
+                        <select name="tiposlideshome" class="form-control font-weight-bold">
+                            <option value="mesclado">Mesclado: Jogos (Futebol e Cassino) + Banners Promocionais (Alternados 1-a-1)</option>
+                            <option value="banners">Apenas Banners / Imagens Promocionais (Slideshow do Admin)</option>
+                            <option value="jogos">Apenas Jogos em Destaque (Futebol e Cassino, sem imagens)</option>
+                            <option value="futebol_banners">Apenas Jogos de Futebol + Banners Promocionais</option>
+                            <option value="cassino_banners">Apenas Jogos de Cassino + Banners Promocionais</option>
+                            <option value="desativado">Desativado (Ocultar carrossel na página principal)</option>
+                        </select>
+                        <small class="help-block">
+                            Escolha o que deve aparecer no slide no topo da página principal: você pode mesclar jogos e banners, exibir somente imagens cadastradas no admin, somente jogos, ou desativar.
+                        </small>
+                    </div>
+                    <div class="col-md-6 col-sm-12 col-xs-12">
+                        <div class="alert alert-success m-b-0">
+                            <i class="fa fa-info-circle"></i>
+                            <b>Como funciona a exibição:</b><br/>
+                            • <b>Mesclado:</b> Alterna automaticamente <code>Jogo de Futebol ➔ Banner ➔ Jogo de Cassino ➔ Banner</code>.<br/>
+                            • <b>Apenas Banners:</b> Mostra somente os banners de imagem enviados no menu Slideshow.<br/>
+                            • <b>Apenas Jogos:</b> Mostra somente partidas esportivas com cotações e slots PG Soft.<br/>
+                            • <b>Desativado:</b> Oculta totalmente o carrossel do topo da página inicial.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Carrossel / Slides da Página de Cassino -->
+        <div class="panel info-box panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title"><i class="fa fa-gamepad text-success"></i> Carrossel / Slides da Página de Cassino</h4>
+            </div>
+            <div class="panel-body p-b-10">
+                <div class="row">
+                    <div class="form-group col-md-6 col-sm-12 col-xs-12">
+                        <label class="font-weight-bold">Conteúdo dos Slides do Topo do Cassino</label>
+                        <select name="tiposlidescassino" class="form-control font-weight-bold">
+                            <option value="mesclado">Mesclado: Jogos de Cassino + Banners Promocionais (Alternados 1-a-1)</option>
+                            <option value="banners">Apenas Banners / Imagens Promocionais (Slideshow do Admin)</option>
+                            <option value="jogos">Apenas Jogos de Cassino em Destaque (sem imagens)</option>
+                            <option value="desativado">Desativado (Ocultar carrossel na página de cassino)</option>
+                        </select>
+                        <small class="help-block">
+                            Escolha o que deve aparecer no slide no topo da página de cassino: você pode mesclar slots e banners, exibir somente imagens cadastradas no admin, somente jogos, ou desativar.
+                        </small>
+                    </div>
+                    <div class="col-md-6 col-sm-12 col-xs-12">
+                        <div class="alert alert-info m-b-0">
+                            <i class="fa fa-info-circle"></i>
+                            <b>Como funciona na área de cassino:</b><br/>
+                            • <b>Mesclado:</b> Alterna automaticamente <code>Jogo de Cassino (PG Soft) ➔ Banner ➔ Jogo de Cassino ➔ Banner</code>.<br/>
+                            • <b>Apenas Banners:</b> Mostra somente os banners promocionais configurados no admin.<br/>
+                            • <b>Apenas Jogos:</b> Mostra somente os slots PG Soft em destaque com botões "Jogar Agora" e "Testar Demo".<br/>
+                            • <b>Desativado:</b> Oculta totalmente o carrossel do topo da página de cassino.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Dimensões de Imagens, Logos e Slides -->
+        <div class="panel info-box panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title"><i class="fa fa-image text-warning"></i> Dimensões de Logos e Slides / Imagens</h4>
+            </div>
+            <div class="panel-body p-b-10">
+                <div class="row">
+
+                    <div class="form-group col-md-3 col-sm-6 col-xs-12">
+                        <label>Largura Máx. da Logo (px)</label>
+                        <div class="input-group">
+                            <input type="number" name="logowidth" class="form-control" placeholder="160" min="40" max="600"/>
+                            <span class="input-group-addon">px</span>
+                        </div>
+                        <small class="help-block">Padrão: 160px. Controla a largura máxima da marca no cabeçalho.</small>
+                    </div>
+
+                    <div class="form-group col-md-3 col-sm-6 col-xs-12">
+                        <label>Altura Máx. da Logo (px)</label>
+                        <div class="input-group">
+                            <input type="number" name="logoheight" class="form-control" placeholder="45" min="20" max="300"/>
+                            <span class="input-group-addon">px</span>
+                        </div>
+                        <small class="help-block">Padrão: 45px. Controla a altura máxima da logo no cabeçalho.</small>
+                    </div>
+
+                    <div class="form-group col-md-3 col-sm-6 col-xs-12">
+                        <label>Altura dos Slides Desktop (px)</label>
+                        <div class="input-group">
+                            <input type="number" name="slideheight" class="form-control" placeholder="320" min="100" max="800"/>
+                            <span class="input-group-addon">px</span>
+                        </div>
+                        <small class="help-block">Padrão: 320px. Altura dos banners promocionais na versão desktop.</small>
+                    </div>
+
+                    <div class="form-group col-md-3 col-sm-6 col-xs-12">
+                        <label>Altura dos Slides Mobile (px)</label>
+                        <div class="input-group">
+                            <input type="number" name="slideheightmobile" class="form-control" placeholder="160" min="80" max="500"/>
+                            <span class="input-group-addon">px</span>
+                        </div>
+                        <small class="help-block">Padrão: 160px. Altura dos banners na versão para celulares.</small>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Visibilidade de Botões e Seções do Site -->
+        <div class="panel info-box panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title"><i class="fa fa-toggle-on text-success"></i> Visibilidade de Botões e Links do Site</h4>
+            </div>
+            <div class="panel-body p-b-10">
+                <p class="text-muted small m-b-15">
+                    Controle quais botões e links de navegação aparecem no cabeçalho, rodapé, barra mobile e menus de todos os temas:
+                </p>
+                <div class="row">
+
+                    <div class="form-group col-md-3 col-sm-6 col-xs-12">
+                        <label>Botão de Cadastro</label>
+                        <select name="exibirregistro" class="form-control">
+                            <option value="1">Ativado (Visível)</option>
+                            <option value="0">Desativado (Oculto)</option>
+                        </select>
+                        <small class="help-block">Exibe o botão de criar conta / cadastre-se.</small>
+                    </div>
+
+                    <div class="form-group col-md-3 col-sm-6 col-xs-12">
+                        <label>Botão de Login / Entrar</label>
+                        <select name="exibirlogin" class="form-control">
+                            <option value="1">Ativado (Visível)</option>
+                            <option value="0">Desativado (Oculto)</option>
+                        </select>
+                        <small class="help-block">Exibe o botão de login para visitantes.</small>
+                    </div>
+
+                    <div class="form-group col-md-3 col-sm-6 col-xs-12">
+                        <label>Botão Baixar Aplicativo</label>
+                        <select name="exibirapp" class="form-control">
+                            <option value="1">Ativado (Visível)</option>
+                            <option value="0">Desativado (Oculto)</option>
+                        </select>
+                        <small class="help-block">Exibe o link de download do app Android.</small>
+                    </div>
+
+                    <div class="form-group col-md-3 col-sm-6 col-xs-12">
+                        <label>Consultar Bilhete</label>
+                        <select name="exibirbilhete" class="form-control">
+                            <option value="1">Ativado (Visível)</option>
+                            <option value="0">Desativado (Oculto)</option>
+                        </select>
+                        <small class="help-block">Exibe o atalho para consulta de bilhetes.</small>
+                    </div>
+
+                    <div class="form-group col-md-3 col-sm-6 col-xs-12">
+                        <label>SuperOdds / Cotações</label>
+                        <select name="exibircotacoes" class="form-control">
+                            <option value="1">Ativado (Visível)</option>
+                            <option value="0">Desativado (Oculto)</option>
+                        </select>
+                        <small class="help-block">Exibe o link para página de cotações.</small>
+                    </div>
+
+                    <div class="form-group col-md-3 col-sm-6 col-xs-12">
+                        <label>Regulamento / Regras</label>
+                        <select name="exibirregras" class="form-control">
+                            <option value="1">Ativado (Visível)</option>
+                            <option value="0">Desativado (Oculto)</option>
+                        </select>
+                        <small class="help-block">Exibe o link com regulamento do site.</small>
+                    </div>
+
+                    <div class="form-group col-md-3 col-sm-6 col-xs-12">
+                        <label>Fale Conosco / Contato</label>
+                        <select name="exibircontato" class="form-control">
+                            <option value="1">Ativado (Visível)</option>
+                            <option value="0">Desativado (Oculto)</option>
+                        </select>
+                        <small class="help-block">Exibe o link para formulário de contato.</small>
+                    </div>
+
+                    <div class="form-group col-md-3 col-sm-6 col-xs-12">
+                        <label>Comunicados</label>
+                        <select name="exibircomunicados" class="form-control">
+                            <option value="1">Ativado (Visível)</option>
+                            <option value="0">Desativado (Oculto)</option>
+                        </select>
+                        <small class="help-block">Exibe o link da área de avisos/comunicados.</small>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Configurações de Depósito e Gateway PIX -->
+        <div class="panel info-box panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title"><i class="fa fa-qrcode text-info"></i> Modo de Depósito e Gateway PIX</h4>
+            </div>
+            <div class="panel-body p-b-10">
+                <div class="row">
+
+                    <div class="form-group col-md-4 col-sm-6 col-xs-12">
+                        <label>Gateway PIX Automático</label>
+                        <select name="gatewaypix" class="form-control font-weight-bold">
+                            <option value="pixup" {% if config.getGatewaypix() == 'pixup' %}selected{% endif %}>PixUp</option>
+                            <option value="veopag" {% if config.getGatewaypix() == 'veopag' %}selected{% endif %}>VeoPag</option>
+                        </select>
+                        <small class="help-block">Escolha qual provedor será usado para gerar novas cobranças automáticas.</small>
+                    </div>
+
+                    <div class="form-group col-md-4 col-sm-6 col-xs-12">
+                        <label>Modo de Depósito no Site</label>
+                        <select name="mododeposito" class="form-control font-weight-bold">
+                            <option value="todos">Todos (PIX Automático + Manual com Comprovante)</option>
+                            <option value="pix">Apenas PIX Automático (gateway selecionado)</option>
+                            <option value="manual">Apenas Depósito Manual com Comprovante</option>
+                        </select>
+                        <small class="help-block">
+                            Escolha se os usuários poderão depositar via PIX automático, comprovante manual ou ambos.
+                        </small>
+                    </div>
+
+                    <div class="form-group col-md-4 col-sm-6 col-xs-12">
+                        <label>Status Gateway VeoPag</label>
+                        <select name="veopag_status" class="form-control">
+                            <option value="1" {% if config.getVeopagStatus() == 1 %}selected{% endif %}>Ativado</option>
+                            <option value="0" {% if config.getVeopagStatus() == 0 %}selected{% endif %}>Desativado</option>
+                        </select>
+                        <small class="help-block">Habilita ou desabilita a integração com a VeoPag.</small>
+                    </div>
+
+                    <div class="form-group col-md-4 col-sm-6 col-xs-12">
+                        <label>Status Gateway PixUp</label>
+                        <select name="pixup_status" class="form-control">
+                            <option value="1" {% if config.getPixupStatus() == 1 %}selected{% endif %}>Ativado</option>
+                            <option value="0" {% if config.getPixupStatus() == 0 %}selected{% endif %}>Desativado</option>
+                        </select>
+                        <small class="help-block">Habilita ou desabilita a integração com a PixUp.</small>
+                    </div>
+
+                    <div class="form-group col-md-4 col-sm-12 col-xs-12">
+                        <label>URL do Webhook (Postback PixUp)</label>
+                        <div class="input-group">
+                            <input type="text" id="webhook-url-input" class="form-control bg-light" value="{{ webhookUrl }}" readonly/>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" onclick="navigator.clipboard.writeText($('#webhook-url-input').val()); swal('Copiado!', 'URL do Webhook copiada para a área de transferência.', 'success');" title="Copiar URL">
+                                    <i class="fa fa-copy"></i>
+                                </button>
+                            </span>
+                        </div>
+                        <small class="help-block">Cadastre esta URL no painel da PixUp para receber notificações automáticas de pagamento.</small>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-6 col-xs-12">
+                        <label>PixUp Client ID</label>
+                        <input type="text" name="pixup_client_id" value="{{ config.getPixupClientId() }}" class="form-control" placeholder="Ex: usuarioteste_63c4ff6423765as"/>
+                        <small class="help-block">Client ID obtido no painel da PixUp (menu API -> Credenciais).</small>
+                    </div>
+
+                    <div class="form-group col-md-6 col-xs-12">
+                        <label>PixUp Client Secret</label>
+                        <input type="password" name="pixup_client_secret" value="{{ config.getPixupClientSecret() }}" class="form-control" placeholder="Chave secreta PixUp"/>
+                        <small class="help-block">Client Secret obtido no painel da PixUp.</small>
+                    </div>
+                </div>
+
+                <hr/>
+                <h5><i class="fa fa-link text-info"></i> Integração VeoPag</h5>
+                <div class="row">
+                    <div class="form-group col-md-6 col-xs-12">
+                        <label>VeoPag Client ID</label>
+                        <input type="text" name="veopag_client_id" value="{{ config.getVeopagClientId() }}" class="form-control" autocomplete="off"/>
+                    </div>
+                    <div class="form-group col-md-6 col-xs-12">
+                        <label>VeoPag Client Secret</label>
+                        <input type="password" name="veopag_client_secret" value="{{ config.getVeopagClientSecret() }}" class="form-control" autocomplete="new-password"/>
+                    </div>
+                    <div class="form-group col-md-6 col-xs-12">
+                        <label>VeoPag Webhook Signature</label>
+                        <input type="password" name="veopag_webhook_secret" value="{{ config.getVeopagWebhookSecret() }}" class="form-control" autocomplete="new-password"/>
+                        <small class="help-block">Chave HMAC cadastrada em Configurações &gt; Credenciais no portal VeoPag.</small>
+                    </div>
+                    <div class="form-group col-md-6 col-xs-12">
+                        <label>VeoPag Callback Token</label>
+                        <input type="password" name="veopag_webhook_token" value="{{ config.getVeopagWebhookToken() }}" class="form-control" autocomplete="new-password"/>
+                        <small class="help-block">Token fixo enviado no cabeçalho Authorization do webhook, se habilitado pela VeoPag.</small>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label>URL do Webhook VeoPag</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light" value="{{ veopagWebhookUrl }}" readonly/>
+                            <span class="input-group-btn"><button type="button" class="btn btn-default" onclick="navigator.clipboard.writeText($(this).parent().siblings('input').val()); swal('Copiado!', 'URL do webhook VeoPag copiada.', 'success');"><i class="fa fa-copy"></i></button></span>
+                        </div>
+                        <small class="help-block">Cadastre esta URL como Deposit webhook URL no portal VeoPag. O sistema exige a Webhook Signature ou o Callback Token para habilitar pagamentos.</small>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning m-t-10 m-b-0">
+                    <i class="fa fa-info-circle"></i>
+                    <b>Como funciona o PIX automático:</b> Quando o cliente digita o valor e clica em "Gerar PIX", o gateway selecionado gera um QR Code e um código Copia e Cola. Após a confirmação do pagamento pelo webhook validado, o saldo é creditado automaticamente.
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Botão Salvar -->
+        <div class="panel info-box panel-default">
+            <div class="panel-footer">
+                <div class="row">
+                    <div class="text-right col-md-12 col-xs-12">
+                        <button type="submit" class="btn btn-primary btn-lg font-weight-bold">
+                            <i class="fa fa-save"></i> Salvar Personalização
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        var formConfig = {{ json(config, true) }};
+        if (formConfig) {
+            formConfig.pixup_client_id = formConfig.pixupclientid || formConfig.pixup_client_id || '';
+            formConfig.pixup_client_secret = formConfig.pixupclientsecret || formConfig.pixup_client_secret || '';
+            formConfig.pixup_status = (formConfig.pixupstatus !== undefined) ? formConfig.pixupstatus : formConfig.pixup_status;
+            formConfig.veopag_client_id = formConfig.veopagclientid || formConfig.veopag_client_id || '';
+            formConfig.veopag_client_secret = formConfig.veopagclientsecret || formConfig.veopag_client_secret || '';
+            formConfig.veopag_webhook_secret = formConfig.veopagwebhooksecret || formConfig.veopag_webhook_secret || '';
+            formConfig.veopag_webhook_token = formConfig.veopagwebhooktoken || formConfig.veopag_webhook_token || '';
+            formConfig.veopag_status = (formConfig.veopagstatus !== undefined) ? formConfig.veopagstatus : formConfig.veopag_status;
+        }
+
+        $('.admpage-form')
+            .setValues(formConfig)
+            .adminPage({
+                autoSearch: false,
+                autoReset: false,
+                alertSuccess: true,
+                reloadSuccess: true,
+                controller: 'config/personalizacao',
+                insertAction: 'insert',
+                updateAction: 'update',
+            })
+            .on('error', function (event, xhr) {
+                var msg = (xhr && xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : (xhr && xhr.statusText ? xhr.statusText : 'Falha na comunicação com o servidor.');
+                if (typeof swal === 'function') {
+                    swal('Erro', 'Não foi possível salvar: ' + msg, 'error');
+                } else {
+                    alert('Erro ao salvar: ' + msg);
+                }
+            });
+
+    </script>
+
+{% endblock %}

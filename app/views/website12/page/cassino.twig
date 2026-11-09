@@ -1,0 +1,119 @@
+{% extends layout %}
+
+{% set cat = category|default('all') %}
+{% set busca = search|default('') %}
+
+{% block main %}
+
+    <div class="gold-card m-3">
+        
+        <div class="gold-card-header justify-content-between">
+            <div>
+                <i class="fa fa-gamepad"></i> Cassino Online GoldEsporte
+            </div>
+            <div>
+                <span class="badge" style="background:#d29d00;color:#000;font-size:12px;font-weight:bold;">{{ jogos|length }} Jogos Disponíveis</span>
+            </div>
+        </div>
+
+        <!-- Barra de Busca e Filtros de Categoria -->
+        <div class="p-3" style="background: #1a1a1a; border-bottom: 1px solid #333;">
+            <div class="row align-items-center">
+                <div class="col-lg-4 col-md-5 col-sm-12 mb-2 mb-md-0">
+                    <form method="get" action="{{ url('cassino') }}" class="d-flex">
+                        <input type="text"
+                               name="search"
+                               value="{{ busca }}"
+                               class="form-control mr-2"
+                               placeholder="Buscar jogo por nome..."
+                               style="background: #111; color: #fff; border-color: #d29d00;"/>
+                        <button type="submit" class="botao" style="height: 38px; min-width: 44px; padding: 0 14px;">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="col-lg-8 col-md-7 col-sm-12 text-md-right" style="overflow-x: auto; white-space: nowrap;">
+                    <a href="{{ url('cassino') }}" class="btn btn-sm mb-1 {{ not busca and (cat == 'all' or not cat) ? 'btn-warning font-weight-bold' : 'btn-outline-light' }}">
+                        Todos
+                    </a>
+                    <a href="{{ url('cassino', null, null, {'category': 'Destaque'}) }}" class="btn btn-sm mb-1 {{ cat == 'Destaque' ? 'btn-warning font-weight-bold' : 'btn-outline-light' }}">
+                        <i class="fa fa-star text-warning"></i> Destaques
+                    </a>
+                    <a href="{{ url('cassino', null, null, {'category': 'Pragmatic'}) }}" class="btn btn-sm mb-1 {{ cat == 'Pragmatic' or cat == 'PRAGMATIC' ? 'btn-warning font-weight-bold' : 'btn-outline-light' }}">
+                        Pragmatic Play
+                    </a>
+                    <a href="{{ url('cassino', null, null, {'category': 'PGSOFT'}) }}" class="btn btn-sm mb-1 {{ cat == 'PGSOFT' or cat == 'PG Soft' ? 'btn-warning font-weight-bold' : 'btn-outline-light' }}">
+                        PG Soft
+                    </a>
+                    <a href="{{ url('cassino', null, null, {'category': 'TADA'}) }}" class="btn btn-sm mb-1 {{ cat == 'TADA' or cat == 'TaDa' ? 'btn-warning font-weight-bold' : 'btn-outline-light' }}">
+                        TaDa Gaming
+                    </a>
+                    <a href="{{ url('cassino', null, null, {'category': 'Crash'}) }}" class="btn btn-sm mb-1 {{ cat == 'Crash' ? 'btn-warning font-weight-bold' : 'btn-outline-light' }}">
+                        Aviator & Crash
+                    </a>
+                    <a href="{{ url('cassino', null, null, {'category': 'CPGAMES'}) }}" class="btn btn-sm mb-1 {{ cat == 'CPGAMES' or cat == 'CP Games' ? 'btn-warning font-weight-bold' : 'btn-outline-light' }}">
+                        CP Games
+                    </a>
+                    <a href="{{ url('cassino', null, null, {'category': 'WG'}) }}" class="btn btn-sm mb-1 {{ cat == 'WG' ? 'btn-warning font-weight-bold' : 'btn-outline-light' }}">
+                        WG Slots
+                    </a>
+                    <a href="{{ url('cassino', null, null, {'category': 'POPOK'}) }}" class="btn btn-sm mb-1 {{ cat == 'POPOK' ? 'btn-warning font-weight-bold' : 'btn-outline-light' }}">
+                        PopOK
+                    </a>
+                    <a href="{{ url('cassino', null, null, {'category': 'G759'}) }}" class="btn btn-sm mb-1 {{ cat == 'G759' ? 'btn-warning font-weight-bold' : 'btn-outline-light' }}">
+                        G759
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grade de Jogos -->
+        <div class="p-3">
+            <div class="row">
+                {% if jogos|length > 0 %}
+                    {% for j in jogos %}
+                        <div class="col-xl-2 col-lg-3 col-md-4 col-6 mb-4">
+                            <div class="card h-100 shadow-sm border" style="overflow: hidden; border-radius: 8px; border-color: #2b2b2b !important; background: #141414; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 16px rgba(210,157,0,0.25)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="position: relative; background: #000; padding-top: 100%;">
+                                    <img src="{{ j.image|default(j.cover)|default(j.banner) }}"
+                                         alt="{{ j.name }}"
+                                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
+                                         onerror="this.src='{{ url('imagens/sem-imagem.png') }}'"
+                                         loading="lazy"/>
+                                    
+                                    <span class="badge" style="position: absolute; top: 6px; right: 6px; font-size: 10px; font-weight: bold; padding: 3px 6px; border-radius: 4px; background: rgba(0,0,0,0.85); color: #d29d00; border: 1px solid #d29d00;">
+                                        {{ j.provider|default('Slots') }}
+                                    </span>
+
+                                    {% if j.featured %}
+                                        <span class="badge" style="position: absolute; top: 6px; left: 6px; font-size: 10px; font-weight: bold; padding: 3px 6px; border-radius: 4px; background: #d29d00; color: #000;">
+                                            ★ Destaque
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body p-2 text-center" style="background: #111; color: #fff;">
+                                    <div class="font-weight-bold text-truncate small" title="{{ j.name }}" style="color: #eee;">{{ j.name }}</div>
+                                    <div class="d-flex justify-content-between align-items-center mt-1" style="font-size: 11px; color: #888;">
+                                        <span>RTP {{ j.rtp }}%</span>
+                                        <span class="text-muted"><i class="fa fa-eye"></i> {{ j.views_count }}</span>
+                                    </div>
+                                    <a href="{{ url('cassino/jogar', [j.game_code|default(j.code)]) }}" class="btn btn-sm w-100 mt-2 font-weight-bold" style="background: #d29d00; color: #000; font-size: 12px; border-radius: 4px;">
+                                        <i class="fa fa-play mr-1"></i> Jogar Agora
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center py-5 text-muted">
+                        <i class="fa fa-gamepad fa-3x mb-3 text-warning"></i>
+                        <h5>Nenhum jogo encontrado</h5>
+                        <p class="small">Tente selecionar outra categoria ou buscar por outro nome.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

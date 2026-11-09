@@ -1,0 +1,90 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="page-title">
+        <h1 class="title">Editar Meu Perfil</h1>
+    </div>
+
+    <div class="container py-5">
+
+        <form class="admpage-form">
+
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="form-group col-md-6 col-12">
+                            <label>Nome</label>
+                            <input type="text" name="nome" class="form-control" required/>
+                        </div>
+                        <div class="form-group col-md-3 col-12">
+                            <label>Usuário</label>
+                            <input type="text" name="login" class="form-control" disabled/>
+                        </div>
+                        <div class="form-group col-md-3 col-12">
+                            <label>Telefone</label>
+                            <input type="text" name="telefone" class="form-control mask-telefone"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-3 col-12">
+                            <label>Celular</label>
+                            <input type="text" name="celular" class="form-control mask-telefone"/>
+                        </div>
+                        <div class="form-group col-12 col-md-3">
+                            <label>Whastapp</label>
+                            <input type="text" name="whatsapp" class="form-control mask-telefone"/>
+                        </div>
+                        <div class="form-group col-12 col-md-6">
+                            <label>E-mail</label>
+                            <input type="email" name="email" class="form-control" required/>
+                        </div>
+                    </div>
+                    <h3>Definir nova senha</h3>
+                    <div class="row">
+                        <div class="form-group col-12 col-md-6">
+                            <label>Nova Senha</label>
+                            <input type="password" name="nsenha" class="form-control"/>
+                            <span class="help-inline">Preencher somente se for atualizar a senha</span>
+                        </div>
+                        <div class="form-group col-12 col-md-6">
+                            <label>Repita a nova Senha</label>
+                            <input type="password" name="nsenhar" class="form-control"/>
+                        </div>
+                    </div>
+                    <h3>Confirmar Senha</h3>
+                    <div class="form-group">
+                        <label>Senha atual</label>
+                        <input type="password" name="senha" class="form-control" required/>
+                    </div>
+                </div>
+                <div class="panel-footer text-right">
+                    <button class="btn btn-primary">
+                        <i class="fa fa-save"></i> Salvar
+                    </button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $('.admpage-form')
+            .setValues({{ json(user) }})
+            .adminPage({
+                autoSearch: false,
+                insertAction: 'atualizar',
+                controller: 'perfil',
+                alertSuccess: true,
+                autoReset: false,
+            })
+            .on('success', function (event, e) {
+                if (e.result == 1) {
+                    $('.admpage-form [type=password]').val('');
+                }
+            })
+    </script>
+{% endblock %}

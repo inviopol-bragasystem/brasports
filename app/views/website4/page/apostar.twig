@@ -1,0 +1,461 @@
+{% extends layout %}
+
+{% block jogos %}
+    <!-- Filtros de Datas Bet365 -->
+    <div class="b365-date-tabs mb-3 d-flex align-items-center" style="overflow-x: auto; white-space: nowrap; gap: 8px; padding-bottom: 6px;">
+        <button type="button" 
+                class="btn btn-sm" 
+                style="border-radius: 20px; font-weight: 700; font-size: 12px; padding: 6px 16px; border: none;"
+                v-bind:style="{ background: (!findData || findData == '*' || findData == 'todos') ? 'var(--b365-yellow)' : '#1e2830', color: (!findData || findData == '*' || findData == 'todos') ? '#000' : '#fff' }"
+                v-on:click="setCampeonato(); setData('*');">
+            <i class="fa fa-globe mr-1"></i> Todos os Jogos
+        </button>
+        <button type="button" 
+                class="btn btn-sm" 
+                style="border-radius: 20px; font-weight: 700; font-size: 12px; padding: 6px 16px; border: none;"
+                v-bind:style="{ background: findData == '{{ hoje }}' ? 'var(--b365-yellow)' : '#1e2830', color: findData == '{{ hoje }}' ? '#000' : '#fff' }"
+                v-on:click="setData('{{ hoje }}')">
+            <i class="fa fa-calendar-check-o mr-1"></i> Hoje
+        </button>
+        <button type="button" 
+                class="btn btn-sm" 
+                style="border-radius: 20px; font-weight: 700; font-size: 12px; padding: 6px 16px; border: none;"
+                v-bind:style="{ background: findData == '{{ amanha }}' ? 'var(--b365-yellow)' : '#1e2830', color: findData == '{{ amanha }}' ? '#000' : '#fff' }"
+                v-on:click="setData('{{ amanha }}')">
+            <i class="fa fa-calendar-o mr-1"></i> Amanhã
+        </button>
+        <button type="button" 
+                v-for="d in datas" 
+                :key="d.data"
+                v-if="d.data != '{{ hoje }}' && d.data != '{{ amanha }}'"
+                class="btn btn-sm" 
+                style="border-radius: 20px; font-weight: 700; font-size: 12px; padding: 6px 16px; border: none;"
+                v-bind:style="{ background: findData == d.data ? 'var(--b365-yellow)' : '#1e2830', color: findData == d.data ? '#000' : '#fff' }"
+                v-on:click="setData(d.data)">
+            ${d.data.split('-').reverse().join('/')}
+        </button>
+    </div>
+
+    <div class="mb-3" v-if="getCampeonatos().length">
+        <div v-for="campeonato in getCampeonatos(null, true)" class="b365-league-box">
+            
+            <!-- Cabeçalho do Campeonato -->
+            <div class="b365-league-bar">
+                <div class="b365-league-title">
+                    <img v-if="campeonato.paisImg" v-bind:src="campeonato.paisImg" v-bind:alt="campeonato.title" loading="lazy" onerror="this.style.display='none'"/>
+                    <i v-else class="fa fa-trophy" style="color: var(--b365-yellow);"></i>
+                    <a href="javascript:;" v-on:click="setCampeonato(campeonato)" class="text-white text-decoration-none">
+                        ${campeonato.title}
+                    </a>
+                </div>
+                <div class="b365-league-tools">
+                    <button type="button" v-on:click="imprimir(campeonato.id)" title="Imprimir Campeonato">
+                        <i class="fa fa-print"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabela de Partidas -->
+            <div class="table-responsive m-0">
+                <table class="b365-table-matches">
+                    <thead>
+                        <tr>
+                            <th class="text-left" style="min-width: 220px;">PARTIDA</th>
+                            <th style="width: 130px;" class="d-none d-md-table-cell text-center">DATA / HORA</th>
+                            <th style="width: 70px;" class="text-center" v-for="c in getCotacoesPrincipais()" v-bind:title="c.title">
+                                ${c.title}
+                            </th>
+                            <th style="width: 55px;" class="text-center">MAIS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="jogo in getJogos(campeonato)" class="b365-match-row">
+                            
+                            <!-- Times -->
+                            <td class="b365-match-cell-teams">
+                                <div v-on:click="maisCotacoes(jogo)" class="b365-teams-wrapper">
+                                    <div class="b365-match-time d-block d-md-none">
+                                        <i class="fa fa-clock-o"></i> ${jogo.data.split('-').reverse().join('/')} às ${jogo.hora.replace(/:00$/, '')}
+                                    </div>
+                                    <div class="b365-team-line">
+                                        <img v-if="jogo.imgCasa" v-bind:src="jogo.imgCasa" v-bind:alt="jogo.casa" loading="lazy" onerror="this.style.display='none'"/>
+                                        <i v-else class="fa fa-shield text-muted" style="font-size: 11px;"></i>
+                                        <span>${jogo.casa}</span>
+                                    </div>
+                                    <div class="b365-team-line">
+                                        <img v-if="jogo.imgFora" v-bind:src="jogo.imgFora" v-bind:alt="jogo.fora" loading="lazy" onerror="this.style.display='none'"/>
+                                        <i v-else class="fa fa-shield text-muted" style="font-size: 11px;"></i>
+                                        <span>${jogo.fora}</span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Data e Hora (Desktop) -->
+                            <td class="d-none d-md-table-cell text-center" style="vertical-align: middle;">
+                                <div class="b365-match-time justify-content-center m-0">
+                                    <i class="fa fa-calendar-o"></i>
+                                    <time v-bind:datetime="jogo.data + 'T' + jogo.hora">
+                                        ${jogo.data.split('-').reverse().join('/')}<br/>${jogo.hora.replace(/:00$/, '')}
+                                    </time>
+                                </div>
+                            </td>
+
+                            <!-- Cotações Principais (1, X, 2) -->
+                            <td class="b365-odd-cell" v-for="c in getCotacoesPrincipais()">
+                                <div class="b365-odd-btn" 
+                                     v-bind:class="{ active: jogo.apostaEm == '90' + c.campo }"
+                                     v-bind:title="c.title + ': ' + ((jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo]) ? maskReal(jogo.cotacoes['90'][c.campo]) : '-')"
+                                     v-on:click="apostar(jogo, '90', c)">
+                                    <span class="odd-lbl">${c.title}</span>
+                                    <span class="odd-val">${(jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo]) ? maskReal(jogo.cotacoes['90'][c.campo]) : '-'}</span>
+                                </div>
+                            </td>
+
+                            <!-- Botão +Outras Cotações -->
+                            <td class="b365-more-odds-cell">
+                                <div class="b365-more-btn" 
+                                     v-bind:class="{ active: jogo.outras }" 
+                                     v-on:click="maisCotacoes(jogo)"
+                                     title="Ver mais mercados">
+                                    +${Math.max(0, totalCotacoes(jogo.cotacoes) - getCotacoesPrincipais().length)}
+                                </div>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <div v-else class="p-4 text-center text-muted" style="background-color: var(--b365-bg-card); border-radius: 6px; border: 1px solid var(--b365-border);">
+        <i class="fa fa-calendar-times-o fa-2x mb-2 text-warning d-block"></i>
+        Nenhuma partida encontrada para os filtros selecionados.
+    </div>
+
+    {{ block('modalCotacoes') }}
+{% endblock %}
+
+{% block modalCotacoes %}
+    <!-- Modal Mais Cotações Estilo Bet365 -->
+    <div id="modal-cotacoes" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content b365-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bold">
+                        <i class="fa fa-sliders text-warning mr-2"></i> Todos os Mercados
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div v-if="mJogo.jogo" class="p-3 border-bottom d-flex align-items-center justify-content-between flex-wrap" style="background-color: #1a1a1a; border-color: var(--b365-border) !important;">
+                    <div class="d-flex align-items-center font-weight-bold flex-nowrap" style="font-size: 15px;">
+                        <span class="d-inline-flex align-items-center mr-2">
+                            <img v-if="mJogo.jogo.imgCasa" v-bind:src="mJogo.jogo.imgCasa" class="mr-2" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.style.display='none'"/>
+                            ${mJogo.jogo.casa}
+                        </span>
+                        <span class="text-warning mx-2">x</span>
+                        <span class="d-inline-flex align-items-center ml-2">
+                            <img v-if="mJogo.jogo.imgFora" v-bind:src="mJogo.jogo.imgFora" class="mr-2" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.style.display='none'"/>
+                            ${mJogo.jogo.fora}
+                        </span>
+                    </div>
+                    <div class="small text-muted mt-1 mt-md-0">
+                        <i class="fa fa-clock-o mr-1"></i> ${mJogo.jogo.data ? mJogo.jogo.data.split('-').reverse().join('/') : ''} às ${mJogo.jogo.hora ? mJogo.jogo.hora.replace(/:00$/, '') : ''}
+                    </div>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="b365-modal-tabs">
+                        <button type="button" class="b365-modal-tab-btn" 
+                                v-bind:class="{ active: key == mJogo.tempo }" 
+                                v-for="(tempo, key) in tempos" 
+                                v-on:click="mJogo.tempo = key">
+                            ${tempo}
+                        </button>
+                    </div>
+                    <div class="p-3" v-if="mJogo.jogo" style="max-height: calc(100vh - 220px); overflow-y: auto;">
+                        <div v-for="(grupo, id) in grupos" class="mb-4">
+                            <div class="b365-market-group-title">
+                                <i class="fa fa-futbol-o mr-1"></i> ${grupo}
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 col-12 mb-2" v-for="c in cotacoes" v-if="c.grupo == id && mJogo.jogo && mJogo.jogo.cotacoes && mJogo.jogo.cotacoes[mJogo.tempo] && mJogo.jogo.cotacoes[mJogo.tempo][c.campo] > 1">
+                                    <div class="b365-modal-odd-item">
+                                        <span class="small font-weight-bold text-white">${c.title}</span>
+                                        <button type="button" class="b365-odd-btn" style="width: 68px;"
+                                                v-bind:class="{ active: mJogo.jogo.apostaEm == mJogo.tempo + c.campo }"
+                                                v-on:click="apostar(mJogo.jogo, mJogo.tempo, c)">
+                                            <span class="odd-val">${(mJogo.jogo.cotacoes && mJogo.jogo.cotacoes[mJogo.tempo] && mJogo.jogo.cotacoes[mJogo.tempo][c.campo]) ? maskReal(mJogo.jogo.cotacoes[mJogo.tempo][c.campo]) : '-'}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main %}
+    <div class="b365-main-container">
+        <div class="b365-grid">
+
+            <!-- 1. Coluna Esquerda: Em Alta, A-Z Esportes, Competições -->
+            <aside class="b365-sidebar">
+                
+                <!-- Em Alta -->
+                <div class="b365-sidebar-section">
+                    <div class="b365-sidebar-title">Em Alta</div>
+                    <a href="javascript:;" v-on:click="setCampeonato(); setData('*');" class="b365-sidebar-item" v-bind:class="{ active: (!findData || findData == '*' || findData == 'todos') && (!findCampeonato || findCampeonato == '*') }">
+                        <i class="fa fa-globe"></i>
+                        <span>Todos os Jogos</span>
+                    </a>
+                    <a href="javascript:;" v-on:click="setData('{{ hoje }}')" class="b365-sidebar-item" v-bind:class="{ active: findData == '{{ hoje }}' }">
+                        <i class="fa fa-calendar-check-o"></i>
+                        <span>Jogos de Hoje</span>
+                    </a>
+                    <a href="javascript:;" v-on:click="setData('{{ amanha }}')" class="b365-sidebar-item" v-bind:class="{ active: findData == '{{ amanha }}' }">
+                        <i class="fa fa-calendar-o"></i>
+                        <span>Jogos de Amanhã</span>
+                    </a>
+                </div>
+
+                <!-- A-Z Esportes -->
+                <div class="b365-sidebar-section">
+                    <div class="b365-sidebar-title">A-Z Esportes</div>
+                    <a href="javascript:;" v-on:click="setCampeonato();" class="b365-sidebar-item active">
+                        <img src="img/bet365/soccer.svg" alt="Futebol"/>
+                        <span>Futebol</span>
+                    </a>
+                    <a href="javascript:;" class="b365-sidebar-item">
+                        <img src="img/bet365/basketball.svg" alt="Basquete"/>
+                        <span>Basquete</span>
+                    </a>
+                    <a href="javascript:;" class="b365-sidebar-item">
+                        <img src="img/bet365/tennis.svg" alt="Tênis"/>
+                        <span>Tênis</span>
+                    </a>
+                    <a href="javascript:;" class="b365-sidebar-item">
+                        <img src="img/bet365/nfl.svg" alt="Futebol Americano"/>
+                        <span>Futebol Americano</span>
+                    </a>
+                    <a href="javascript:;" class="b365-sidebar-item">
+                        <img src="img/bet365/boxing.svg" alt="Boxe/MMA"/>
+                        <span>Boxe / MMA</span>
+                    </a>
+                    <a href="javascript:;" class="b365-sidebar-item">
+                        <img src="img/bet365/volleyball.svg" alt="Vôlei"/>
+                        <span>Vôlei</span>
+                    </a>
+                    <a href="javascript:;" class="b365-sidebar-item">
+                        <img src="img/bet365/table_tennis.svg" alt="Tênis de Mesa"/>
+                        <span>Tênis de Mesa</span>
+                    </a>
+                    <a href="javascript:;" class="b365-sidebar-item">
+                        <img src="img/bet365/esports.svg" alt="E-Sports"/>
+                        <span>E-Sports</span>
+                    </a>
+                    <a href="javascript:;" class="b365-sidebar-item">
+                        <img src="img/bet365/cs2.svg" alt="CS2"/>
+                        <span>CS2</span>
+                    </a>
+                    {% if dados.getExibirCassino() %}
+                        <a href="{{ url('cassino') }}" class="b365-sidebar-item">
+                            <img src="img/bet365/casino.svg" alt="Cassino"/>
+                            <span>Cassino</span>
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Competições -->
+                <div class="b365-sidebar-section" v-if="paises && paises.length">
+                    <div class="b365-sidebar-title">Competições</div>
+                    <div v-for="p in paises" class="b365-comp-group">
+                        <div class="b365-comp-country">
+                            <img v-if="p.img" v-bind:src="p.img" v-bind:alt="p.title" onerror="this.style.display='none'"/>
+                            <span>${p.title}</span>
+                        </div>
+                        <a v-for="c in p.campeonatos" href="javascript:;" 
+                           v-on:click="setCampeonato(c)" 
+                           class="b365-sidebar-item" 
+                           style="padding-left: 24px; font-size: 12px;"
+                           v-bind:class="{ active: findCampeonato == c.id }">
+                            <i class="fa fa-angle-right" style="width: 10px; margin-right: 6px;"></i>
+                            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${c.title}</span>
+                        </a>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- 2. Coluna Central: Jogos & Cotações -->
+            <section class="b365-center-col">
+                
+                <!-- Pills Sub-filtros (Todos, Hoje, Amanhã) -->
+                <div class="b365-filter-pills">
+                    <div class="b365-pill-filter" v-on:click="setCampeonato(); setData('todos');" v-bind:class="{ active: !checkFiltros() }">
+                        <span>Todos</span>
+                    </div>
+                    <div class="b365-pill-filter" v-on:click="setData('{{ hoje }}')" v-bind:class="{ active: findData == '{{ hoje }}' }">
+                        <span>Hoje</span>
+                    </div>
+                    <div class="b365-pill-filter" v-on:click="setData('{{ amanha }}')" v-bind:class="{ active: findData == '{{ amanha }}' }">
+                        <span>Amanhã</span>
+                    </div>
+                    
+                    <div class="ml-auto d-flex align-items-center gap-2">
+                        <select v-model="findCampeonato" class="form-control form-control-sm bg-dark border-secondary text-white" style="max-width: 220px; font-size: 12px;">
+                            <option value="*">-- Todos os Campeonatos --</option>
+                            <optgroup v-for="p in paises" v-bind:label="p.title">
+                                <option v-for="c in p.campeonatos" v-bind:value="c.id">
+                                    ${c.title}
+                                </option>
+                            </optgroup>
+                        </select>
+                        <button type="button" class="btn btn-sm btn-outline-secondary ml-1" v-on:click="setCampeonato()" title="Limpar">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slideshow Banner se houver -->
+                {% include 'website/inc/slideshow.twig' with {ref: 'site-slideshow'} %}
+
+                <!-- Bloco de Jogos -->
+                {{ block('jogos') }}
+
+            </section>
+
+            <!-- 3. Coluna Direita: Caderneta de Apostas (Betslip) -->
+            <aside class="b365-betslip-col">
+                <div class="b365-betslip-box">
+                    {{ block('bilhete') }}
+                </div>
+            </aside>
+
+        </div>
+    </div>
+
+    <!-- Floating Trigger Mobile quando tem apostas -->
+    <div class="b365-mobile-slip-trigger d-lg-none" v-if="aposta.jogos.length > 0" onclick="$('#modal-mobile-slip').modal('show');">
+        <div>
+            <span class="badge-count">${aposta.jogos.length}</span>
+            <span class="font-weight-bold">Caderneta de Apostas</span>
+        </div>
+        <div class="font-weight-bold text-warning">
+            Retorno: R$ ${premio} <i class="fa fa-chevron-up ml-1"></i>
+        </div>
+    </div>
+
+    <!-- Modal Mobile para Caderneta de Apostas -->
+    <div id="modal-mobile-slip" class="modal fade d-lg-none" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content b365-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bold">
+                        <i class="fa fa-ticket text-warning mr-2"></i> Caderneta de Apostas (${aposta.jogos.length})
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body p-3">
+                    {{ block('bilhete') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block bilhete %}
+    <!-- Cabeçalho da Caderneta Bet365 -->
+    <div class="b365-betslip-header">
+        <h4><i class="fa fa-ticket"></i> Caderneta de Apostas</h4>
+        <span class="b365-betslip-badge">${aposta.jogos.length}</span>
+    </div>
+
+    <!-- Corpo da Caderneta -->
+    <div class="b365-betslip-body">
+
+        <!-- Valor da Aposta (Stake) -->
+        <div class="b365-stake-box">
+            <label>VALOR DA APOSTA</label>
+            <div class="b365-input-group">
+                <span class="prefix">R$</span>
+                <input type="number" v-model="valorAposta" v-bind:min="apostaMinima" v-bind:max="apostaMaxima" step="1.00"/>
+            </div>
+        </div>
+
+        <!-- Alerta Mínimo de Jogos -->
+        <div v-if="aposta.jogos.length > 0 && aposta.jogos.length < minJogos" class="alert alert-warning py-1 px-2 small mb-2">
+            <i class="fa fa-warning"></i> Mínimo de jogos: ${minJogos}
+        </div>
+
+        <!-- Seções Selecionadas -->
+        <div v-if="aposta.jogos.length > 0">
+            <div v-for="(v, i) in aposta.jogos" class="b365-selection-card">
+                <span class="b365-sel-del" v-on:click="rmAposta(i)" title="Remover seleção">&times;</span>
+                <div class="b365-sel-teams">
+                    ${v.jogo.casa} x ${v.jogo.fora}
+                </div>
+                <div class="b365-sel-market">
+                    ${v.jogo.data.split('-').reverse().join('/')} às ${v.jogo.hora.replace(/:00$/, '')}
+                </div>
+                <div class="b365-sel-pick">
+                    <span class="label">
+                        Palpite: <b class="text-warning">${v.cotacao.sigla}</b>
+                        <span class="badge badge-secondary ml-1" v-if="v.tempo != '90'">
+                            ${v.tempo == 'pt' ? '1º Tempo': '2º Tempo'}
+                        </span>
+                    </span>
+                    <span class="rate">${(v && v.jogo && v.jogo.cotacoes && v.jogo.cotacoes[v.tempo] && v.cotacao && v.jogo.cotacoes[v.tempo][v.cotacao.campo]) ? maskReal(v.jogo.cotacoes[v.tempo][v.cotacao.campo]) : '-'}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cupom Vazio -->
+        <div v-else class="b365-betslip-empty">
+            <i class="fa fa-hand-pointer-o"></i>
+            <div class="title">Caderneta de apostas vazia</div>
+            <div class="subtitle">Selecione uma cotação para apostar.</div>
+        </div>
+
+        <!-- Resumo Financeiro -->
+        <div class="b365-summary-box" v-if="aposta.jogos.length > 0">
+            <div class="b365-sum-row">
+                <span>Seleções:</span>
+                <b class="text-white">${aposta.jogos.length}</b>
+            </div>
+            <div class="b365-sum-row">
+                <span>Cotação Total:</span>
+                <b class="text-warning">${valorCotacao}</b>
+            </div>
+            <div class="b365-sum-row total-return">
+                <span>Retornos Potenciais:</span>
+                <span class="val">R$ ${premio}</span>
+            </div>
+        </div>
+
+        <!-- Nome do Cliente -->
+        <div class="b365-stake-box" v-if="aposta.jogos.length > 0">
+            <label>NOME DO APOSTADOR</label>
+            <input type="text" v-model="cliente" class="form-control form-control-sm bg-dark border-secondary text-white font-weight-bold" placeholder="Ex: Seu Nome" maxlength="50"/>
+        </div>
+
+        <!-- Botões de Ação do Bilhete -->
+        <div v-if="aposta.jogos.length > 0" class="mt-3">
+            <button type="button" class="b365-btn-bet-action" v-bind:disabled="!apostaValida" v-on:click="finalizarAposta">
+                <i class="fa fa-check-circle"></i> {{ user ? 'Apostar Agora' : 'Gerar Pré-Bilhete' }}
+            </button>
+            <button type="button" class="b365-btn-clear-slip" v-on:click="limpaAposta">
+                <i class="fa fa-trash-o mr-1"></i> Limpar Caderneta
+            </button>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block script %}
+    {% set selector = '#website' %}
+    {{ block('script', 'website/page/apostar.twig') }}
+{% endblock %}

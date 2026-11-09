@@ -1,0 +1,941 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - PAGINA DE APOSTAS (home)
+   Visual do antigo bet24hs.site/v4:
+     .home        grade 230px | 1fr | 280px
+     .home-side   menu lateral (dias, importar bilhete, paises/campeonatos)
+     .home-main   banners + "Junte-se a acao" com campeonatos (.league)
+     .home-aside  "Minhas apostas" + "Ofertas"
+     .v4-cupom    bilhete flutuante (360px, canto inferior direito)
+   A LOGICA (Vue + endpoints /apostar/jogos e /apostar/apostar) vem inteira
+   do template base do sistema: website/page/apostar.twig.
+   ===================================================================== #}
+
+{% set selector = '#website' %}
+{% set listaBanners = banners('site-slideshow', null, null, 10) %}
+{% set destaquesHome = destaquesJogosHome(6) %}
+{% set storiesCassino = destaquesCassinoHome(10) %}
+
+{% block main %}
+
+    <div class="home">
+
+        {# ============================================================
+             MENU LATERAL
+             ============================================================ #}
+        <nav class="home-side" aria-label="Navegação">
+            <a class="side-link{{ not _get.data ? ' active' : '' }}"
+               href="{{ url('apostar', null, null, {'data': hoje}) }}">
+                <span class="side-link-dot" aria-hidden="true"></span>Jogos de hoje
+            </a>
+            <a class="side-link{{ _get.data == amanha ? ' active' : '' }}"
+               href="{{ url('apostar', null, null, {'data': amanha}) }}">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <rect x="4" y="5" width="16" height="15" rx="2"/>
+                    <path d="M4 10h16M8 3v4M16 3v4"/>
+                </svg>
+                Próximos jogos
+            </a>
+
+            <h3 class="home-side-title">Dias</h3>
+            {% set meses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'] %}
+            <div class="v4-dias">
+                {% for i in 0..2 %}
+                    {% set diaChip = 'now'|date_modify('+' ~ i ~ ' days') %}
+                    <a class="v4-dia{{ (not _get.data and i == 0) or (_get.data == diaChip|date('Y-m-d')) ? ' active' : '' }}"
+                       href="{{ url('apostar', null, null, {'data': diaChip|date('Y-m-d')}) }}">
+                        <span class="v4-dia-mes">{{ meses[diaChip|date('n') - 1] }}</span>
+                        <strong>{{ diaChip|date('d') }}</strong>
+                    </a>
+                {% endfor %}
+            </div>
+
+            {% if dados.getExibirBilhete() %}
+                <h3 class="home-side-title">Importar jogo</h3>
+                <form class="v4-consulta" onsubmit="location.href='{{ url('bilhete') }}?codigo='+encodeURIComponent(this.codigo.value);return false;"
+                      autocomplete="off">
+                    <input type="text" name="codigo" class="v4-campo" placeholder="Código do bilhete"
+                           aria-label="Código do bilhete">
+                    <button type="submit" class="v4-botao">Importar</button>
+                </form>
+            {% endif %}
+
+            <h3 class="home-side-title">Países</h3>
+            <a class="side-link{{ findPais == '*' ? '' : '' }}" href="javascript:;"
+               :class="{active: findPais == '*'}" v-on:click="setPais()">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>
+                </svg>
+                Todos os jogos
+            </a>
+            <a class="side-link" href="javascript:;" v-for="p in paises" :key="p.id"
+               :class="{active: findPais == p.id}" v-on:click="setPais(p)">
+                <img v-if="p.img" :src="p.img" width="16" height="16" alt="">
+                <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.title}</span>
+                <span class="side-link-count">${p.campeonatos.length}</span>
+            </a>
+
+            <h3 class="home-side-title">Principais ligas</h3>
+            <a class="side-link side-competition" href="javascript:;"
+               v-for="c in getCampeonatos(null, false)" :key="'liga-' + c.id"
+               :class="{active: findCampeonato == c.id}" v-on:click="setCampeonato(c)">
+                <img class="flag" v-if="c.paisImg" :src="c.paisImg" width="16" height="16" alt="">
+                <span class="side-competition-name">${c.title}</span>
+                <span class="side-link-count">${getJogos(c).length}</span>
+            </a>
+            <div class="v4-carregando" v-if="!paises.length">
+                <span class="spinner"></span> Carregando ligas...
+            </div>
+
+            <footer class="site-footer side-footer">
+                {% if dados.getExibirRegras() %}<a class="site-footer-link" href="{{ url('regras') }}">Regras</a>{% endif %}
+                <span>© {{ anoAtual }} {{ dados.getBanca() }}</span>
+                <span class="site-footer-age">+18</span>
+            </footer>
+        </nav>
+
+        {# ============================================================
+             TOPO (destaques + stories) - ocupa as duas colunas da direita
+             ============================================================ #}
+        <div class="home-top">
+
+            {# ---------- Destaques com odds (v4 .highlights) ---------- #}
+            <section class="highlights" aria-label="Destaques" data-v4-carrossel>
+                <div class="highlights-track" data-v4-trilho>
+                    <article class="highlight offer-banner">
+                        <a class="offer-banner-link" href="{{ url('apostar', null, null, {'data': hoje}) }}">
+                            <span class="offer-banner-title">
+                                <span class="offer-banner-lead">Criar aposta</span>
+                                <span>turbinada</span>
+                            </span>
+                            <span class="offer-banner-body">
+                                <span class="offer-banner-text">Odd aumentada pelo site, por tempo limitado.</span>
+                                <span class="offer-banner-more">Veja mais</span>
+                            </span>
+                        </a>
+                    </article>
+
+                    {% for g in destaquesHome %}
+                        <div class="highlight">
+                            <div class="highlight-top">
+                                <span class="highlight-when">{{ g.data|date('d/m') }} {{ g.hora|slice(0, 5) }}</span>
+                                <span class="highlight-league">
+                                    {% if g.paisImg %}
+                                        <img class="flag" width="14" height="14" src="{{ g.paisImg }}" alt=""/>
+                                    {% endif %}
+                                    {{ g.campeonato }}
+                                </span>
+                            </div>
+
+                            <div class="highlight-teams">
+                                <div class="highlight-team">
+                                    {% if g.imgCasa %}
+                                        <img class="logo" width="26" height="26" src="{{ g.imgCasa }}" alt=""
+                                             loading="lazy"/>
+                                    {% endif %}
+                                    <span>{{ g.casa }}</span>
+                                </div>
+                                <div class="highlight-team">
+                                    {% if g.imgFora %}
+                                        <img class="logo" width="26" height="26" src="{{ g.imgFora }}" alt=""
+                                             loading="lazy"/>
+                                    {% endif %}
+                                    <span>{{ g.fora }}</span>
+                                </div>
+                            </div>
+
+                            <div class="highlight-odds">
+                                <button type="button" class="odd odd-pickable prematch"
+                                        onclick="app.apostar({{ g|json_encode|e('html_attr') }}, '90', {campo:'casa', principal:'1', sigla:'1'}); return false;">
+                                    <span class="odd-label"><span class="odd-label-text">1</span></span>
+                                    <span class="odd-price">{{ g.oddCasa }}</span>
+                                </button>
+                                <button type="button" class="odd odd-pickable prematch"
+                                        onclick="app.apostar({{ g|json_encode|e('html_attr') }}, '90', {campo:'empate', principal:'1', sigla:'X'}); return false;">
+                                    <span class="odd-label"><span class="odd-label-text">X</span></span>
+                                    <span class="odd-price">{{ g.oddEmpate }}</span>
+                                </button>
+                                <button type="button" class="odd odd-pickable prematch"
+                                        onclick="app.apostar({{ g|json_encode|e('html_attr') }}, '90', {campo:'fora', principal:'1', sigla:'2'}); return false;">
+                                    <span class="odd-label"><span class="odd-label-text">2</span></span>
+                                    <span class="odd-price">{{ g.oddFora }}</span>
+                                </button>
+                            </div>
+
+                            <a class="highlight-more" href="javascript:;"
+                               onclick="app.maisCotacoes({{ g|json_encode|e('html_attr') }}); return false;">
+                                Mais mercados
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="carousel-btn carousel-prev" data-v4-anterior
+                        aria-label="Anteriores">&lsaquo;</button>
+                <button type="button" class="carousel-btn carousel-next" data-v4-proximo
+                        aria-label="Próximos">&rsaquo;</button>
+            </section>
+
+            {# ---------- Stories (capas do cassino em destaque) ---------- #}
+            {% if storiesCassino|length %}
+                <section class="stories stories-wide" aria-label="Destaques do cassino">
+                    <div class="stories-track">
+                        {% for j in storiesCassino %}
+                            <a class="story-card" href="{{ url('cassino/jogar/' ~ j.game_code) }}"
+                               title="{{ j.name }}">
+                                {% if j.image %}
+                                    <img src="{{ j.image }}" alt="{{ j.name }}" loading="lazy"/>
+                                {% endif %}
+                                <span class="story-card-title">{{ j.name }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                {# No celular o v4 tambem mostra a faixa de stories dentro do home-top #}
+                <section class="stories stories-phone" aria-label="Destaques do cassino">
+                    <div class="stories-track">
+                        {% for j in storiesCassino %}
+                            <a class="story-card" href="{{ url('cassino/jogar/' ~ j.game_code) }}"
+                               title="{{ j.name }}">
+                                {% if j.image %}
+                                    <img src="{{ j.image }}" alt="{{ j.name }}" loading="lazy"/>
+                                {% endif %}
+                                <span class="story-card-title">{{ j.name }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+        </div>
+
+        {# ============================================================
+             CONTEUDO PRINCIPAL
+             ============================================================ #}
+        <div class="home-main" data-bet24-jogos>
+
+            {# ---------- Carrossel de banners ---------- #}
+            <section class="v4-banners" data-v4-carrossel>
+                <div class="v4-banners-trilho" data-v4-trilho>
+                    {% for b in listaBanners %}
+                        {% set imgDesktop = b.imgCapa(true, 'desktop').getSource(true) %}
+                        {% set imgMobile = b.imgCapa(true, 'mobile').getSource(true) %}
+                        <div class="v4-banner">
+                            {% if b.getLink() %}
+                            <a href="{{ b.getLink() }}"{% if b.getLinktarget() %} target="{{ b.getLinktarget() }}"{% endif %}>
+                                {% endif %}
+                                <img src="{{ imgDesktop ?: imgMobile }}" alt="{{ b.getTitle() }}" loading="lazy"/>
+                                {% if b.getLink() %}
+                            </a>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        {# Sem banners cadastrados no painel: usa as artes do tema antigo #}
+                        <div class="v4-banner"><img src="imagens/bet24/banner-01.png"
+                                                    alt="Bônus no primeiro depósito" loading="lazy"/></div>
+                        <div class="v4-banner"><img src="imagens/bet24/banner-04.jpeg"
+                                                    alt="Apostas esportivas" loading="lazy"/></div>
+                        <div class="v4-banner"><img src="imagens/bet24/banner-02.png"
+                                                    alt="Promoções" loading="lazy"/></div>
+                        <div class="v4-banner"><img src="imagens/bet24/banner-03.png"
+                                                    alt="Cassino" loading="lazy"/></div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="carousel-btn carousel-prev" data-v4-anterior
+                        aria-label="Anterior">&lsaquo;</button>
+                <button type="button" class="carousel-btn carousel-next" data-v4-proximo
+                        aria-label="Próximo">&rsaquo;</button>
+            </section>
+
+            {# ---------- Junte-se a acao ---------- #}
+            <section class="home-section">
+
+                <div class="home-section-head">
+                    <h2 class="home-title">
+                        Junte-se à ação
+                        <span class="page-count" v-if="paises.length">(${getCampeonatos(null, true).length} ${getCampeonatos(null, true).length === 1 ? 'liga' : 'ligas'})</span>
+                    </h2>
+
+                    <div class="toggle">
+                        <button type="button" :class="{active: findData == '{{ hoje }}'}"
+                                v-on:click="setData('{{ hoje }}')">
+                            <svg aria-hidden="true" class="bolt toggle-clock" width="13" height="16"
+                                 viewBox="0 0 11 14">
+                                <path d="M6.5 0 0 8h4.5L3.5 14 11 5.5H6.3L6.5 0Z" fill="currentColor"/>
+                            </svg>
+                            <span>Jogos de hoje</span>
+                        </button>
+                        <button type="button" :class="{active: findData == '{{ amanha }}'}"
+                                v-on:click="setData('{{ amanha }}')">
+                            <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9"/>
+                                <path d="M12 7v5l3 2"/>
+                            </svg>
+                            <span>Próximos</span>
+                        </button>
+                    </div>
+                </div>
+
+                {# Filtros de data (dados reais vindos do servidor) #}
+                <div class="filters">
+                    <div class="chips chips-scroll">
+                        <button type="button" class="chip" v-for="d in datas" :key="d.data"
+                                :class="{'chip-active': findData == d.data}"
+                                v-on:click="setData(d.data)">${d.title}</button>
+                    </div>
+                </div>
+
+                {# Abas de pais (esportes no site antigo) #}
+                <nav class="sport-bar sport-bar-small" aria-label="Países">
+                    <a class="sport-tab" href="javascript:;" :class="{'sport-tab-active': findPais == '*'}"
+                       v-on:click="setPais()">Todos</a>
+                    <a class="sport-tab" href="javascript:;" v-for="p in paises" :key="p.id"
+                       :class="{'sport-tab-active': findPais == p.id}" v-on:click="setPais(p)">
+                        <img v-if="p.img" :src="p.img" alt=""/>
+                        <span>${p.title}</span>
+                    </a>
+                </nav>
+
+                {# Carregando #}
+                <div class="v4-carregando" v-if="!datas.length">
+                    <span class="spinner"></span> Carregando jogos...
+                </div>
+
+                {# Jogos agrupados por campeonato (.league) #}
+                <template v-if="datas.length && paises.length > 0">
+                    <template v-for="pais in paises">
+                        <template v-for="campeonato in getCampeonatos(pais, true)">
+                            <div class="league" v-if="filterPais(pais)" :key="campeonato.id">
+                                <button type="button" class="league-head" aria-expanded="true">
+                                    <span class="league-title">
+                                        <img class="flag" width="16" height="16" loading="lazy" alt=""
+                                             :src="campeonato.paisImg" v-if="campeonato.paisImg"/>
+                                        <span class="league-name">${campeonato.title}</span>
+                                        <span class="league-count">${getJogos(campeonato).length}</span>
+                                    </span>
+                                    <span class="league-cols" aria-hidden="true">
+                                        <span v-for="c in getCotacoesPrincipais()" :key="c.id">${c.campo === 'casa' ? '1' : (c.campo === 'empate' ? 'X' : (c.campo === 'fora' ? '2' : c.sigla))}</span>
+                                    </span>
+                                    <span class="league-chevron">
+                                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"
+                                             fill="none" stroke="currentColor" stroke-width="1.6"
+                                             stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M6 9l6 6 6-6"/>
+                                        </svg>
+                                    </span>
+                                </button>
+                                <div class="league-body">
+                                    <div class="match-row match-item" v-for="jogo in getJogos(campeonato)"
+                                         :key="jogo.id" :data-search="jogo.casa + ' x ' + jogo.fora">
+
+                                        <div class="when">
+                                            <span class="when-top">${jogo.hora.replace(/:00$/, '')}</span>
+                                            <span class="when-sub">${jogo.data.split('-').reverse().slice(0, 2).join('/')}</span>
+                                        </div>
+
+                                        <div class="teams">
+                                            <div class="teams-link">
+                                                <div class="team">
+                                                    <img class="logo" width="16" height="16" loading="lazy" alt=""
+                                                         :src="jogo.imgCasa" v-if="jogo.imgCasa"/>
+                                                    <span class="team-name">${jogo.casa}</span>
+                                                </div>
+                                                <div class="team">
+                                                    <img class="logo" width="16" height="16" loading="lazy" alt=""
+                                                         :src="jogo.imgFora" v-if="jogo.imgFora"/>
+                                                    <span class="team-name">${jogo.fora}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row-odds">
+                                            <button type="button" class="odd odd-pickable prematch"
+                                                    v-for="c in getCotacoesPrincipais()" :key="c.id"
+                                                    :class="{active: jogo.apostaEm == ('90' + c.campo)}"
+                                                    :title="c.title"
+                                                    v-on:click="apostar(jogo, '90', c)">
+                                                <span class="odd-label">
+                                                    <span class="odd-label-text">${c.campo === 'casa' ? '1' : (c.campo === 'empate' ? 'X' : (c.campo === 'fora' ? '2' : c.sigla))}</span>
+                                                </span>
+                                                <span class="odd-price">${(jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo]) ? maskReal(jogo.cotacoes['90'][c.campo]) : '-'}</span>
+                                            </button>
+                                        </div>
+
+                                        <a class="row-more" href="javascript:;"
+                                           v-on:click.stop="maisCotacoes(jogo)" title="Mais mercados">
+                                            +${Math.max(0, totalCotacoes(jogo.cotacoes) - getCotacoesPrincipais().length)}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </template>
+                </template>
+
+                {# Nenhum jogo para os filtros atuais #}
+                <div class="empty" v-if="datas.length && getCampeonatos(null, true).length === 0">
+                    <div class="empty-state">
+                        <div class="empty-title"
+                             v-text="paises.length ? 'Nenhum jogo com esses filtros' : 'Nenhum jogo disponível no momento'">
+                        </div>
+                        <div class="empty-text"
+                             v-text="paises.length ? 'Não há jogos com esses filtros. Escolha outro dia, outro país ou limpe a busca.' : 'Assim que novos jogos forem cadastrados eles aparecem aqui.'">
+                        </div>
+                        <div class="empty-actions" v-if="paises.length">
+                            <button type="button" class="empty-button" v-on:click="setData('{{ hoje }}')">
+                                Ver jogos de hoje
+                            </button>
+                            <button type="button" class="empty-button is-quiet" v-on:click="setData('{{ amanha }}')">
+                                Ver jogos de amanhã
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <a class="more-link" href="{{ url('apostar', null, null, {'data': amanha}) }}">Mais eventos</a>
+            </section>
+        </div>
+
+        {# ============================================================
+             COLUNA DIREITA (Minhas apostas + Ofertas)
+             ============================================================ #}
+        <aside class="home-aside v4-aside" id="v4Aside" aria-label="Minhas apostas e ofertas">
+
+            <section class="aside-card bets-card v4-minhas-apostas">
+                <h3 class="bets-card-title">Minhas apostas</h3>
+                <div class="bets-tabs" role="tablist" aria-label="Apostas">
+                    <button aria-selected="true" class="bets-tab is-active" role="tab" type="button">Em aberto</button>
+                    <button aria-selected="false" class="bets-tab" role="tab" type="button">Resolvidas</button>
+                </div>
+                <div class="bets-list">
+                    <p class="bets-empty">
+                        {% if user %}
+                            Consulte suas apostas na página Minhas apostas.
+                        {% else %}
+                            Entre na sua conta para acompanhar suas apostas.
+                        {% endif %}
+                    </p>
+                </div>
+                <a class="bets-history" href="{{ url('apostas') }}">Histórico completo</a>
+            </section>
+
+            <section class="aside-card suggest-card" aria-label="Sugestões">
+                <h3 class="suggest-head">
+                    <svg aria-hidden="true" fill="currentColor" height="16" viewBox="0 0 24 24" width="16">
+                        <path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9zM19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9z"></path>
+                    </svg>
+                    Sugestões
+                </h3>
+                <div class="suggest-body">
+                    <label class="suggest-label" for="bet24SugValor">Escolha o valor a apostar</label>
+                    <span class="stake-field suggest-stake">
+                        <span class="stake-currency">R$</span>
+                        <input id="bet24SugValor" inputmode="numeric" placeholder="0"
+                               value="{{ apostaMinima|default(1)|number_format(0, ',', '.') }}" autocomplete="off"/>
+                    </span>
+                    <span class="suggest-label">Escolha o valor que gostaria de ganhar</span>
+                    <div aria-label="Valor que gostaria de ganhar" class="suggest-ranges" role="radiogroup">
+                        <button aria-checked="true" class="suggest-range is-active" role="radio" type="button"
+                                data-min="60" data-max="200">R$&nbsp;60 - R$&nbsp;200</button>
+                        <button aria-checked="false" class="suggest-range" role="radio" type="button"
+                                data-min="200" data-max="600">R$&nbsp;200 - R$&nbsp;600</button>
+                        <button aria-checked="false" class="suggest-range" role="radio" type="button"
+                                data-min="600" data-max="3000">R$&nbsp;600 - R$&nbsp;3.000</button>
+                        <button aria-checked="false" class="suggest-range" role="radio" type="button"
+                                data-min="3000" data-max="20000">R$&nbsp;3.000 - R$&nbsp;20.000</button>
+                        <button aria-checked="false" class="suggest-range" role="radio" type="button"
+                                data-min="20000" data-max="30000">R$&nbsp;20.000 - R$&nbsp;30.000</button>
+                    </div>
+                    <button class="suggest-go" id="bet24SugVer" type="button">Ver sugestões</button>
+                </div>
+            </section>
+
+            <section class="aside-card offers-card" aria-label="Ofertas">
+                <h3 class="suggest-head">
+                    <svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round"
+                         stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="16">
+                        <rect height="4" rx="1" width="18" x="3" y="8"></rect>
+                        <path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path>
+                        <path d="M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"></path>
+                    </svg>
+                    Ofertas
+                </h3>
+                <ul class="offers-list">
+                    <li class="offer offer-bolt">
+                        <span aria-hidden="true" class="offer-pic">
+                            <svg aria-hidden="true" class="cas-art" height="32" viewBox="0 0 32 32" width="32">
+                                <defs>
+                                    <linearGradient id="ofrv4-0-g" x1="0" x2="0" y1="0" y2="1">
+                                        <stop offset="0" stop-color="#fff07a"></stop>
+                                        <stop offset="1" stop-color="#ffb20f"></stop>
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="16" cy="16" fill="#3a2a8c" r="13"></circle>
+                                <path d="M18 3.5L8 18h6.5L12.5 28.5 24 13h-6.8z" fill="url(#ofrv4-0-g)"
+                                      stroke="#fff6c4" stroke-linejoin="round" stroke-width=".8"></path>
+                            </svg>
+                        </span>
+                        <div class="offer-body">
+                            <span class="offer-group">Esportes</span>
+                            <h3 class="offer-title">Apostas de hoje</h3>
+                            <p class="offer-text">Todos os jogos de hoje com as melhores cotações.</p>
+                            <a class="offer-more" href="{{ url() }}">Veja mais</a>
+                        </div>
+                    </li>
+                    <li class="offer offer-flame">
+                        <span aria-hidden="true" class="offer-pic">
+                            <svg aria-hidden="true" class="cas-art" height="32" viewBox="0 0 32 32" width="32">
+                                <defs>
+                                    <linearGradient id="ofrv4-1-g" x1="0" x2="0" y1="0" y2="1">
+                                        <stop offset="0" stop-color="#ffb347"></stop>
+                                        <stop offset="1" stop-color="#ff5a1f"></stop>
+                                    </linearGradient>
+                                    <linearGradient id="ofrv4-1-i" x1="0" x2="0" y1="0" y2="1">
+                                        <stop offset="0" stop-color="#fff1a8"></stop>
+                                        <stop offset="1" stop-color="#ffc23d"></stop>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M16 29c-6 0-10-4.2-10-9.6 0-5.6 4.6-8.6 5.6-14.4 3.4 2.2 4.9 5 5 8 1.4-1 2.3-2.6 2.5-4.6 3.5 3 6.9 6.6 6.9 11.4C26 25 22 29 16 29z"
+                                      fill="url(#ofrv4-1-g)"></path>
+                                <path d="M16 27.5c-3 0-5-2-5-4.8 0-3 2.4-4.6 3.4-7.4 2.4 1.6 3.5 3.4 3.6 5.2.8-.5 1.4-1.4 1.6-2.4 1.6 1.6 2.4 3 2.4 4.8 0 2.7-2.4 4.6-6 4.6z"
+                                      fill="url(#ofrv4-1-i)"></path>
+                            </svg>
+                        </span>
+                        <div class="offer-body">
+                            <span class="offer-group">Esportes</span>
+                            <h3 class="offer-title">Múltiplas do dia</h3>
+                            <p class="offer-text">Monte um bilhete com vários jogos e multiplique a cotação.</p>
+                            <a class="offer-more" href="{{ url('apostar', null, null, {'data': hoje}) }}">Veja mais</a>
+                        </div>
+                    </li>
+                    {% if dados.getExibirRegras() %}
+                        <li class="offer offer-trophy">
+                            <span aria-hidden="true" class="offer-pic">
+                                <svg aria-hidden="true" class="cas-art" height="32" viewBox="0 0 32 32" width="32">
+                                    <defs>
+                                        <linearGradient id="ofrv4-2-g" x1="0" x2="0" y1="0" y2="1">
+                                            <stop offset="0" stop-color="#ffe27a"></stop>
+                                            <stop offset="1" stop-color="#f0a10f"></stop>
+                                        </linearGradient>
+                                        <linearGradient id="ofrv4-2-b" x1="0" x2="0" y1="0" y2="1">
+                                            <stop offset="0" stop-color="#7a4a1c"></stop>
+                                            <stop offset="1" stop-color="#4a2a0e"></stop>
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M8 6h16v5a8 8 0 0 1-16 0z" fill="url(#ofrv4-2-g)"></path>
+                                    <path d="M8 8H4.5a4.5 4.5 0 0 0 4.7 6.2M24 8h3.5a4.5 4.5 0 0 1-4.7 6.2"
+                                          fill="none" stroke="#f0a10f" stroke-linecap="round"
+                                          stroke-width="2.2"></path>
+                                    <path d="M14 18h4l1 5h-6z" fill="#e0920e"></path>
+                                    <rect fill="url(#ofrv4-2-b)" height="5" rx="1.6" width="12" x="10" y="23"></rect>
+                                    <path d="M11.5 8.5c0 3.5 1.4 6 3.5 7" fill="none" opacity=".8"
+                                          stroke="#fff6cc" stroke-linecap="round" stroke-width="1.6"></path>
+                                </svg>
+                            </span>
+                            <div class="offer-body">
+                                <span class="offer-group">Informações</span>
+                                <h3 class="offer-title">Regras de apostas</h3>
+                                <p class="offer-text">Entenda como as apostas são validadas e pagas.</p>
+                                <a class="offer-more" href="{{ url('regras') }}">Veja mais</a>
+                            </div>
+                        </li>
+                    {% endif %}
+                </ul>
+            </section>
+        </aside>
+
+        {# ============================================================
+             BILHETE FLUTUANTE (cupom do site antigo)
+             ============================================================ #}
+        <section class="v4-cupom" id="v4Cupom" :data-qtd="aposta.jogos.length" aria-label="Bilhete">
+            <button type="button" class="v4-cupom-barra" data-v4-cupom-barra aria-expanded="false"
+                    aria-controls="v4CupomCorpo">
+                <span class="v4-cupom-linha">
+                    <span class="v4-cupom-icone" aria-hidden="true">
+                        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <path d="M5 3h14v18l-2.3-1.6L14.3 21 12 19.4 9.7 21l-2.4-1.6L5 21z"/>
+                            <path d="M9 8h6M9 12h6"/>
+                        </svg>
+                        <span class="v4-cupom-qtd" v-text="aposta.jogos.length">0</span>
+                    </span>
+                    <strong class="v4-cupom-tipo">${aposta.jogos.length === 1 ? 'Simples' : (aposta.jogos.length === 2 ? 'Dupla' : (aposta.jogos.length === 3 ? 'Tripla' : (aposta.jogos.length > 3 ? 'Múltipla' : 'Bilhete')))}</strong>
+                    <span class="v4-cupom-odd" v-text="valorCotacao"></span>
+                    <span class="v4-cupom-seta" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 15l6-6 6 6"/>
+                        </svg>
+                    </span>
+                </span>
+                <span class="v4-cupom-linha v4-cupom-linha-2">
+                    <span class="v4-cupom-times">${aposta.jogos.length ? aposta.jogos[0].jogo.casa + ' x ' + aposta.jogos[0].jogo.fora : ''}</span>
+                    <span class="v4-cupom-mais" v-if="aposta.jogos.length > 1"
+                          v-text="'+' + (aposta.jogos.length - 1)"></span>
+                </span>
+            </button>
+
+            <div class="v4-cupom-corpo" id="v4CupomCorpo">
+                {{ block('bilhete') }}
+            </div>
+        </section>
+
+    </div>
+
+    {{ block('modalCotacoes') }}
+
+{% endblock %}
+
+{# =====================================================================
+   BILHETE (conteudo do cupom)
+   ===================================================================== #}
+{% block bilhete %}
+    <div class="aside-card slip-card" :data-qtd="aposta.jogos.length">
+        <div class="slip-head">
+            <strong>Bilhete</strong>
+            <span class="slip-badge" v-text="aposta.jogos.length">0</span>
+            <button type="button" class="slip-clear" v-on:click="limpaAposta" title="Limpar bilhete">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5M14 11v5"/>
+                </svg>
+                Limpar
+            </button>
+            <button type="button" class="slip-clear v4-aside-fechar" data-v4-bilhete-fechar
+                    aria-label="Fechar bilhete">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 6l12 12M18 6L6 18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="v4-compartilhar" v-if="aposta.jogos.length">
+            <button type="button" class="v4-compartilhar-item" v-on:click="bet24CopiarBilhete">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="8" y="8" width="12" height="12" rx="2"/>
+                    <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>
+                </svg>
+                Copiar
+            </button>
+            <a class="v4-compartilhar-item v4-whatsapp"
+               href="https://api.whatsapp.com/send?text=Confira%20meu%20bilhete%20no%20{{ dados.getBanca()|url_encode }}"
+               target="_blank" rel="noopener">
+                <i class="fab fa-whatsapp"></i> Whatsapp
+            </a>
+        </div>
+
+        <div class="slip-tabs ticket-menu" v-if="aposta.jogos.length">
+            <div class="slip-tab" :class="{'is-on': aposta.jogos.length === 1}">Simples</div>
+            <div class="slip-tab" :class="{'is-on': aposta.jogos.length === 2}">Dupla</div>
+            <div class="slip-tab" :class="{'is-on': aposta.jogos.length > 2}">Múltipla</div>
+        </div>
+
+        <p class="v4-bilhete-vazio">Clique em uma cotação para montar o seu bilhete.</p>
+
+        <div class="ticket-info">
+            <div class="ticket-item" v-for="(v, i) in aposta.jogos" :key="i">
+                <div class="ticket-item-header">
+                    <div class="ticket-item-league">${v.jogo.campeonato}</div>
+                </div>
+                <div class="ticket-item-data">
+                    <div class="ticket-item-teams">
+                        <span>
+                            <img :src="v.jogo.imgCasa" alt="" v-if="v.jogo.imgCasa"/>
+                            ${v.jogo.casa}
+                        </span>
+                        <span>
+                            <img :src="v.jogo.imgFora" alt="" v-if="v.jogo.imgFora"/>
+                            ${v.jogo.fora}
+                        </span>
+                    </div>
+                    <div class="ticket-item-date">
+                        <i class="far fa-clock" aria-hidden="true"></i>
+                        ${v.jogo.data.split('-').reverse().join('/')} ${v.jogo.hora.replace(/:00$/, '')}
+                        <span class="ticket-item-remove">
+                            <a href="javascript:;" v-on:click="rmAposta(i)" title="Remover">
+                                <i class="far fa-trash-alt" aria-hidden="true"></i>
+                            </a>
+                        </span>
+                    </div>
+                </div>
+                <div class="ticket-item-odd">
+                    <div class="ticket-item-market">${grupos[v.cotacao.grupo] || v.cotacao.campo || 'Mercado'}<span v-if="v.tempo != '90'"> — ${v.tempo == 'pt' ? '1º Tempo' : '2º Tempo'}</span></div>
+                    <div class="ticket-item-type">
+                        <span>${v.cotacao.title || v.cotacao.sigla}</span>
+                        <span class="ticket-item-value">${maskReal(v.jogo.cotacoes[v.tempo] ? v.jogo.cotacoes[v.tempo][v.cotacao.campo] : 0)}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ticket-content slip-foot">
+            <div class="ticket-content-value">
+                <label class="stake-field">
+                    <span class="stake-currency">R$</span>
+                    <input type="number" v-model="valorAposta" :min="apostaMinima" :max="apostaMaxima"
+                           step="1" inputmode="decimal" placeholder="Digite o valor"/>
+                </label>
+                {% if not user %}
+                    <label class="stake-field">
+                        <span class="stake-currency">
+                            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="4"/>
+                                <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>
+                            </svg>
+                        </span>
+                        <input type="text" v-model="cliente" placeholder="Nome do cliente (opcional)"
+                               maxlength="50"/>
+                    </label>
+                {% endif %}
+            </div>
+
+            <dl class="slip-totals ticket-content-data">
+                <div class="ticket-content-data-item">
+                    <dt>Bilhetes</dt>
+                    <dd v-text="aposta.jogos.length">0</dd>
+                </div>
+                <div class="ticket-content-data-item">
+                    <dt>Cotação</dt>
+                    <dd v-text="valorCotacao">0,00</dd>
+                </div>
+                <div class="ticket-content-data-item">
+                    <dt>Aposta total</dt>
+                    <dd>R$ <span v-text="maskReal(valorAposta)">0,00</span></dd>
+                </div>
+                <div class="ticket-content-data-item slip-return">
+                    <dt>Valor do prêmio</dt>
+                    <dd>R$ <span v-text="premio">0,00</span></dd>
+                </div>
+            </dl>
+
+            <button type="button" class="slip-place" :disabled="!apostaValida"
+                    v-on:click="finalizarAposta">
+                {{ user ? 'Apostar' : 'Criar pré-bilhete' }}
+            </button>
+        </div>
+    </div>
+{% endblock %}
+
+{# =====================================================================
+   MODAL "MAIS COTACOES"
+   ===================================================================== #}
+{% block modalCotacoes %}
+    <div id="modal-cotacoes" class="modal" aria-hidden="true">
+        <div class="modal-dialog v4-turbo-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="dialog-title">
+                        <span v-if="mJogo.jogo">${mJogo.jogo.casa} x ${mJogo.jogo.fora}</span>
+                        <span v-else>Mais cotações</span>
+                    </h2>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="bet24-tabs bet24-mercado-tabs">
+                        <button type="button" class="bet24-tab" v-for="(tempo, key) in tempos" :key="key"
+                                :class="{'is-active': mJogo.tempo == key}"
+                                v-on:click="mJogo.tempo = key">${tempo}</button>
+                    </div>
+
+                    <div v-if="mJogo.jogo" class="bet24-mercados">
+                        <template v-for="(grupo, id) in grupos">
+                            <div class="market" v-if="getCotacoesByGrupo(id).length" :key="id">
+                                <div class="market-head">
+                                    <span>${grupo}</span>
+                                </div>
+                                <div class="market-grid">
+                                    <button type="button" class="odd odd-pickable"
+                                            v-for="c in getCotacoesByGrupo(id)" :key="c.id"
+                                            :class="{active: mJogo.jogo.apostaEm == (mJogo.tempo + c.campo)}"
+                                            v-on:click="apostar(mJogo.jogo, mJogo.tempo, c)">
+                                        <span class="odd-label"><span class="odd-label-text">${c.title}</span></span>
+                                        <span class="odd-price">${maskReal(mJogo.jogo.cotacoes[mJogo.tempo][c.campo])}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{# =====================================================================
+   LOGICA (app Vue + endpoints) - reaproveitada do template base
+   ===================================================================== #}
+{% block script %}
+    {{ block('script', 'website/page/apostar.twig') }}
+
+    <script>
+        (function () {
+            if (!window.app) {
+                return;
+            }
+
+            // Data inicial vinda da URL (?data=YYYY-MM-DD), usada pelo menu "Jogos de hoje/amanhã"
+            var dataInicial = {{ ('' ~ (_get.data ?: hoje))|json_encode|raw }};
+            if (dataInicial && window.app.findData !== dataInicial) {
+                window.app.findData = dataInicial;
+            }
+
+            // Se o dia escolhido nao tiver jogos, abre no primeiro dia com jogos
+            window.app.$watch('datas', function (lista) {
+                if (!lista || !lista.length) {
+                    return;
+                }
+                var datasComJogos = lista.map(function (d) {
+                    return d.data;
+                });
+                if (window.app.findData && datasComJogos.indexOf(window.app.findData) === -1) {
+                    window.app.findData = datasComJogos[0];
+                }
+            });
+
+            // Se por algum motivo nao vier nenhum dia, troca o "Carregando" por estado vazio
+            setTimeout(function () {
+                if (window.app.datas && window.app.datas.length) {
+                    return;
+                }
+                var carregando = document.querySelector('.v4-carregando');
+                if (carregando) {
+                    carregando.innerHTML = '<div class="empty-state"><div class="empty-title">Nenhum jogo disponivel no momento</div><div class="empty-text">Assim que novos jogos forem cadastrados eles aparecem aqui.</div></div>';
+                }
+            }, 10000);
+
+            // Busca inicial (?search=)
+            var buscaInicial = {{ ('' ~ (_get.search ?: ''))|json_encode|raw }};
+            if (buscaInicial) {
+                window.app.search = buscaInicial;
+            }
+
+            // O modal de busca filtra os jogos no cliente (sem recarregar)
+            $(document).data('bet24-busca-live', true);
+            $(document).on('bet24:busca', function (e, termo) {
+                window.app.search = termo || '';
+            });
+
+            // Abre o cupom automaticamente quando a pessoa adiciona a primeira odd
+            window.app.$watch('aposta.jogos.length', function (novo, antigo) {
+                $.bet24AtualizaQtd(novo);
+                if (novo > 0 && !window.bet24CupomAberto()) {
+                    $('#v4Cupom').addClass('is-entrando');
+                    setTimeout(function () {
+                        $('#v4Cupom').removeClass('is-entrando');
+                    }, 420);
+                }
+                if (novo === 0) {
+                    window.bet24FechaCupom && window.bet24FechaCupom();
+                }
+            });
+
+            // "Ver sugestões": monta um bilhete com até 3 jogos disponíveis e
+            // escolhe o valor para o ganho ficar dentro da faixa selecionada.
+            $(document).on('click', '.suggest-range', function () {
+                $('.suggest-range').removeClass('is-active').attr('aria-checked', 'false');
+                $(this).addClass('is-active').attr('aria-checked', 'true');
+            });
+
+            // O valor digitado no cartão de sugestões também alimenta o bilhete.
+            $('#bet24SugValor').on('input change', function () {
+                if (!window.app) {
+                    return;
+                }
+                var valor = parseFloat(String($(this).val()).replace(/\./g, '').replace(',', '.'));
+                if (!isNaN(valor) && valor > 0) {
+                    window.app.valorAposta = valor;
+                }
+            });
+
+            $('#bet24SugVer').on('click', function () {
+                var v = window.app;
+                if (!v) {
+                    return;
+                }
+
+                var candidatos = [];
+                (v.getCampeonatos(null, true) || []).forEach(function (c) {
+                    (c.jogos || []).forEach(function (j) {
+                        var cota = j.cotacoes && j.cotacoes['90'];
+                        if (cota && (cota.casa || cota.empate || cota.fora) && (!v.jogoAberto || v.jogoAberto(j))) {
+                            candidatos.push(j);
+                        }
+                    });
+                });
+
+                if (!candidatos.length) {
+                    window.bet24Aviso('Nenhum jogo disponível para montar a sugestão agora.');
+                    return;
+                }
+
+                if (v.limpaAposta) {
+                    v.limpaAposta();
+                }
+
+                var passo = Math.max(1, Math.floor(candidatos.length / 3));
+                var escolhidos = [];
+                for (var i = 0; i < candidatos.length && escolhidos.length < 3; i += passo) {
+                    escolhidos.push(candidatos[i]);
+                }
+
+                var oddTotal = 1;
+                escolhidos.forEach(function (j) {
+                    var cota = j.cotacoes['90'];
+                    var campo = cota.casa ? 'casa' : (cota.empate ? 'empate' : 'fora');
+                    oddTotal *= parseFloat(cota[campo]) || 1;
+                    v.apostar(j, '90', {
+                        campo: campo,
+                        principal: '1',
+                        sigla: campo === 'casa' ? '1' : (campo === 'empate' ? 'X' : '2')
+                    });
+                });
+
+                var $faixa = $('.suggest-range.is-active');
+                var alvo = ((parseFloat($faixa.data('min')) || 60) + (parseFloat($faixa.data('max')) || 200)) / 2;
+                var valor = alvo / oddTotal;
+                valor = Math.max(v.apostaMinima || 1, Math.min(v.apostaMaxima || 999999, valor));
+                v.valorAposta = Math.round(valor * 100) / 100;
+
+                $('#bet24SugValor').val(v.valorAposta.toFixed(2).replace('.', ','));
+
+                setTimeout(function () {
+                    window.bet24AbreCupom && window.bet24AbreCupom();
+                    window.bet24Aviso('Sugestão montada no bilhete. Confira as seleções e finalize.');
+                }, 150);
+            });
+
+            // Copiar o bilhete (texto simples)
+            window.app.bet24CopiarBilhete = function () {
+                var linhas = window.app.aposta.jogos.map(function (v) {
+                    var odd = v.jogo.cotacoes && v.jogo.cotacoes[v.tempo] ? v.jogo.cotacoes[v.tempo][v.cotacao.campo] : '';
+                    return v.jogo.casa + ' x ' + v.jogo.fora + ' - ' + (v.cotacao.title || v.cotacao.sigla) + ': ' + window.app.maskReal(odd);
+                });
+                var texto = 'Bilhete (' + window.app.aposta.jogos.length + ' seleções)\n' + linhas.join('\n')
+                    + '\nCotação: ' + window.app.valorCotacao
+                    + '\nValor: R$ ' + window.app.maskReal(window.app.valorAposta)
+                    + '\nPrêmio: R$ ' + window.app.premio;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(texto).then(function () {
+                        window.bet24Aviso('Bilhete copiado!');
+                    });
+                } else {
+                    window.prompt('Copie o bilhete abaixo:', texto);
+                }
+            };
+        })();
+    </script>
+{% endblock %}

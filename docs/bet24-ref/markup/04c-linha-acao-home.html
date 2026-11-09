@@ -1,0 +1,171 @@
+<!--
+  TEMA BET24 (site11) - REFERENCIA v4
+  Arquivo: 04c - Linha compacta da home ("Junte-se a acao") - .action-row
+  Origem: template JS em js_v4-home.js (funcoes linhaAcao() 181-192, times() 151-155,
+          tags() 166-178, odds() 143-149) + classes reais em css_v4_app.css.
+
+  Diferenca para .match-row:
+    - .action-row e o cartao da secao principal da home (lista solta, sem campeonato)
+    - .action-when mostra horario + dia
+    - .action-teams traz os times E o nome do campeonato com bandeira (.action-league)
+    - o "+N mercados" fica dentro de .action-league como .action-more
+    - nao tem a coluna final de 52px do .match-row
+
+  Grid: 64px | minmax(0,1fr) | minmax(300px,420px)  (<=960px: 52px | 1fr e odds na linha toda)
+
+  Estas linhas sao carregadas em lotes de 20 por v4-home.js a partir de
+  /router?path=v4.home&bloco=jogos. O JSON de cada jogo tem:
+    id, cid, cn (campeonato), bd (bandeira), h (hora), dm (data), dia,
+    busca, casa, fora, ec/ef (escudos), mais [url, qtd], ca, pa, st (stats), x (tem empate),
+    o [[taxaId, "2,11"], ...]
+-->
+
+<!-- =====================================================================
+     1) Linha com selos CA + PA, estatisticas e "+950" (caso mais completo)
+     ===================================================================== -->
+<div class="action-row match-item has-tags" data-search="coritiba x vitoria 31/10/2026 16:00">
+
+    <!-- selos no canto superior esquerdo (posicionados por .match-tags-corner) -->
+    <span class="match-tags match-tags-corner">
+        <span class="match-tag match-tag-ca" data-tooltip="CA" title="Criar Aposta">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 2 4 13.5h6.5L9 22l10-12.5h-6.6z"/></svg>CA
+        </span>
+        <span class="match-tag match-tag-ep" data-tooltip="PA" title="Pagamento Antecipado">
+            <svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true" fill="currentColor"><path d="M1.5 3.2v9.6c0 .5.6.8 1 .5L8 9.4v3.4c0 .5.6.8 1 .5l6.3-4.8a.6.6 0 0 0 0-1L9 2.7a.6.6 0 0 0-1 .5v3.4L2.5 2.7a.6.6 0 0 0-1 .5Z"/></svg>2 gols
+        </span>
+    </span>
+
+    <div class="action-when">
+        <strong>16:00</strong>
+        <span>31/10</span>
+    </div>
+
+    <div class="action-teams">
+        <a class="teams-link" href="/v4/jogos/196785640">
+            <div class="team">
+                <img class="logo" width="16" height="16" loading="lazy" alt="" src="https://images.wolfsistemas.me/s/29f69c1dd4c7e607d114c7ba8a27313a.png">
+                <span class="team-name">Coritiba</span>
+            </div>
+            <div class="team">
+                <img class="logo" width="16" height="16" loading="lazy" alt="" src="https://images.wolfsistemas.me/s/dd5c2c38b23d35cdaca50f1b1bd99ef3.png">
+                <span class="team-name">Vitoria</span>
+            </div>
+        </a>
+        <span class="action-league">
+            <img class="flag" width="12" height="12" loading="lazy" alt="" src="https://images.wolfsistemas.me/flags/br.png">
+            <span class="action-league-name">Brasil - Serie A</span>
+            <a class="match-stats" href="/v4/stats/YVpXMUsra3NPdlE9" target="_blank" rel="noopener" title="Estatísticas">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>
+            </a>
+            <a class="action-more" href="/v4/jogos/196785640">+950</a>
+        </span>
+    </div>
+
+    <div class="row-odds" data-v4-jogo="196785640">
+        <button type="button" class="odd odd-pickable prematch" data-jogo-id="196785640" data-id="77715154">
+            <span class="odd-label"><span class="odd-label-text">1</span></span>
+            <span class="odd-price">2,11</span>
+        </button>
+        <button type="button" class="odd odd-pickable prematch" data-jogo-id="196785640" data-id="77715155">
+            <span class="odd-label"><span class="odd-label-text">X</span></span>
+            <span class="odd-price">3,20</span>
+        </button>
+        <button type="button" class="odd odd-pickable prematch" data-jogo-id="196785640" data-id="77715156">
+            <span class="odd-label"><span class="odd-label-text">2</span></span>
+            <span class="odd-price">3,16</span>
+        </button>
+    </div>
+</div>
+
+<!-- =====================================================================
+     2) Linha minima (sem selos, sem stats, sem +mercados)
+     ===================================================================== -->
+<div class="action-row match-item" data-search="brentford x nottm forest 31/10/2026 12:00">
+    <div class="action-when"><strong>12:00</strong><span>31/10</span></div>
+    <div class="action-teams">
+        <div class="teams-link">
+            <div class="team">
+                <img class="logo" width="16" height="16" loading="lazy" alt="" src="https://images.wolfsistemas.me/s/f2e6f0a7ba3eeb1f2713b30851edd2dd.png">
+                <span class="team-name">Brentford</span>
+            </div>
+            <div class="team">
+                <img class="logo" width="16" height="16" loading="lazy" alt="" src="https://images.wolfsistemas.me/s/f93b8bbbac89ea22bac0bf188ba49a61.png">
+                <span class="team-name">Nottm Forest</span>
+            </div>
+        </div>
+        <span class="action-league">
+            <img class="flag" width="12" height="12" loading="lazy" alt="" src="https://images.wolfsistemas.me/flags/gb-eng.png">
+            <span class="action-league-name">Inglaterra -  Premier League</span>
+        </span>
+    </div>
+    <div class="row-odds" data-v4-jogo="196786667">
+        <button type="button" class="odd odd-pickable prematch" data-jogo-id="196786667" data-id="77893222">
+            <span class="odd-label"><span class="odd-label-text">1</span></span>
+            <span class="odd-price">1,96</span>
+        </button>
+        <button type="button" class="odd odd-pickable prematch" data-jogo-id="196786667" data-id="77893223">
+            <span class="odd-label"><span class="odd-label-text">X</span></span>
+            <span class="odd-price">3,49</span>
+        </button>
+        <button type="button" class="odd odd-pickable prematch" data-jogo-id="196786667" data-id="77893224">
+            <span class="odd-label"><span class="odd-label-text">2</span></span>
+            <span class="odd-price">3,36</span>
+        </button>
+    </div>
+</div>
+
+<!-- =====================================================================
+     3) Linha ao vivo no formato compacto (home/lista) - .action-row.is-live
+     ===================================================================== -->
+<div class="action-row match-item is-live" data-search="coritiba x vitoria">
+    <div class="action-when is-live">
+        <strong>
+            <svg aria-hidden="true" class="bolt" width="11" height="13" viewBox="0 0 11 14"><path d="M6.5 0 0 8h4.5L3.5 14 11 5.5H6.3L6.5 0Z" fill="currentColor"/></svg>
+            67'
+        </strong>
+        <span>2º tempo</span>
+    </div>
+    <div class="action-teams">
+        <a class="teams-link" href="/v4/jogos/aovivo/196785640">
+            <div class="team">
+                <img class="logo" width="16" height="16" alt="" src="https://images.wolfsistemas.me/s/29f69c1dd4c7e607d114c7ba8a27313a.png">
+                <span class="team-name">Coritiba</span>
+                <span class="team-score">1</span>
+            </div>
+            <div class="team">
+                <img class="logo" width="16" height="16" alt="" src="https://images.wolfsistemas.me/s/dd5c2c38b23d35cdaca50f1b1bd99ef3.png">
+                <span class="team-name">Vitoria</span>
+                <span class="team-score">0</span>
+            </div>
+        </a>
+        <span class="action-league">
+            <img class="flag" width="12" height="12" alt="" src="https://images.wolfsistemas.me/flags/br.png">
+            <span class="action-league-name">Brasil - Serie A</span>
+        </span>
+    </div>
+    <div class="row-odds" data-v4-jogo="196785640">
+        <button type="button" class="odd odd-pickable" data-jogo-id="196785640" data-id="77715154">
+            <span class="odd-label"><span class="odd-label-text">1</span></span>
+            <span class="odd-price">1,55</span>
+        </button>
+        <button type="button" class="odd odd-pickable" data-jogo-id="196785640" data-id="77715155">
+            <span class="odd-label"><span class="odd-label-text">X</span></span>
+            <span class="odd-price">4,20</span>
+        </button>
+        <button type="button" class="odd odd-pickable" data-jogo-id="196785640" data-id="77715156">
+            <span class="odd-label"><span class="odd-label-text">2</span></span>
+            <span class="odd-price">6,80</span>
+        </button>
+    </div>
+</div>
+
+<!-- =====================================================================
+     4) Container da lista (.action-list) e esqueleto de carregamento
+     ===================================================================== -->
+<div class="action-list" data-v4-home-lista="principais" aria-busy="true">
+    <div class="action-row v4-sk-jogo" aria-hidden="true">
+        <span class="v4-sk v4-sk-hora"></span>
+        <span class="v4-sk-times"><span class="v4-sk v4-sk-time"></span><span class="v4-sk v4-sk-time"></span></span>
+        <span class="v4-sk-odds"><span class="v4-sk v4-sk-odd"></span><span class="v4-sk v4-sk-odd"></span><span class="v4-sk v4-sk-odd"></span></span>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+# Desabilitar listagem de diretórios
+Options -Indexes
+
+# Proteger arquivos sensíveis de configuração, backups, logs e composer
+<FilesMatch "(^(composer\.(json|lock)|\.env|\.git|inc\.config\.php)|\.(bak|sql|log|md|sh|yml|yaml))$">
+    <IfModule authz_core_module>
+        Require all denied
+    </IfModule>
+    <IfModule !authz_core_module>
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+RewriteEngine on
+
+# Pragmatic Play Assets e Serviços
+RewriteRule ^public/(.*)$ games/pragmatic/public/$1 [L]
+RewriteRule ^gs2c/(.*)$ games/pragmatic/index.php/gs2c/$1 [L]
+RewriteRule ^games/wurfl\.js$ games/pragmatic/index.php/games/wurfl.js [L]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule . index.php [L]
+
+

@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    {{ seo_header() }}
+
+    <link rel="stylesheet" href="css/bootstrap4.css"/>
+    <link rel="stylesheet" href="css/bet365.css?v=3.0.0"/>
+    <link rel="stylesheet" href="css/loading.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+    {% block head %}{% endblock %}
+
+    {{ dados.getHtmlHead()|raw }}
+    {% include 'website/inc/personalizacao-css.twig' %}
+</head>
+<body>
+
+{% set hoje = 'now'|date('Y-m-d') %}
+{% set amanha = '+1day'|date('Y-m-d') %}
+
+<!-- Modal de Login -->
+<form id="modal-login" class="modal fade" method="post">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content b365-modal">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bold"><i class="fa fa-lock text-warning mr-1"></i> Acessar Conta</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="form-group">
+                    <label class="text-white-50 small font-weight-bold">USUÁRIO OU E-MAIL</label>
+                    <input type="text" name="username" class="form-control bg-dark border-secondary text-white" placeholder="Digite seu login" required/>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="text-white-50 small font-weight-bold">SENHA</label>
+                    <input type="password" name="password" class="form-control bg-dark border-secondary text-white" placeholder="Digite sua senha" required minlength="5" maxlength="20"/>
+                </div>
+                <button type="submit" class="b365-btn-bet-action w-100">
+                    <i class="fa fa-sign-in"></i> Entrar
+                </button>
+                {% if dados.getExibirRegistro() %}
+                    <div class="text-center mt-3">
+                        <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="btn btn-link btn-sm text-white-50">
+                            Não tem conta? <span class="text-warning font-weight-bold">Cadastre-se</span>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
+<div id="website">
+
+    <!-- Top Mini Bar (Jogo Responsável) -->
+    <div class="b365-topbar-mini">
+        <a href="{{ url('regras') }}" title="Jogo Responsável">
+            <span class="b365-rg-icon">RG</span>
+            <span>Jogo Responsável</span>
+        </a>
+    </div>
+
+    <!-- Header Principal Bet365 / Brasil365 -->
+    <header class="b365-header">
+        <div class="b365-header-inner">
+            
+            <!-- Logo -->
+            <div class="b365-logo-box">
+                <a href="{{ url() }}" class="d-flex align-items-center text-decoration-none">
+                    <img src="{{ dados.imgCapa(true, 'logo').getSource() ? dados.imgCapa(true, 'logo').getSource(true) : 'img/bet365/logo.png' }}" class="b365-logo-img" alt="{{ dados.getBanca()|default('Bet365') }}"/>
+                </a>
+            </div>
+
+            <!-- Navegação Central (Desktop) -->
+            <nav class="b365-nav-tabs d-none d-lg-flex">
+                <a href="{{ url() }}" class="b365-nav-tab active">
+                    Todos os Esportes
+                </a>
+                <a href="{{ url('aovivo') }}" class="b365-nav-tab">
+                    Ao-Vivo
+                </a>
+                {% if dados.getExibirCassino() %}
+                    <a href="{{ url('cassino') }}" class="b365-nav-tab">
+                        Cassino
+                    </a>
+                {% endif %}
+            </nav>
+
+            <!-- Ações Direita -->
+            <div class="b365-header-actions">
+                
+                <a href="{{ url('comunicados') }}" class="b365-btn-rewards">
+                    Recompensas
+                </a>
+
+                {% if not user %}
+                    {% if dados.getExibirRegistro() %}
+                        <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="b365-btn-register">
+                            Registre-se
+                        </a>
+                    {% endif %}
+                    {% if dados.getExibirLogin() %}
+                        <a href="#modal-login" data-toggle="modal" class="b365-btn-login">
+                            Login
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <!-- Usuário Logado -->
+                    <div class="dropdown">
+                        <a href="javascript:;" class="b365-user-pill dropdown-toggle text-decoration-none" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-user-circle text-warning"></i>
+                            <span class="d-none d-sm-inline">{{ user.getNome()|default(user.getLogin()) }}</span>
+                            <span class="balance-val">R$ {{ user.getCredito(true) }}</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" style="background-color: #242424; border: 1px solid #363636;">
+                            <a class="dropdown-item text-white" href="{{ url("financeiro/extrato") }}"><i class="fa fa-list-alt text-warning mr-2"></i> Extrato</a>
+                            <a class="dropdown-item text-white" href="{{ url("financeiro/deposito") }}"><i class="fa fa-arrow-down text-success mr-2"></i> Depósito</a>
+                            <a class="dropdown-item text-white" href="{{ url("financeiro/saque") }}"><i class="fa fa-arrow-up text-danger mr-2"></i> Saque</a>
+                            <a class="dropdown-item text-white" href="{{ url('apostas') }}"><i class="fa fa-history text-info mr-2"></i> Minhas Apostas</a>
+                            <a class="dropdown-item text-white" href="{{ url('perfil') }}"><i class="fa fa-cog text-light mr-2"></i> Meu Perfil</a>
+                            <div class="dropdown-divider" style="border-color: #363636;"></div>
+                            <a class="dropdown-item text-danger" href="{{ url('logout') }}"><i class="fa fa-sign-out mr-2"></i> Sair</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Subheader com Busca e Carrossel Horizontal de Esportes -->
+    {% if pageAposta %}
+    <div class="b365-subnav-bar" v-cloak>
+        <div class="b365-subnav-inner">
+            
+            <!-- Campo de Busca Pill -->
+            <div class="b365-search-pill">
+                <i class="fa fa-search search-icon"></i>
+                <input type="text" id="b365-quick-search" placeholder="Pesquisar..." v-model="search"/>
+            </div>
+
+            <!-- Carrossel de Esportes -->
+            <div class="b365-sports-scroller">
+                <a href="javascript:;" v-on:click="setCampeonato(); setData('todos');" class="b365-sport-card" v-bind:class="{ active: (!findData || findData == 'todos') && (!findCampeonato || findCampeonato == '*') }">
+                    <img src="img/bet365/soccer.svg" alt="Futebol"/>
+                    <span>Futebol</span>
+                </a>
+                <a href="javascript:;" v-on:click="setData('{{ hoje }}')" class="b365-sport-card" v-bind:class="{ active: findData == '{{ hoje }}' }">
+                    <img src="img/bet365/next.svg" alt="Hoje"/>
+                    <span>Hoje</span>
+                </a>
+                <a href="javascript:;" v-on:click="setData('{{ amanha }}')" class="b365-sport-card" v-bind:class="{ active: findData == '{{ amanha }}' }">
+                    <img src="img/bet365/next.svg" alt="Amanhã"/>
+                    <span>Amanhã</span>
+                </a>
+                <a href="javascript:;" class="b365-sport-card">
+                    <img src="img/bet365/basketball.svg" alt="Basquete"/>
+                    <span>Basquete</span>
+                </a>
+                <a href="javascript:;" class="b365-sport-card">
+                    <img src="img/bet365/tennis.svg" alt="Tênis"/>
+                    <span>Tênis</span>
+                </a>
+                <a href="javascript:;" class="b365-sport-card">
+                    <img src="img/bet365/nfl.svg" alt="NFL"/>
+                    <span>NFL</span>
+                </a>
+                <a href="javascript:;" class="b365-sport-card">
+                    <img src="img/bet365/nba.svg" alt="NBA"/>
+                    <span>NBA</span>
+                </a>
+                <a href="javascript:;" class="b365-sport-card">
+                    <img src="img/bet365/cs2.svg" alt="CS2"/>
+                    <span>CS2</span>
+                </a>
+                <a href="javascript:;" class="b365-sport-card">
+                    <img src="img/bet365/esports.svg" alt="E-Sports"/>
+                    <span>E-Sports</span>
+                </a>
+                <a href="javascript:;" class="b365-sport-card">
+                    <img src="img/bet365/boxing.svg" alt="Boxe/MMA"/>
+                    <span>Boxe</span>
+                </a>
+                <a href="javascript:;" class="b365-sport-card">
+                    <img src="img/bet365/volleyball.svg" alt="Vôlei"/>
+                    <span>Vôlei</span>
+                </a>
+                <a href="javascript:;" class="b365-sport-card">
+                    <img src="img/bet365/table_tennis.svg" alt="Tênis de Mesa"/>
+                    <span>T. Mesa</span>
+                </a>
+                <a href="javascript:;" class="b365-sport-card">
+                    <img src="img/bet365/f1.svg" alt="Fórmula 1"/>
+                    <span>F1</span>
+                </a>
+                {% if dados.getExibirCassino() %}
+                    <a href="{{ url('cassino') }}" class="b365-sport-card">
+                        <img src="img/bet365/casino.svg" alt="Cassino"/>
+                        <span>Cassino</span>
+                    </a>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Conteúdo Principal -->
+    <main id="main">
+        {% block main %}{% endblock %}
+    </main>
+
+    <!-- Rodapé Bet365 / Brasil365 Oficial -->
+    <footer class="b365-footer">
+        <div class="b365-footer-inner">
+            
+            <ul class="b365-footer-links">
+                <li><a href="{{ url('termos-uso') }}">Termos e Condições</a></li>
+                {% if dados.getExibirRegras() %}<li><a href="{{ url('regras') }}">Regras de Apostas</a></li>{% endif %}
+                {% if dados.getExibirCotacoes() %}<li><a href="{{ url('cotacoes') }}">Tabela de Cotações</a></li>{% endif %}
+                <li><a href="{{ url('perguntas-frequentes') }}">Formas de Pagamento</a></li>
+                <li><a href="{{ url('bilhete') }}">Consultar Bilhete</a></li>
+                {% if dados.getExibirApp() %}<li><a href="{{ dados.getApp()|default(url('app')) }}" target="_blank">Baixar Aplicativo</a></li>{% endif %}
+            </ul>
+
+            <div class="b365-footer-badges">
+                <img src="img/bet365/18.svg" alt="18+"/>
+                <img src="img/bet365/gt_v2.svg" alt="Gambling Therapy"/>
+            </div>
+
+            <div class="b365-footer-text">
+                Jogue com responsabilidade. Ministério da Fazenda adverte: Aposta não é investimento.<br/>
+                Você não deve utilizar os recursos de programas e benefícios assistenciais para apostar.
+            </div>
+
+            <div class="b365-footer-text">
+                © {{ 'now'|date('Y') }} {{ dados.getBanca() }}. Todos os direitos reservados.
+            </div>
+
+            <div class="b365-footer-social">
+                <span style="font-size: 11.5px; font-weight: 600; color: #888888; margin-right: 8px;">Parceiros & Redes:</span>
+                <a href="javascript:;" title="X"><img src="img/bet365/social_x.svg" alt="X"/></a>
+                <a href="javascript:;" title="Facebook"><img src="img/bet365/social_facebook.svg" alt="Facebook"/></a>
+                <a href="javascript:;" title="Instagram"><img src="img/bet365/social_instagram.svg" alt="Instagram"/></a>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- Barra de Navegação Fixa Inferior Mobile (Bottom Tab Bar) -->
+    <div class="b365-bottom-bar">
+        <a href="{{ url() }}" class="b365-tab-item active">
+            <i class="fa fa-home"></i>
+            <span>Início</span>
+        </a>
+        <a href="javascript:;" onclick="$('#b365-quick-search').focus(); $('html, body').animate({scrollTop: 0}, 'fast');" class="b365-tab-item">
+            <i class="fa fa-futbol-o"></i>
+            <span>Esportes</span>
+        </a>
+        <a href="{{ url('aovivo') }}" class="b365-tab-item">
+            <i class="fa fa-podcast"></i>
+            <span>Ao-Vivo</span>
+        </a>
+        <a href="{{ user ? url('apostas') : '#modal-login' }}" {% if not user %}data-toggle="modal"{% endif %} class="b365-tab-item">
+            <i class="fa fa-check-circle-o"></i>
+            <span>Apostas</span>
+        </a>
+        {% if dados.getExibirCassino() %}
+            <a href="{{ url('cassino') }}" class="b365-tab-item">
+                <i class="fa fa-gamepad"></i>
+                <span>Cassino</span>
+            </a>
+        {% endif %}
+    </div>
+
+</div>
+
+{{ seo_footer() }}
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="node_modules/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.mask.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.form.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.serializeObject.js"></script>
+<script type="text/javascript" src="cdn/js/fastclick.js"></script>
+<script type="text/javascript" src="cdn/js/modernizr.min.js"></script>
+<script type="text/javascript" src="cdn/js/mask.js"></script>
+<script type="text/javascript" src="cdn/js/string.js"></script>
+<script type="text/javascript" src="cdn/js/clipboard.min.js"></script>
+<script type="text/javascript" src="cdn/js/admin.js"></script>
+<script type="text/javascript" src="js/site.js?v=1.0.0"></script>
+
+<script>
+    $('#modal-login')
+        .adminPage({
+            autoSearch: false,
+            controller: 'login',
+            module: 'entrar',
+        })
+        .on("success", function (event, e) {
+            if (e.result == 1) {
+                window.location.href = e.url;
+            }
+        });
+</script>
+
+{% block script %}{% endblock %}
+
+{{ dados.getHtmlFooter()|raw }}
+
+</body>
+</html>

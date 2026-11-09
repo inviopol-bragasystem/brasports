@@ -1,0 +1,73 @@
+<!--
+  TEMA BET24 (site11) - REFERENCIA v4
+  Arquivo: 11 - Modal "Criar aposta turbinada" (modelo de modal informativo)
+  Origem: pages/home.html linhas 1410-1472
+  Obs.: Modelo de modal com passos numerados e exemplo de odd riscada -> turbinada. Serve de referencia para qualquer modal de oferta/bonus do tema novo.
+
+  Recorte REAL do site antigo bet24hs.site/v4 (classes e estrutura preservadas).
+  Os links /v4/..., as imagens do CDN e os ids/onclick do backend v4 sao apenas
+  referencia: no tema novo troque por rotas Twig e dados do sistema atual.
+-->
+    <div class="modal fade" id="v4TurbinadaModal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="v4TurbinadaTitulo" aria-hidden="true">
+    <div class="modal-dialog v4-turbo-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="dialog-title" id="v4TurbinadaTitulo">Criar aposta turbinada</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body v4-turbo">
+                <p class="v4-turbo-intro">Um Criar Aposta com a odd aumentada pelo site, por tempo limitado.</p>
+
+                <div class="v4-turbo-exemplo">
+                    <p class="v4-turbo-exemplo-topo">
+                        <span class="boost-tag"><svg aria-hidden="true" class="bolt" width="9" height="11" viewBox="0 0 11 14"><path d="M6.5 0 0 8h4.5L3.5 14 11 5.500H6.300L6.500 0Z" fill="currentColor"/></svg>Turbinada</span>
+                        <b>Exemplo</b>
+                    </p>
+                    <p class="v4-turbo-exemplo-linha">
+                        Vitória do mandante, mais de 1.5 gols e ambos marcam:
+                        <s>4,50</s> <strong>5,40</strong>
+                    </p>
+                </div>
+
+                <ol class="v4-turbo-passos">
+                    <li>
+                        <span class="v4-turbo-num" aria-hidden="true">1</span>
+                        <div>
+                            <h3>Encontre o selo Turbinada</h3>
+                            <p>Na página inicial e nas Escolhas principais do jogo, com a odd normal riscada ao lado da turbinada.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="v4-turbo-num" aria-hidden="true">2</span>
+                        <div>
+                            <h3>Toque na odd</h3>
+                            <p>As seleções entram no bilhete como um Criar Aposta, já com a odd turbinada.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="v4-turbo-num" aria-hidden="true">3</span>
+                        <div>
+                            <h3>Aposte antes do jogo</h3>
+                            <p>A turbinada vale só antes do início e enquanto estiver no ar.</p>
+                        </div>
+                    </li>
+                </ol>
+
+                <ul class="v4-turbo-notas">
+                    <li>Num jogo com CA Turbinada, qualquer Criar Aposta que você montar nele tem a odd aumentada.</li>
+                    <li>Quando um Criar Aposta pronto e a CA Turbinada valem juntos, vale o pronto: os aumentos não se somam.</li>
+                    <li>Cada turbinada pode ter valor máximo de aposta próprio, indicado junto dela.</li>
+                    <li>A odd é conferida de novo na validação: se a turbinada acabar antes, ela deixa de valer.</li>
+                    <li>Não tem Pagamento antecipado nem Encerrar aposta.</li>
+                </ul>
+
+                <a class="v4-turbo-regras" href="/v4/paginas/regras">Ver regras</a>
+
+                <button type="button" class="account-submit v4-turbo-ok" data-dismiss="modal">Entendi</button>
+            </div>
+        </div>
+    </div>
+</div>

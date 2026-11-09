@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2e3035"/>
+      <stop offset="100%" stop-color="#1d1e20"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="400" fill="url(#g)"/>
+  <circle cx="150" cy="170" r="36" fill="#3b3d43"/>
+  <path d="M138 170 L168 155 L168 185 Z" fill="#00b24b"/>
+  <text x="150" y="250" text-anchor="middle" fill="#797f8b" font-family="Arial" font-size="16">Game</text>
+</svg>

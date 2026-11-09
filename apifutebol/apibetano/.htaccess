@@ -1,0 +1,4 @@
+# Se o DocumentRoot for a pasta do projeto (não /public), redireciona
+RewriteEngine On
+RewriteRule ^$ public/ [L]
+RewriteRule (.*) public/$1 [L]

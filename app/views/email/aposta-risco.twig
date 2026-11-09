@@ -1,0 +1,49 @@
+{% extends 'email/_layout.twig' %}
+
+{% block main %}
+
+    <h1 style="margin: 0 0 20px 0; font-size: 25px;">Aposta de risco</h1>
+
+    <p>
+        A aposta #{{ aposta.getid() }} do apostador {{ aposta.getUserNome() }} entrou no radar de alto risco
+        de retorno do sistema.
+    </p>
+
+    <table style="width: 100%; border-collapse: collapse; border: 1px solid #999;" cellpadding="5">
+        <thead>
+        <tr style="border: 1px solid #999; background-color: #adadad;">
+            <th align="left">Jogo</th>
+            <th width="100">Cotação</th>
+            <th width="70">Valor</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for v in aposta.voJogos() %}
+            <tr style="border: 1px solid #999; background-color: {{ loop.index%2 == 0 ? '#ededed' : '#ddd' }};">
+                <td>{{ v.voJogo().getDescricao() }}</td>
+                <td style="text-align: center;">
+                    {{ v.getCotacaoSigla() }}
+                </td>
+                <td style="text-align:  center;">
+                    {{ v.getCotacaoValor(true) }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p>
+        <b>Aposta:</b> {{ aposta.getId() }}<br/>
+        <b>Apostador:</b> {{ aposta.getUserNome() }}<br/>
+        <b>Valor:</b> R$ {{ aposta.getValor(true) }}<br/>
+        <b>Cotação:</b> R$ {{ aposta.getCotacaoValida(true) }}<br/>
+        <b>Retorno:</b> R$ {{ aposta.getRetornoValido(true) }}<br/>
+        <b>Data/Hora:</b> {{ aposta.getInsert()|date('d/m/Y \\à\\s H\\hi') }}<br/>
+        <b>
+            <a href="{{ url('apostas/bilhete', [aposta.getToken()], 'site') }}">
+                Link do bilhete
+            </a>
+        </b>
+    </p>
+
+{% endblock %}

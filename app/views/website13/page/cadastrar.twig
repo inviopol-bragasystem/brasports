@@ -1,0 +1,66 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div style="background:var(--theme-card-2);border:1px solid var(--theme-card-border);border-radius:16px;padding:24px;max-width:800px;margin:0 auto 24px auto;">
+        <h4 class="font-weight-bold text-white mb-2">
+            <i class="fa fa-user-plus mr-2" style="color:var(--theme-primary);"></i> Criar Nova Conta
+        </h4>
+        <p style="color:var(--theme-text-muted);font-size:13px;" class="mb-4">
+            Cadastre-se na {{ dados.getBanca()|default('99Play') }} e comece a jogar com depósitos e saques instantâneos via PIX.
+        </p>
+
+        <form class="admpage-form" autocomplete="off" method="post" action="{{ url('cadastrar/insert') }}">
+
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label class="small font-weight-bold" style="color:var(--theme-text-muted);">NOME COMPLETO *</label>
+                    <input type="text" name="nome" class="form-control" required placeholder="Seu nome completo" style="background:var(--theme-card-1);border-color:var(--theme-card-border);color:#fff;"/>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label class="small font-weight-bold" style="color:var(--theme-text-muted);">CPF *</label>
+                    <input type="text" name="cpf" class="form-control mask-cpf" required placeholder="000.000.000-00" style="background:var(--theme-card-1);border-color:var(--theme-card-border);color:#fff;"/>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label class="small font-weight-bold" style="color:var(--theme-text-muted);">E-MAIL *</label>
+                    <input type="email" name="email" class="form-control" required placeholder="seu@email.com" style="background:var(--theme-card-1);border-color:var(--theme-card-border);color:#fff;"/>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label class="small font-weight-bold" style="color:var(--theme-text-muted);">WHATSAPP / CELULAR *</label>
+                    <input type="text" name="celular" class="form-control mask-telefone" required placeholder="(00) 00000-0000" style="background:var(--theme-card-1);border-color:var(--theme-card-border);color:#fff;"/>
+                </div>
+
+                <div class="col-md-4 form-group">
+                    <label class="small font-weight-bold" style="color:var(--theme-text-muted);">USUÁRIO DE ACESSO *</label>
+                    <input type="text" name="login" class="form-control" required placeholder="Nome de usuário" minlength="4" style="background:var(--theme-card-1);border-color:var(--theme-card-border);color:#fff;"/>
+                </div>
+
+                <div class="col-md-4 form-group">
+                    <label class="small font-weight-bold" style="color:var(--theme-text-muted);">SENHA *</label>
+                    <input type="password" name="senha" class="form-control" required minlength="4" placeholder="Mínimo 4 dígitos" style="background:var(--theme-card-1);border-color:var(--theme-card-border);color:#fff;"/>
+                </div>
+
+                <div class="col-md-4 form-group">
+                    <label class="small font-weight-bold" style="color:var(--theme-text-muted);">CONFIRMAR SENHA *</label>
+                    <input type="password" name="confirmar-senha" class="form-control" required minlength="4" placeholder="Repita a senha" style="background:var(--theme-card-1);border-color:var(--theme-card-border);color:#fff;"/>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn-play-primary" style="padding:12px 30px;font-size:15px;border-radius:12px;">
+                    <i class="fa fa-check-circle"></i> Criar Conta Agora
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    {{ block('script', 'website/page/cadastrar.twig') }}
+{% endblock %}
+

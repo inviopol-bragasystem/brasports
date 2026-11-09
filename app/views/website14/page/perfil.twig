@@ -1,0 +1,57 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div style="background:var(--theme-card-2);border:1px solid var(--theme-card-border);border-radius:16px;padding:24px;max-width:800px;margin:0 auto 24px auto;">
+        <h4 class="font-weight-bold text-white mb-2">
+            <i class="fa fa-user-circle mr-2" style="color:var(--theme-primary);"></i> Meu Perfil
+        </h4>
+
+        <div class="p-3 mb-4 rounded d-flex justify-content-between align-items-center" style="background:var(--theme-card-1);border:1px solid var(--theme-card-border);border-radius:12px;">
+            <div>
+                <h4 class="m-0 font-weight-bold text-white">{{ user.getNome() }}</h4>
+                <span class="small" style="color:var(--theme-text-muted);">@{{ user.getLogin() }} &bull; {{ user.getEmail() }}</span>
+            </div>
+            <div class="text-right">
+                <span class="small d-block" style="color:var(--theme-text-muted);">Saldo Disponível</span>
+                <span class="font-weight-bold" style="font-size: 20px; color: var(--theme-accent);">R$ {{ user.getCredito(true) }}</span>
+            </div>
+        </div>
+
+        <form class="admpage-form" method="post" action="{{ url('perfil/salvar') }}">
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label class="small font-weight-bold" style="color:var(--theme-text-muted);">NOME</label>
+                    <input type="text" name="nome" value="{{ user.getNome() }}" class="form-control" required style="background:var(--theme-card-1);border-color:var(--theme-card-border);color:#fff;"/>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label class="small font-weight-bold" style="color:var(--theme-text-muted);">E-MAIL</label>
+                    <input type="email" name="email" value="{{ user.getEmail() }}" class="form-control" required style="background:var(--theme-card-1);border-color:var(--theme-card-border);color:#fff;"/>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label class="small font-weight-bold" style="color:var(--theme-text-muted);">TELEFONE</label>
+                    <input type="text" name="telefone" value="{{ user.getTelefone() }}" class="form-control mask-telefone" style="background:var(--theme-card-1);border-color:var(--theme-card-border);color:#fff;"/>
+                </div>
+
+                <div class="col-md-6 form-group">
+                    <label class="small font-weight-bold" style="color:var(--theme-text-muted);">CPF</label>
+                    <input type="text" name="cpf" value="{{ user.getCpf() }}" class="form-control mask-cpf" disabled style="background:var(--theme-card-3);border-color:var(--theme-card-border);color:#888;"/>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn-play-primary" style="padding:10px 24px;">
+                    <i class="fa fa-save mr-1"></i> Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    {{ block('script', 'website/page/perfil.twig') }}
+{% endblock %}
+

@@ -1,0 +1,348 @@
+{% extends layout %}
+
+{% block list %}
+
+    <div class="container-fluid pb-3">
+        {% if busca.getCount() %}
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive m-0">
+                        <table class="table table-minified table-striped table-bordered table-hover m-0">
+                            <thead>
+                            <tr class="table-dark">
+                                <th width="70" class="text-center">#</th>
+                                <th width="110" class="text-center">Data</th>
+                                <th width="120" class="text-center">Tipo</th>
+                                <th>Cliente / CPF</th>
+                                <th width="130" class="text-center">Valor</th>
+                                <th width="140" class="text-center">Situação</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for v in busca.getRegistros() %}
+                                <tr>
+                                    <td class="text-center font-weight-bold">{{ v.getId() }}</td>
+                                    <td class="text-center">{{ v.getData(true) }}</td>
+                                    <td class="text-center">
+                                        {% if v.getTipo() == 'pixup' or v.getTipo() == 'veopag' %}
+                                            <span class="badge badge-success px-2 py-1"><i class="fa fa-qrcode mr-1"></i> PIX</span>
+                                        {% else %}
+                                            <span class="badge badge-secondary px-2 py-1"><i class="fa fa-upload mr-1"></i> Manual</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <strong>{{ v.voUser().getNome() }}</strong> ({{ v.voUser().getLogin() }})
+                                        <div class="small text-muted">{{ v.voUser().getCpf() }}</div>
+                                    </td>
+                                    <td class="text-center font-weight-bold text-success">R$ {{ v.getValor(true) }}</td>
+                                    <td class="text-center">
+                                        {% if v.getStatus() == 2 %}
+                                            <span class="badge badge-success"><i class="fa fa-check-circle"></i> {{ v.getStatusTitle() }}</span>
+                                        {% elseif v.getStatus() == 1 %}
+                                            <span class="badge badge-warning text-dark"><i class="fa fa-clock-o"></i> {{ v.getStatusTitle() }}</span>
+                                        {% else %}
+                                            <span class="badge badge-danger"><i class="fa fa-times-circle"></i> {{ v.getStatusTitle() }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer">{{ busca }}</div>
+                </div>
+            </div>
+        {% elseif message %}
+            <div class="alert alert-warning m-0">
+                <i class="fa fa-warning"></i> {{ message }}
+            </div>
+        {% else %}
+            <div class="alert alert-info m-0">
+                <i class="fa fa-info-circle"></i> Nenhum depósito registrado até o momento.
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block main %}
+
+    <!-- Modal Depósito Manual com Comprovante -->
+    <form id="modal-deposito-manual" class="modal fade admpage-form" enctype="multipart/form-data">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bold"><i class="fa fa-upload text-primary mr-1"></i> Depósito Manual com Comprovante</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="form-group mb-3">
+                        <label class="font-weight-bold">Valor do Depósito (R$)</label>
+                        <input type="text" name="valor" class="form-control mask-valor form-control-lg font-weight-bold" placeholder="0,00" required/>
+                        {% if depositoMinimo > 0 %}
+                            <small class="text-muted">Valor mínimo: R$ {{ depositoMinimo|number_format(2, ',', '.') }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="form-group mb-0">
+                        <label class="font-weight-bold">Comprovante de Pagamento</label>
+                        {{ inputFile('<i class="fa fa-paperclip"></i> Anexar Comprovante', 'upfile', 'pdf,jpg,jpeg,png') }}
+                        <small class="text-muted d-block mt-1">Formatos aceitos: PDF, JPG, PNG.</small>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary font-weight-bold">
+                        <i class="fa fa-send"></i> Enviar Depósito
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Modal Depósito PIX Automático ({{ gatewayPix|capitalize }}) -->
+    <div id="modal-deposito-pix" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                
+                <!-- Etapa 1: Digitar Valor -->
+                <div id="pix-step-form">
+                    <div class="modal-header">
+                        <h5 class="modal-title font-weight-bold text-dark"><i class="fa fa-qrcode text-success mr-1"></i> Depósito via PIX Automático ({{ gatewayPix|capitalize }})</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body p-4">
+                        
+                        <div class="alert alert-success py-2 px-3 small font-weight-bold mb-3">
+                            <i class="fa fa-bolt"></i> Liberação Imediata: O saldo entra automaticamente na sua conta assim que você pagar o PIX.
+                        </div>
+
+                        <div class="form-group mb-2">
+                            <label class="font-weight-bold text-dark">VALOR DO DEPÓSITO (R$)</label>
+                            <div class="input-group input-group-lg">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text font-weight-bold bg-dark text-white">R$</span>
+                                </div>
+                                <input type="text" id="pix-input-valor" class="form-control mask-valor font-weight-bold" placeholder="0,00" value="20,00" required/>
+                            </div>
+                            {% if depositoMinimo > 0 %}
+                                <small class="text-muted font-weight-bold">Valor mínimo: R$ {{ depositoMinimo|number_format(2, ',', '.') }}</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Valores Rápidos -->
+                        <div class="mb-3 d-flex flex-wrap" style="gap: 8px;">
+                            <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold" onclick="$('#pix-input-valor').val('10,00');">R$ 10</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold" onclick="$('#pix-input-valor').val('20,00');">R$ 20</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold" onclick="$('#pix-input-valor').val('50,00');">R$ 50</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold" onclick="$('#pix-input-valor').val('100,00');">R$ 100</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold" onclick="$('#pix-input-valor').val('200,00');">R$ 200</button>
+                        </div>
+
+                        <button type="button" id="btn-gerar-pix" class="btn btn-success btn-lg btn-block font-weight-bold py-3" onclick="gerarPix();">
+                            <i class="fa fa-qrcode mr-1"></i> Gerar QR Code PIX
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Etapa 2: QR Code e Copia e Cola -->
+                <div id="pix-step-qrcode" style="display: none;">
+                    <div class="modal-header">
+                        <h5 class="modal-title font-weight-bold text-dark"><i class="fa fa-qrcode text-success mr-1"></i> Pague com o PIX</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body p-4 text-center">
+
+                        <div class="badge badge-success px-3 py-2 font-weight-bold mb-3" style="font-size: 16px;">
+                            Valor: R$ <span id="pix-display-valor">0,00</span>
+                        </div>
+
+                        <!-- QR Code Image -->
+                        <div class="my-3 p-3 bg-white d-inline-block rounded shadow-sm border">
+                            <img id="pix-qr-img" src="" alt="QR Code PIX" style="width: 220px; height: 220px; display: block; margin: 0 auto;"/>
+                        </div>
+
+                        <!-- PIX Copia e Cola -->
+                        <div class="form-group text-left mb-2">
+                            <label class="small font-weight-bold text-muted mb-1">PIX COPIA E COLA</label>
+                            <textarea id="pix-copiacola" class="form-control font-weight-bold small" rows="3" readonly style="font-size: 12px; background: #f8f9fa;"></textarea>
+                        </div>
+
+                        <button type="button" class="btn btn-primary btn-block font-weight-bold mb-3" onclick="copiarPix();">
+                            <i class="fa fa-copy mr-1"></i> Copiar Código PIX
+                        </button>
+
+                        <!-- Indicador de Status com Polling -->
+                        <div class="alert alert-light border py-2 px-3 small font-weight-bold mb-0 text-muted">
+                            <i class="fa fa-spinner fa-spin text-success mr-1"></i> Aguardando confirmação do pagamento... O saldo será creditado automaticamente.
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Título da Página e Botões de Ação -->
+    <div class="page-title mb-3">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-12 col-md-auto mb-2 mb-md-0">
+                <h4 class="title mb-0 font-weight-bold"><i class="fa fa-arrow-down text-success mr-2"></i> Depósitos</h4>
+            </div>
+            <div class="col-12 col-md-auto d-flex flex-wrap" style="gap: 10px;">
+                
+                {% if modoDeposito == 'todos' or modoDeposito == 'pix' %}
+                    <button class="btn btn-success font-weight-bold" onclick="$('#modal-deposito-pix').modal('show'); resetPix();">
+                        <i class="fa fa-bolt mr-1"></i> Depósito via PIX {{ gatewayPix|capitalize }} (Instantâneo)
+                    </button>
+                {% endif %}
+
+                {% if modoDeposito == 'todos' or modoDeposito == 'manual' %}
+                    <button class="btn btn-primary font-weight-bold" onclick="$('#modal-deposito-manual').setValues({}).modal('show');">
+                        <i class="fa fa-upload mr-1"></i> Depósito com Comprovante
+                    </button>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros de Busca -->
+    <div class="container-fluid mb-3">
+        <div class="card p-3 shadow-sm border-0">
+            <form class="admpage-form-search" onsubmit="javascript:return false;">
+                <div class="row align-items-end">
+                    <div class="form-group col-md-5 col-12 mb-md-0">
+                        <label class="small font-weight-bold text-muted">De:</label>
+                        <input type="date" name="dataInicial" class="form-control form-control-sm"/>
+                    </div>
+                    <div class="form-group col-md-5 col-12 mb-md-0">
+                        <label class="small font-weight-bold text-muted">Até:</label>
+                        <input type="date" name="dataFinal" class="form-control form-control-sm"/>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <button class="btn btn-dark btn-sm btn-block font-weight-bold">
+                            <i class="fa fa-search"></i> Filtrar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="admpage-container"></div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        $(".admpage-form")
+            .adminPage({
+                formSearch: '.admpage-form-search',
+                container: '.admpage-container',
+                autoSearch: true,
+            });
+
+        var pixPollInterval = null;
+        var currentPixToken = null;
+
+        function resetPix() {
+            clearInterval(pixPollInterval);
+            $('#pix-step-form').show();
+            $('#pix-step-qrcode').hide();
+            $('#btn-gerar-pix').prop('disabled', false).html('<i class="fa fa-qrcode mr-1"></i> Gerar QR Code PIX');
+        }
+
+        function gerarPix() {
+            var valor = $('#pix-input-valor').val();
+            if (!valor) {
+                swal('Aviso', 'Digite um valor para o depósito.', 'warning');
+                return;
+            }
+
+            $('#btn-gerar-pix').prop('disabled', true).html('<i class="fa fa-spinner fa-spin mr-1"></i> Gerando PIX...');
+
+            $.ajax({
+                url: url('financeiro/deposito/pix'),
+                type: 'POST',
+                data: { valor: valor },
+                dataType: 'json',
+                success: function (res) {
+                    $('#btn-gerar-pix').prop('disabled', false).html('<i class="fa fa-qrcode mr-1"></i> Gerar QR Code PIX');
+
+                    if (res.result == 1) {
+                        currentPixToken = res.token;
+                        $('#pix-display-valor').text(res.valor);
+                        $('#pix-copiacola').val(res.qrcode);
+
+                        // Gera imagem do QR Code
+                        var qrImgUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent(res.qrcode);
+                        $('#pix-qr-img').attr('src', qrImgUrl);
+
+                        $('#pix-step-form').hide();
+                        $('#pix-step-qrcode').show();
+
+                        // Inicia polling de status a cada 3 segundos
+                        iniciarPollingPix(res.token);
+                    } else {
+                        swal('Erro', res.message || 'Não foi possível gerar a cobrança PIX.', 'error');
+                    }
+                },
+                error: function (xhr) {
+                    $('#btn-gerar-pix').prop('disabled', false).html('<i class="fa fa-qrcode mr-1"></i> Gerar QR Code PIX');
+                    var msg = 'Ocorreu um erro ao comunicar com o servidor.';
+                    try {
+                        var json = JSON.parse(xhr.responseText);
+                        if (json && json.message) msg = json.message;
+                    } catch (e) {}
+                    swal('Erro', msg, 'error');
+                }
+            });
+        }
+
+        function copiarPix() {
+            var textarea = document.getElementById('pix-copiacola');
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+            try {
+                navigator.clipboard.writeText(textarea.value);
+            } catch (err) {
+                document.execCommand('copy');
+            }
+            swal('Copiado!', 'Código PIX Copia e Cola copiado com sucesso. Cole no seu aplicativo do banco.', 'success');
+        }
+
+        function iniciarPollingPix(token) {
+            clearInterval(pixPollInterval);
+            pixPollInterval = setInterval(function () {
+                if (!token) return;
+                $.ajax({
+                    url: url('financeiro/deposito/status-pix'),
+                    type: 'POST',
+                    data: { token: token },
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res.result == 1 && res.aprovado) {
+                            clearInterval(pixPollInterval);
+                            swal({
+                                title: "Depósito Aprovado!",
+                                text: "Seu pagamento foi confirmado com sucesso e o saldo já está disponível na sua conta.",
+                                type: "success"
+                            }, function () {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                });
+            }, 3000);
+        }
+
+        $('#modal-deposito-pix').on('hidden.bs.modal', function () {
+            clearInterval(pixPollInterval);
+        });
+
+    </script>
+
+{% endblock %}

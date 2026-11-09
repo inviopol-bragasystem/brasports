@@ -1,0 +1,60 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="container-fluid px-lg-4 px-3 py-4">
+        <div class="sb-page-card">
+            <h3 class="sb-page-title"><i class="fa fa-exchange"></i> Transferência de Créditos</h3>
+
+            <form class="admpage-form" onsubmit="return false;">
+                <div class="row mb-4">
+                    <div class="col-md-4 col-12 mb-3">
+                        <label class="text-white-50 small font-weight-bold">LOGIN DO REMETENTE</label>
+                        <input type="text" name="remetente" placeholder="{{ user.getLogin() }}" value="{{ user.getLogin() }}" readonly class="form-control bg-dark border-secondary text-white-50 font-weight-bold">
+                    </div>
+                    <div class="col-md-4 col-12 mb-3">
+                        <label class="text-white-50 small font-weight-bold">LOGIN DO DESTINATÁRIO</label>
+                        <input type="text" name="destinatario" class="form-control bg-dark border-secondary text-white font-weight-bold" placeholder="Digite o usuário de destino" required>
+                    </div>
+                    <div class="col-md-4 col-12 mb-3">
+                        <label class="text-white-50 small font-weight-bold">VALOR A SER TRANSFERIDO (R$)</label>
+                        <input type="text" name="valor" class="form-control mask-valor bg-dark border-secondary text-warning font-weight-bold" placeholder="0,00" required>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-dark rounded border mb-4" style="border-color: var(--sb-border) !important;">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="autorizo" value="1" required>
+                        <label class="custom-control-label text-white small" for="autorizo">
+                            Autorizo o desconto automático do meu saldo para transferir créditos para o usuário informado.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="text-right mb-4">
+                    <button type="submit" class="sb-btn-bet px-4 py-2 font-weight-bold" style="width: auto; display: inline-flex;">
+                        <i class="fa fa-arrows-h mr-1"></i> Confirmar Transferência
+                    </button>
+                </div>
+
+                {% if pagina('transferencia').getTexto() %}
+                    <div class="p-3 bg-dark rounded border text-white-50 small" style="border-color: var(--sb-border) !important;">
+                        {{ pagina('transferencia').getTexto()|raw }}
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $('.admpage-form')
+            .adminPage({
+                autoSearch: false,
+                alertSuccess: true,
+                reloadSuccess: true,
+            });
+    </script>
+{% endblock %}

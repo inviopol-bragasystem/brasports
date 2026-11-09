@@ -1,0 +1,31 @@
+{% extends layout %}
+
+{% set comunicados = comunicados() %}
+
+{% block main %}
+    <div class="container-fluid px-lg-4 px-3 py-4">
+        <div class="bca-page-card">
+            <h3 class="bca-page-title"><i class="fa fa-bullhorn"></i> Comunicados Oficiais</h3>
+            
+            {% if comunicados %}
+                <div class="comunicados">
+                    {% for v in comunicados %}
+                        <div class="bca-card mb-3">
+                            <div class="bca-card-header">
+                                <span class="text-white font-weight-bold">{{ v.getTitle() }}</span>
+                                <span class="small text-warning font-weight-bold"><i class="fa fa-clock-o mr-1"></i> {{ v.getData(true) }}</span>
+                            </div>
+                            <div class="p-3 bg-dark text-white" style="line-height: 1.6;">
+                                {{ v.getMensagem()|raw }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info bg-dark border-secondary text-white">
+                    <i class="fa fa-info-circle text-warning mr-1"></i> Nenhum comunicado no momento.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

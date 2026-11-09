@@ -1,0 +1,431 @@
+@import "../scss/preboot";
+@import "../scss/vars";
+
+html {
+  background-color: #2f8ecc;
+
+  &.show-menu .menu-mobile {
+    left: 0;
+  }
+
+  .menu-mobile {
+    position: fixed;
+    top: 0;
+    left: -270px;
+    width: 270px;
+    height: 100vh;
+    background-color: white;
+    z-index: 999;
+    @include transition(left 0.3s ease-in-out);
+
+    .title {
+      line-height: 55px;
+      margin: 0;
+      padding: 0 15px;
+      background-color: #ededed;
+      color: black;
+      font-weight: bold;
+      @extend .pt-sans;
+    }
+
+    ul, li {
+      display: block;
+      margin: 0;
+      padding: 0;
+    }
+
+    ul {
+      height: calc(100vh - 55px);
+      overflow: auto;
+    }
+
+    li {
+      border-bottom: 1px solid #ededed;
+    }
+
+    a {
+      display: block;
+      line-height: 35px;
+      padding: 0 15px;
+      font-size: 15px;
+      text-transform: uppercase;
+      color: black;
+    }
+  }
+
+  &.page-scroll .header-scroll {
+    top: 0;
+    @include opacity(1);
+    pointer-events: auto;
+  }
+
+  .header-scroll {
+    background-position: center;
+    background-size: cover;
+    position: fixed;
+    top: -96px;
+    left: 0;
+    width: 100%;
+    z-index: 998;
+    pointer-events: none;
+    @include transition(all 0.3s ease-in-out);
+  }
+
+  &.show-filtros .menu-filtros {
+    left: 0;
+  }
+
+  .menu-filtros {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    z-index: 999;
+    @include transition(left 0.3s ease-in-out);
+
+    .btn-open {
+      position: absolute;
+      left: 100%;
+      top: 50%;
+    }
+
+    .filtros-header {
+      background-color: #ededed;
+      .title {
+        font-weight: bold;
+        font-size: 18px;
+        text-transform: uppercase;
+      }
+    }
+
+    .content {
+      height: 100%;
+      overflow: auto;
+    }
+  }
+}
+
+body {
+  background-color: white;
+}
+
+.pt-sans {
+  font-family: 'PT Sans', sans-serif;
+}
+
+.header {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  .row-top {
+    background-color: rgba(black, 0.3);
+  }
+
+  .row-menu {
+
+    z-index: 999;
+    position: relative;
+
+    ul, li {
+      margin: 0;
+      padding: 0;
+    }
+
+    ul {
+      display: block;
+      text-align: center;
+    }
+
+    li {
+      display: inline-block;
+      position: relative;
+    }
+
+    .menu > li > a:not(.btn) {
+      font-size: 20px;
+      line-height: 38px;
+      text-decoration: none;
+      text-transform: uppercase;
+      color: white;
+      font-weight: bold;
+      padding: 10px 20px;
+      @extend .pt-sans;
+
+      &:hover {
+        color: $yellow;
+      }
+    }
+
+    li:hover ul {
+      display: block;
+    }
+
+    .submenu {
+      position: absolute;
+      display: none;
+      top: 100%;
+      min-width: 100%;
+      text-align: left;
+      left: 0;
+      white-space: nowrap;
+      background-color: white;
+      box-shadow: 0 5px 5px rgba(black, 0.30);
+
+      li {
+        display: block;
+
+        &:not(:last-child) {
+          border-bottom: 1px solid #ededed;
+        }
+
+        a {
+          @extend .pt-sans;
+          color: black !important;
+          display: block;
+          font-size: 14px;
+          text-transform: uppercase;
+          padding: 0 15px;
+          line-height: 30px;
+          text-decoration: none;
+        }
+      }
+    }
+  }
+}
+
+.rodape {
+  background-color: $blue;
+  color: white;
+  font-size: 13px;
+  line-height: 12px;
+  @extend .pt-sans;
+
+  ul, li {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+  }
+
+  li:not(:last-child) {
+    border-right: 1px solid white;
+    margin-right: -4px;
+  }
+
+  a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 0 10px;
+
+    &:hover {
+      color: black;
+    }
+  }
+}
+
+#bilhete {
+  width: 350px;
+  position: fixed;
+  bottom: 0px;
+  right: -350px;
+  z-index: 999;
+  background-color: white;
+  @include transition(all 0.3s ease-in-out);
+
+  label {
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .form-group {
+    margin-bottom: 0.5rem;
+  }
+
+  .btn-show {
+    cursor: pointer;
+    position: absolute;
+    left: -30px;
+    bottom: 50px;
+  }
+
+  .table-bilhete {
+    color: black;
+    font-size: 12px;
+
+    .time {
+      font-size: 14px;
+      font-weight: bold;
+    }
+  }
+
+  .table-responsive {
+    max-height: #{66*3}px;
+  }
+
+  @media (max-width: 768px) {
+
+    width: 100%;
+    height: 100%;
+    top: 0;
+
+    right: -100vw;
+    .bilhete-content {
+      overflow: auto;
+      height: 100%;
+    }
+  }
+}
+
+.page-title {
+  color: #3096ff;
+  text-transform: uppercase;
+  margin: 0 0 1rem 0;
+  @extend .pt-sans;
+
+  .title {
+    font-size: 35px;
+    font-weight: bold;
+    margin: 0;
+  }
+}
+
+html.show-bilhete #bilhete {
+  right: 0 !important;
+  box-shadow: 0 0 10px rgba(black, 0.5);
+}
+
+.container-max {
+  max-width: 1510px;
+}
+
+.menu-campeonatos {
+
+  .title {
+    margin: 0;
+    line-height: 56px;
+    padding: 0 15px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    @extend .pt-sans;
+    @include gradient-vertical(#3096ff, #156aff);
+  }
+
+  ul {
+    border: 1px solid #999;
+  }
+
+  ul, li {
+    display: block;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    &:not(:last-child) {
+      border-bottom: 1px solid #999;
+    }
+
+    a {
+      line-height: 42px;
+      text-decoration: none;
+      font-size: 20px;
+      color: #333;
+      font-size: 14px;
+      display: block;
+      padding: 0 15px;
+      margin: 0;
+
+      &.active {
+        background-color: #ededed;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.box-campeonatos {
+  .campeonato-title {
+    margin: 0;
+    line-height: 35px;
+    padding: 0 15px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    position: sticky;
+    top: 15px;
+    @extend .pt-sans;
+    @include gradient-vertical(#3096ff, #156aff);
+  }
+
+  .campeonato-header {
+    .btn {
+      border-color: #e1e1e1;
+      color: #cccccc;
+    }
+  }
+
+  .btn {
+    @extend .pt-sans;
+    width: 72px;
+    font-size: 14px;
+  }
+
+  @media (max-width: 768px) {
+    .btn-group {
+      width: 100%;
+
+      .btn {
+        width: 25% !important;
+        box-sizing: border-box;
+      }
+    }
+  }
+
+  .campeonato-jogo {
+    line-height: 100%;
+    background-color: lighten(#ededed, 5%);
+
+    &.active {
+      //@include gradient-vertical(#ffcc02, #ffe35a);
+    }
+
+    &:nth-child(even) {
+      background-color: lighten(#ededed, 3%);
+    }
+
+    .btn-group {
+      .btn.btn-primary {
+        border-color: #0066da;
+
+        &.active {
+          background-color: #0066da;
+        }
+      }
+
+      .btn-warning {
+        background-color: #f0ad4e;
+        border-color: #f0ad4e;
+
+        &.active {
+          background-color: darken(#f0ad4e, 10%);
+        }
+      }
+    }
+
+    .times {
+      font-weight: bold;
+      color: black;
+      font-size: 14px;
+    }
+
+    time {
+      font-weight: bold;
+      color: #166dff;
+      font-size: 12px;
+    }
+  }
+}

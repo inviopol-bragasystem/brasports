@@ -1,0 +1,153 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - FINANCEIRO / CAIXA
+   ---------------------------------------------------------------------
+   Visual: design system do tema v4 (app.css + v4.css):
+     .bet24-card / .bet24-tabs / .bet24-tab / .bet24-card-title
+     .account-field / .account-label / .account-input / .account-submit
+     .v4-filtros / .v4-filtros-2 / .bet24-msg
+
+   LOGICA: e a mesma do template base do sistema
+   (app/views/website/financeiro/caixaController + tema site9). Endpoint
+   POST /financeiro/caixa/list preservado, o JavaScript (adminPage +
+   primeira busca) foi preservado. Apenas o HTML/CSS mudou.
+
+   Variaveis enviadas pelo controller:
+     - main: meses (array {descricao, dataInicial, dataFinal})
+     - list: relatorio ({result, results[{class, label, valor}], message})
+   ===================================================================== #}
+
+{% block list %}
+
+    {% if relatorio is defined and relatorio.result is defined and relatorio.result == 1 %}
+
+        <div class="bet24-caixa-grid">
+            {% for v in relatorio.results %}
+                {% if v.class == 'success' %}
+                    {% set tom = 'is-up' %}
+                    {% set icone = 'fa-arrow-up' %}
+                {% elseif v.class == 'danger' %}
+                    {% set tom = 'is-down' %}
+                    {% set icone = 'fa-arrow-down' %}
+                {% else %}
+                    {% set tom = 'is-brand' %}
+                    {% set icone = 'fa-coins' %}
+                {% endif %}
+
+                <div class="bet24-caixa-card {{ tom }}">
+                    <span class="bet24-caixa-icone"><i class="fas {{ icone }}"></i></span>
+                    <span class="bet24-caixa-label">{{ v.label }}</span>
+                    <b class="bet24-caixa-valor">R$ {{ v.valor|number_format(2, ',', '.') }}</b>
+                </div>
+            {% endfor %}
+        </div>
+
+        <p class="account-hint bet24-caixa-nota">
+            <i class="fas fa-info-circle"></i> Valores calculados com as apostas do período selecionado.
+        </p>
+
+    {% elseif relatorio is defined and relatorio.result is defined %}
+
+        <div class="bet24-msg is-aviso">
+            <i class="fas fa-exclamation-triangle"></i>
+            {{ relatorio.message|default('Não foi possível carregar o caixa no período informado.') }}
+        </div>
+
+    {% elseif message is defined and message %}
+
+        <div class="bet24-msg is-aviso">
+            <i class="fas fa-exclamation-triangle"></i> {{ message }}
+        </div>
+
+    {% else %}
+
+        <div class="empty">
+            <div class="empty-state">
+                <span class="empty-icon"><i class="fas fa-calculator"></i></span>
+                <p class="empty-title">Nenhum resultado no período</p>
+                <p class="empty-text">Escolha outro intervalo de datas para ver o resumo do seu caixa.</p>
+            </div>
+        </div>
+
+    {% endif %}
+
+{% endblock %}
+
+{% block main %}
+
+    <div class="bet24-page-wide">
+
+        <div class="bet24-page-head">
+            <div>
+                <h1 class="bet24-page-title">Caixa</h1>
+                <p class="bet24-page-sub">Resumo de apostas, prêmios e comissões do período selecionado.</p>
+            </div>
+            <a class="bet24-voltar" href="{{ url('apostas') }}">
+                <i class="fas fa-history"></i> Minhas apostas
+            </a>
+        </div>
+
+        {% if meses is defined and meses|length %}
+            <div class="bet24-tabs bet24-caixa-meses" aria-label="Atalhos por mês">
+                {% for m in meses %}
+                    <button type="button" class="bet24-tab bet24-caixa-mes"
+                            data-inicial="{{ m.dataInicial|date('Y-m-d') }}"
+                            data-final="{{ m.dataFinal|date('Y-m-d') }}">
+                        {{ m.descricao }}
+                    </button>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="bet24-card">
+            <form class="form-search v4-filtros v4-filtros-2">
+                <label class="account-field">
+                    <span class="account-label">De</span>
+                    <input type="date" name="dataInicial" value="{{ 'now'|date('Y-m-01') }}"
+                           class="account-input" required/>
+                </label>
+                <label class="account-field">
+                    <span class="account-label">Até</span>
+                    <input type="date" name="dataFinal" value="{{ 'now'|date('Y-m-d') }}"
+                           class="account-input" required/>
+                </label>
+                <button type="submit" class="account-submit">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+            </form>
+        </div>
+
+        <div class="admpage-container"></div>
+
+    </div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        /* Lista do caixa (AJAX / adminPage) */
+        $.adminPage({
+            autoSearch: false,
+            formSearch: '.form-search',
+            container: '.admpage-container',
+        });
+
+        /* Primeira busca com o mes atual */
+        $('.form-search').submit();
+
+        /* Atalhos de mes (variavel `meses` enviada pelo controller) */
+        $('.bet24-caixa-mes').on('click', function () {
+            var $form = $('.form-search');
+            $('.bet24-caixa-mes').removeClass('is-active');
+            $(this).addClass('is-active');
+            $form.find('[name="dataInicial"]').val($(this).attr('data-inicial'));
+            $form.find('[name="dataFinal"]').val($(this).attr('data-final'));
+            $form.submit();
+        });
+
+    </script>
+
+{% endblock %}

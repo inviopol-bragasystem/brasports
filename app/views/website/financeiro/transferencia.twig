@@ -1,0 +1,91 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="page-title">
+        <h3 class="title"><i class="fa fa-exchange d-none d-md-inline"></i> Transferência</h3>
+    </div>
+
+    <div class="container-fluid py-3">
+        <form class="admpage-form" onsubmit="return false;">
+            <div class="row">
+                <div class="col-12">
+                    <div class="panel panel-default panel-roxo">
+                        <div class="panel-heading">
+                            <h4>Transferir Créditos</h4>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-4 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <label class="">Login do Remetente</label>
+                                        <span class="pointer" data-toggle="popover" data-trigger="hover"
+                                              data-content="Campo que descreve o usuário atual" data-original-title=""
+                                              title="">[<i class="fa fa-question"></i>]</span>
+                                        <input type="text" name="remetente" placeholder="{{ user.getLogin() }}"
+                                               value="{{ user.getLogin() }}" readonly class="form-control text">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <label class="">Login do Destinatário</label>
+                                        <span class="pointer" data-toggle="popover" data-trigger="hover"
+                                              data-content="Digite o usuário que irá receber os créditos."
+                                              data-original-title="" title="">[<i class="fa fa-question"></i>]</span>
+                                        <input type="text" name="destinatario" class="form-control text" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <label class="">Valor a ser transferido (R$)</label>
+                                        <span class="pointer" data-toggle="popover" data-trigger="hover"
+                                              data-content="Digite o valor a ser transferido. Ex.: 20,50"
+                                              data-original-title=""
+                                              title="">[<i class="fa fa-question"></i>]</span>
+                                        <input type="text" name="valor" class="form-control text mask-valor" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row m-t-10 m-b-20">
+                                <div class="col-md-8 col-sm-12 col-12">
+                                    <div class="checkbox">
+                                        <label style="font-size: 0.9em">
+                                            <input id="autorizo" type="checkbox" value="1" required>
+                                            Autorizo o desconto automático do meu saldo para transferir créditos para
+                                            terceiros.
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-12 col-12 text-right">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-arrows-h"></i>
+                                        Transferir
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="texto">
+                                        {{ pagina('transferencia').getTexto()|raw }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $('.admpage-form')
+            .adminPage({
+                autoSearch: false,
+                alertSuccess: true,
+                reloadSuccess: true,
+            });
+    </script>
+{% endblock %}

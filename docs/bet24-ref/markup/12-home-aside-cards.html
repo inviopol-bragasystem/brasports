@@ -1,0 +1,173 @@
+<!--
+  TEMA BET24 (site11) - REFERENCIA v4
+  Arquivo: 12 - Coluna direita da home: Minhas apostas + Ofertas
+  Origem: pages/home.html linhas 823-842 e 1264-1403
+  Obs.: A coluna .home-aside (280px) guarda estes cartoes. Em <=1280px ela vira gaveta lateral (is-aberto) e o bilhete flutuante assume.
+
+  Recorte REAL do site antigo bet24hs.site/v4 (classes e estrutura preservadas).
+  Os links /v4/..., as imagens do CDN e os ids/onclick do backend v4 sao apenas
+  referencia: no tema novo troque por rotas Twig e dados do sistema atual.
+-->
+<!-- ===== 1) Minhas apostas (deslogado) - home.html 823-842 ===== -->
+            <section class="aside-card bets-card v4-minhas-apostas v4-ma-deslogado" aria-label="Minhas apostas" data-v4-minhas-apostas>
+    <h3 class="bets-card-title">Minhas apostas</h3>
+    <div aria-label="Apostas" class="bets-tabs" role="tablist">
+        <button aria-selected="true" class="bets-tab is-active" role="tab" type="button" data-v4-ma-aba="abertas">
+            Em aberto        </button>
+        <button aria-selected="false" class="bets-tab" role="tab" type="button" data-v4-ma-aba="resolvidas">
+            Resolvidas
+        </button>
+    </div>
+
+    <div class="bets-list" data-v4-ma-lista="abertas">
+                    <p class="bets-empty">Não tem apostas em aberto</p>
+            </div>
+
+    <div class="bets-list" data-v4-ma-lista="resolvidas" hidden>
+                    <p class="bets-empty">Nenhuma aposta resolvida ainda</p>
+            </div>
+
+            <button type="button" class="bets-history" data-toggle="modal" data-target="#v4MaModal">Histórico completo</button>
+    </section>
+
+<!-- ===== 2) Ofertas - home.html 1264-1403 (6 itens .offer) ===== -->
+        <section aria-label="Ofertas" class="aside-card offers-card">
+  <h3 class="suggest-head">
+    <svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="16">
+      <rect height="4" rx="1" width="18" x="3" y="8"></rect>
+      <path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path>
+      <path d="M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"></path>
+    </svg>
+    Ofertas
+  </h3>
+  <ul class="offers-list">
+          <li class="offer offer-bolt">
+        <span aria-hidden="true" class="offer-pic">
+          <svg aria-hidden="true" class="cas-art" height="32" viewBox="0 0 32 32" width="32">
+          <defs>
+            <linearGradient id="ofrv4-0-g" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#fff07a"></stop>
+              <stop offset="1" stop-color="#ffb20f"></stop>
+            </linearGradient>
+          </defs>
+          <circle cx="16" cy="16" fill="#3a2a8c" r="13"></circle>
+          <path d="M18 3.5L8 18h6.5L12.5 28.5 24 13h-6.8z" fill="url(#ofrv4-0-g)" stroke="#fff6c4" stroke-linejoin="round" stroke-width=".8"></path>
+        </svg>
+        </span>
+        <div class="offer-body">
+          <span class="offer-group">Esportes</span>
+          <h3 class="offer-title">Criar Aposta Turbinada</h3>
+          <p class="offer-text">Criar aposta com a odd aumentada pelo site, por tempo limitado.</p>
+          <button type="button" class="offer-more" aria-haspopup="dialog" data-toggle="modal" data-target="#v4TurbinadaModal">Veja mais</button>
+        </div>
+      </li>
+              <li class="offer offer-flame">
+        <span aria-hidden="true" class="offer-pic">
+          <svg aria-hidden="true" class="cas-art" height="32" viewBox="0 0 32 32" width="32">
+          <defs>
+            <linearGradient id="ofrv4-1-g" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#ffb347"></stop>
+              <stop offset="1" stop-color="#ff5a1f"></stop>
+            </linearGradient>
+            <linearGradient id="ofrv4-1-i" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#fff1a8"></stop>
+              <stop offset="1" stop-color="#ffc23d"></stop>
+            </linearGradient>
+          </defs>
+          <path d="M16 29c-6 0-10-4.2-10-9.6 0-5.6 4.6-8.6 5.6-14.4 3.4 2.2 4.9 5 5 8 1.4-1 2.3-2.6 2.5-4.6 3.5 3 6.9 6.6 6.9 11.4C26 25 22 29 16 29z" fill="url(#ofrv4-1-g)"></path>
+          <path d="M16 27.5c-3 0-5-2-5-4.8 0-3 2.4-4.6 3.4-7.4 2.4 1.6 3.5 3.4 3.6 5.2.8-.5 1.4-1.4 1.6-2.4 1.6 1.6 2.4 3 2.4 4.8 0 2.7-2.4 4.6-6 4.6z" fill="url(#ofrv4-1-i)"></path>
+        </svg>
+        </span>
+        <div class="offer-body">
+          <span class="offer-group">Esportes</span>
+          <h3 class="offer-title">SuperOdds</h3>
+          <p class="offer-text">O Resultado final do jogo com a odd aumentada, como um mercado a mais.</p>
+          <a class="offer-more" href="#v4SuperOdds">Veja mais</a>
+        </div>
+      </li>
+              <li class="offer offer-trophy">
+        <span aria-hidden="true" class="offer-pic">
+          <svg aria-hidden="true" class="cas-art" height="32" viewBox="0 0 32 32" width="32">
+          <defs>
+            <linearGradient id="ofrv4-2-g" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#ffe27a"></stop>
+              <stop offset="1" stop-color="#f0a10f"></stop>
+            </linearGradient>
+            <linearGradient id="ofrv4-2-b" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#7a4a1c"></stop>
+              <stop offset="1" stop-color="#4a2a0e"></stop>
+            </linearGradient>
+          </defs>
+          <path d="M8 6h16v5a8 8 0 0 1-16 0z" fill="url(#ofrv4-2-g)"></path>
+          <path d="M8 8H4.5a4.5 4.5 0 0 0 4.7 6.2M24 8h3.5a4.5 4.5 0 0 1-4.7 6.2" fill="none" stroke="#f0a10f" stroke-linecap="round" stroke-width="2.2"></path>
+          <path d="M14 18h4l1 5h-6z" fill="#e0920e"></path>
+          <rect fill="url(#ofrv4-2-b)" height="5" rx="1.6" width="12" x="10" y="23"></rect>
+          <path d="M11.5 8.5c0 3.5 1.4 6 3.5 7" fill="none" opacity=".8" stroke="#fff6cc" stroke-linecap="round" stroke-width="1.6"></path>
+        </svg>
+        </span>
+        <div class="offer-body">
+          <span class="offer-group">Esportes</span>
+                    <h3 class="offer-title">2 Gols de Vantagem</h3>
+          <p class="offer-text">Seu time abriu 2 gols de vantagem? A aposta no vencedor já está paga.</p>
+          <a class="offer-more" href="/v4/paginas/regras">Veja mais</a>
+        </div>
+      </li>
+              <li class="offer offer-cards">
+        <span aria-hidden="true" class="offer-pic">
+          <svg aria-hidden="true" class="cas-art" height="32" viewBox="0 0 32 32" width="32">
+          <defs>
+            <linearGradient id="ofrv4-3-g" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#ffffff"></stop>
+              <stop offset="1" stop-color="#e3e7f3"></stop>
+            </linearGradient>
+          </defs>
+          <rect fill="#4a64d8" height="20" rx="2.4" transform="rotate(-14 11 17)" width="14" x="4" y="7"></rect>
+          <rect fill="url(#ofrv4-3-g)" height="21" rx="2.4" transform="rotate(8 20.5 15.5)" width="15" x="13" y="5"></rect>
+          <path d="M20.5 10.5c2 2.8 4.4 4.2 4.4 6.2a2.2 2.2 0 0 1-4.1 1.1l.6 2.4h-1.8l.6-2.4a2.2 2.2 0 0 1-4.1-1.1c0-2 2.4-3.4 4.4-6.2z" fill="#2a2f45" transform="rotate(8 20.5 15.5)"></path>
+        </svg>
+        </span>
+        <div class="offer-body">
+          <span class="offer-group">Esportes</span>
+          <h3 class="offer-title">Criar Aposta</h3>
+          <p class="offer-text">Junte mercados diferentes do mesmo jogo numa aposta só.</p>
+          <a class="offer-more" href="/v4/proximos">Veja mais</a>
+        </div>
+      </li>
+              <li class="offer offer-stars">
+        <span aria-hidden="true" class="offer-pic">
+          <svg aria-hidden="true" class="cas-art" height="32" viewBox="0 0 32 32" width="32">
+          <defs>
+            <linearGradient id="ofrv4-4-g" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#ffe27a"></stop>
+              <stop offset="1" stop-color="#f5a30f"></stop>
+            </linearGradient>
+            <linearGradient id="ofrv4-4-p" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#ff6f8c"></stop>
+              <stop offset="1" stop-color="#e0315a"></stop>
+            </linearGradient>
+          </defs>
+          <rect fill="url(#ofrv4-4-p)" height="15" rx="4" width="26" x="3" y="12"></rect>
+          <path d="M16 3.5l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z" fill="url(#ofrv4-4-g)" stroke="#fff3c4" stroke-width=".8"></path>
+          <path d="M8.5 16.5l1.3 2.6 2.9.4-2.1 2 .5 2.9-2.6-1.4-2.6 1.4.5-2.9-2.1-2 2.9-.4zM23.5 16.5l1.3 2.6 2.9.4-2.1 2 .5 2.9-2.6-1.4-2.6 1.4.5-2.9-2.1-2 2.9-.4z" fill="url(#ofrv4-4-g)"></path>
+        </svg>
+        </span>
+        <div class="offer-body">
+          <span class="offer-group">Esportes</span>
+          <h3 class="offer-title">Múltiplas do dia</h3>
+          <p class="offer-text">Bilhetes prontos com os jogos do dia, para apostar com um toque.</p>
+          <a class="offer-more" href="#v4SuperDicas">Veja mais</a>
+        </div>
+      </li>
+              <li class="offer offer-bag">
+        <span aria-hidden="true" class="offer-pic">
+          <svg aria-hidden="true" class="cas-art" height="32" viewBox="0 0 32 32" width="32"><defs><linearGradient id="ofrv4-5-g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8fe08a"></stop><stop offset="1" stop-color="#2f9c45"></stop></linearGradient></defs><path d="M12 7h8l-2 4h-4z" fill="#2f9c45"></path><path d="M14 11h4c5 3 9 7.5 9 11.5 0 4-3.5 6.5-11 6.5S5 26.5 5 22.5C5 18.5 9 14 14 11z" fill="url(#ofrv4-5-g)"></path><rect fill="#ffc83d" height="2.4" rx="1.2" width="10" x="11" y="9.5"></rect><text fill="#fff" font-family="Geist, system-ui, sans-serif" font-size="10" font-weight="800" text-anchor="middle" x="16" y="25">$</text></svg>
+        </span>
+        <div class="offer-body">
+          <span class="offer-group">Esportes</span>
+          <h3 class="offer-title">Encerrar aposta</h3>
+          <p class="offer-text">Encerre a aposta antes do fim dos jogos e receba o valor oferecido na hora.</p>
+          <a class="offer-more" href="/v4/apostas">Veja mais</a>
+        </div>
+      </li>
+      </ul>
+</section>

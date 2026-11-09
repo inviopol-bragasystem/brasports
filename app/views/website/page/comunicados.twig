@@ -1,0 +1,25 @@
+{% extends layout %}
+
+{% block main %}
+
+    {% if comunicados %}
+    <div class="comunicados">
+        {% for v in comunicados %}
+            <div class="comunicado">
+                <div class="header px-3">
+                    <div class="row">
+                        <div class="col title">{{ v.getTitle() }}</div>
+                        <div class="col-auto hora">{{ v.getData(true) }}</div>
+                    </div>
+                </div>
+                <div class="mensagem p-3">{{ v.getMensagem()|raw }}</div>
+            </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div class="alert alert-warning rounded-0 m-0">
+            <i class="fa fa-warning"></i> Nenhum comunicado no momento.
+        </div>
+    {% endif %}
+
+{% endblock %}

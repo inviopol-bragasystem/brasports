@@ -1,0 +1,15 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div style="background:var(--theme-card-2);border:1px solid var(--theme-card-border);border-radius:16px;padding:28px;max-width:900px;margin:0 auto 24px auto;">
+        <h3 class="font-weight-bold text-white mb-3">
+            {{ pagina.getTitulo()|default('Informações') }}
+        </h3>
+        <div style="color:var(--theme-text-muted);line-height:1.8;font-size:14px;">
+            {{ pagina.getTexto()|raw }}
+        </div>
+    </div>
+
+{% endblock %}
+

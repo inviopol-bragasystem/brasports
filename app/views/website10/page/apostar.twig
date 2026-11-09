@@ -1,0 +1,671 @@
+{% extends layout %}
+
+{% block main %}
+    <!-- Sub-header Fixo Mobile (1:1 dpsportsbr.com: Valor do bilhete + Possível Retorno) -->
+    <div class="dp-mobile-substrip d-flex d-lg-none" v-cloak>
+        <div class="dp-substrip-input">
+            <span>R$</span>
+            <input type="number" 
+                   v-model="valorAposta" 
+                   v-bind:min="apostaMinima" 
+                   v-bind:max="apostaMaxima" 
+                   step="1.00" 
+                   placeholder="0,00"/>
+        </div>
+        <div class="dp-substrip-return" onclick="$('#dpMobileBetslipModal').addClass('open');" style="cursor: pointer;">
+            <div class="label">Possível Retorno</div>
+            <div class="val">R$ ${premio || '0'}</div>
+        </div>
+    </div>
+
+    <div class="dp-main-content" v-cloak>
+        <div class="dp-grid-layout">
+            
+            <!-- ============================================================
+                 COLUNA 1 (ESQUERDA): LOGO 3D OFICIAL & SPORT PILLS
+                 ============================================================ -->
+            <aside class="dp-col-left d-none d-lg-block">
+                
+                <!-- Logo 3D Metálico DP SPORTS Oficial -->
+                <div class="dp-logo-wrapper">
+                    <a href="{{ url() }}">
+                        {% if dados.imgCapa(true, 'logo').getSource() %}
+                            <img src="{{ dados.imgCapa(true, 'logo').getSource(true) }}" alt="{{ dados.getBanca() }}" class="dp-official-shield" style="max-height: 55px; width: auto; object-fit: contain;"/>
+                        {% else %}
+                            <img src="img/dpsports-logo.png" alt="DP SPORTS" class="dp-official-shield"/>
+                        {% endif %}
+                    </a>
+                </div>
+
+                <!-- Modalidade Futebol Ativa -->
+                <div class="dp-sports-pill-list mb-3">
+                    <a href="javascript:;" 
+                       v-on:click="setCampeonato()" 
+                       class="dp-sport-pill" 
+                       v-bind:class="{ active: !findCampeonato || findCampeonato == '*' }">
+                        <div class="dp-sport-label-box">
+                            <span class="dp-sport-icon"><i class="fa fa-futbol-o"></i></span>
+                            <span>Futebol (Todos)</span>
+                        </div>
+                        <span class="dp-sport-badge">${getCampeonatos(null, false).length}</span>
+                    </a>
+                </div>
+
+                <!-- Lista de Competições Reais no Menu Lateral Desktop -->
+                <div class="dp-extras-header-pill d-flex justify-content-between align-items-center">
+                    <span><i class="fa fa-trophy mr-1 text-warning"></i> Competições</span>
+                    <span class="badge badge-light text-dark font-weight-bold" style="font-size: 11px;">${getCampeonatos(null, false).length}</span>
+                </div>
+                <div class="dp-competicoes-list mb-4">
+                    <a href="javascript:;" 
+                       v-for="c in getCampeonatos(null, false)" 
+                       :key="'sidebar-' + c.id"
+                       v-on:click="setCampeonato(c)" 
+                       class="dp-sport-pill dp-comp-pill" 
+                       v-bind:class="{ active: findCampeonato == c.id }">
+                        <div class="dp-sport-label-box text-truncate" :title="c.title">
+                            <span class="dp-sport-icon"><i class="fa fa-angle-right"></i></span>
+                            <span class="text-truncate">${c.title}</span>
+                        </div>
+                        <span class="dp-sport-badge">${c.jogos ? c.jogos.length : 0}</span>
+                    </a>
+                    <div v-if="getCampeonatos(null, false).length == 0" class="text-muted small text-center py-2">
+                        Nenhuma competição disponível
+                    </div>
+                </div>
+
+                <!-- Seção Extras (Pill Escuro Oficial) -->
+                <div class="dp-extras-header-pill">
+                    Extras
+                </div>
+                <div>
+                    <a href="{{ url('regras') }}" class="dp-extra-item">
+                        <i class="fa fa-file-text-o text-muted"></i>
+                        <span>Regulamento</span>
+                    </a>
+                    <a href="{{ url('bilhete') }}" class="dp-extra-item">
+                        <i class="fa fa-ticket text-muted"></i>
+                        <span>Conferir Bilhete</span>
+                    </a>
+
+                    {% if not user %}
+                        <a href="#modal-login" data-toggle="modal" class="dp-login-sidebar-btn">
+                            LOGIN
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="dp-version-text">
+                    v2.0.14
+                </div>
+
+            </aside>
+
+            <!-- ============================================================
+                 COLUNA 2 (CENTRAL): BANNERS, TÍTULO, PESQUISA & JOGOS
+                 ============================================================ -->
+            <section class="dp-col-center">
+
+                <!-- Banner Carrossel Oficial DP Sports / Admin Banners -->
+                {% set dpBanners = banners('site-slideshow', null, null, 10) %}
+                <div class="dp-banner-frame" id="dpBannerFrame">
+                    {% if dpBanners|length > 0 %}
+                        {% for idx, b in dpBanners %}
+                            {% set bUrl = b.getLinkUrl() %}
+                            {% if bUrl %}
+                                <a href="{{ bUrl }}" target="{{ b.getLinkTarget()|default('_self') }}" class="dp-banner-slide" id="dpBannerSlide{{ idx }}" style="opacity: {{ idx == 0 ? '1' : '0' }}; z-index: {{ idx == 0 ? '2' : '1' }}; position: absolute; inset: 0;">
+                                    <picture>
+                                        <source srcset="{{ b.imgCapa(true, 'mobile').getSource(true) }}" media="(max-width: 768px)"/>
+                                        <img src="{{ b.imgCapa(true, 'desktop').getSource(true) }}" alt="{{ b.getTitle()|default('Banner') }}" style="width: 100%; height: 100%; object-fit: cover;"/>
+                                    </picture>
+                                </a>
+                            {% else %}
+                                <div class="dp-banner-slide" id="dpBannerSlide{{ idx }}" style="opacity: {{ idx == 0 ? '1' : '0' }}; z-index: {{ idx == 0 ? '2' : '1' }}; position: absolute; inset: 0;">
+                                    <picture>
+                                        <source srcset="{{ b.imgCapa(true, 'mobile').getSource(true) }}" media="(max-width: 768px)"/>
+                                        <img src="{{ b.imgCapa(true, 'desktop').getSource(true) }}" alt="{{ b.getTitle()|default('Banner') }}" style="width: 100%; height: 100%; object-fit: cover;"/>
+                                    </picture>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% if dpBanners|length > 1 %}
+                            <div class="dp-banner-dots">
+                                {% for idx, b in dpBanners %}
+                                    <span class="dp-banner-dot {{ idx == 0 ? 'active' : '' }}" onclick="switchBanner({{ idx }})"></span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <img class="dp-banner-slide" src="img/dpsports-banner.webp" alt="DP Sports Campeonatos" style="opacity: 1; z-index: 2;"/>
+                        <img class="dp-banner-slide" src="img/dpsports-banner2.webp" alt="DP Sports Brasileirão" style="opacity: 0; z-index: 1;"/>
+                        <div class="dp-banner-dots">
+                            <span class="dp-banner-dot active" onclick="switchBanner(0)"></span>
+                            <span class="dp-banner-dot" onclick="switchBanner(1)"></span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Carrossel de Competições Reais no Mobile -->
+                <div class="dp-mobile-sports-strip d-flex d-lg-none">
+                    <button type="button" 
+                            class="dp-mobile-sport-card" 
+                            v-bind:class="{ active: !findCampeonato || findCampeonato == '*' }"
+                            v-on:click="setCampeonato()">
+                        <div class="dp-mobile-sport-icon"><i class="fa fa-futbol-o"></i></div>
+                        <div class="dp-mobile-sport-name">Todos</div>
+                    </button>
+                    <button type="button" 
+                            v-for="c in getCampeonatos(null, false)"
+                            :key="'strip-' + c.id"
+                            class="dp-mobile-sport-card" 
+                            v-bind:class="{ active: findCampeonato == c.id }"
+                            v-on:click="setCampeonato(c)">
+                        <div class="dp-mobile-sport-icon"><i class="fa fa-trophy text-warning"></i></div>
+                        <div class="dp-mobile-sport-name text-truncate" style="max-width: 86px;" :title="c.title">${c.title}</div>
+                    </button>
+                </div>
+
+                <!-- Barra de Progresso Vermelha do Carrossel de Esportes -->
+                <div class="dp-sports-scrollbar-track d-block d-lg-none">
+                    <div class="dp-sports-scrollbar-bar"></div>
+                </div>
+
+                <!-- Chips de Seleção de Dias (Hoje, Amanhã, Próximos e Todas as Datas) -->
+                <div class="dp-date-chips-wrap">
+                    <button type="button" 
+                            class="dp-day-chip" 
+                            v-bind:class="{ active: !findData || findData == '*' || findData == 'todos' }" 
+                            v-on:click="setData('*')">
+                        <i class="fa fa-globe mr-1"></i> Todos os Jogos
+                    </button>
+                    <button type="button" 
+                            class="dp-day-chip" 
+                            v-bind:class="{ active: findData == '{{ hoje }}' }" 
+                            v-on:click="setData('{{ hoje }}')">
+                        <span class="d-none d-md-inline">Hoje ({{ hoje|split('-')|reverse|join('/') }})</span>
+                        <span class="d-inline d-md-none">{{ diaHoje }}</span>
+                    </button>
+                    <button type="button" 
+                            class="dp-day-chip" 
+                            v-bind:class="{ active: findData == '{{ amanha }}' }" 
+                            v-on:click="setData('{{ amanha }}')">
+                        <span class="d-none d-md-inline">Amanhã ({{ amanha|split('-')|reverse|join('/') }})</span>
+                        <span class="d-inline d-md-none">{{ diaAmanha }}</span>
+                    </button>
+                    <button type="button" 
+                            v-for="d in datas" 
+                            :key="d.data"
+                            v-if="d.data != '{{ hoje }}' && d.data != '{{ amanha }}' && d.data >= '{{ hoje }}'"
+                            class="dp-day-chip" 
+                            v-bind:class="{ active: findData == d.data }" 
+                            v-on:click="setData(d.data)">
+                        ${d.data.split('-').reverse().join('/')}
+                    </button>
+                </div>
+
+                <!-- Seção Jogos em Destaques (1:1 Oficial dpsportsbr.com) -->
+                <div class="dp-featured-section d-block d-lg-none" v-if="getCampeonatos().length > 0 && getJogos(getCampeonatos()[0]).length > 0">
+                    <div class="dp-featured-header">
+                        <h2 class="dp-featured-title">Jogos em destaques</h2>
+                        <span class="dp-featured-count">${getJogos(getCampeonatos()[0]).slice(0, 6).length} destaques</span>
+                    </div>
+                    <div class="dp-featured-carousel">
+                        <div v-for="jogo in getJogos(getCampeonatos()[0]).slice(0, 6)" :key="'feat-' + jogo.id" class="dp-featured-card">
+                            <div class="dp-feat-card-top">
+                                <span class="dp-feat-league">${getCampeonatos()[0].title}</span>
+                                <span class="dp-feat-time">${jogo.hora.replace(/:00$/, '')}</span>
+                            </div>
+                            <div class="dp-feat-teams-box" v-on:click="maisCotacoes(jogo)">
+                                <div class="dp-feat-team left">
+                                    <img v-if="jogo.imgCasa" v-bind:src="jogo.imgCasa" class="dp-feat-crest" v-bind:alt="jogo.casa" onerror="this.style.display='none'"/>
+                                    <i v-else class="fa fa-shield dp-feat-no-crest"></i>
+                                    <span class="dp-feat-team-name">${jogo.casa}</span>
+                                </div>
+                                <div class="dp-feat-vs">VS</div>
+                                <div class="dp-feat-team right">
+                                    <img v-if="jogo.imgFora" v-bind:src="jogo.imgFora" class="dp-feat-crest" v-bind:alt="jogo.fora" onerror="this.style.display='none'"/>
+                                    <i v-else class="fa fa-shield dp-feat-no-crest"></i>
+                                    <span class="dp-feat-team-name">${jogo.fora}</span>
+                                </div>
+                            </div>
+                            <div class="dp-feat-odds-wrap">
+                                <div class="dp-feat-odds-label">Casa/Empate/Fora</div>
+                                <div class="dp-feat-odds-row">
+                                    <button type="button" 
+                                            v-for="c in getCotacoesPrincipais()" 
+                                            :key="'feat-c-' + c.campo"
+                                            class="dp-feat-odd-btn"
+                                            v-bind:class="{ active: jogo.apostaEm == '90' + c.campo }"
+                                            v-on:click="apostar(jogo, '90', c)">
+                                        ${(jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo]) ? maskReal(jogo.cotacoes['90'][c.campo]) : '-'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Título da Seção (1:1 com dpsportsbr.com) -->
+                <div class="dp-title-bar">
+                    <h1 class="dp-main-title">
+                        <span class="d-none d-md-inline">Futebol - Jogos disponíveis para <span v-if="findData && findData != '*'">${findData == '{{ hoje }}' ? 'hoje' : (findData == '{{ amanha }}' ? 'amanhã' : findData.split('-').reverse().join('/'))}</span><span v-else>todas as datas</span> (${getCampeonatos().length} competições)</span>
+                        <span class="d-inline d-md-none">Futebol - Campeonatos disponíveis (${getCampeonatos().length})</span>
+                    </h1>
+                </div>
+
+                <!-- Barra de Pesquisa + Botão - Recolher -->
+                <div class="dp-search-row">
+                    <div class="dp-search-box">
+                        <i class="fa fa-search"></i>
+                        <input type="text" 
+                               v-model="search" 
+                               class="dp-search-input" 
+                               placeholder="Pesquisar por nome da competição ou time..."/>
+                    </div>
+                    <button type="button" class="dp-btn-recolher d-none d-md-inline-block" onclick="$('.dp-matches-list').slideToggle();">
+                        - Recolher
+                    </button>
+                </div>
+
+                <!-- Lista de Campeonatos e Partidas -->
+                <div>
+                    <div v-if="getCampeonatos().length == 0" class="text-center py-5 text-muted">
+                        <i class="fa fa-futbol-o fa-3x mb-3 text-secondary"></i>
+                        <p class="font-weight-bold">Nenhum jogo disponível no momento.</p>
+                    </div>
+
+                    <div v-for="campeonato in getCampeonatos(null, true)" :key="campeonato.id" class="dp-league-card">
+                        
+                        <!-- Cabeçalho da Liga (Bandeira / Globo + Nome) -->
+                        <div class="dp-league-header-row">
+                            <div class="dp-league-title-left">
+                                <img v-if="campeonato.paisImg" v-bind:src="campeonato.paisImg" class="dp-league-flag-img" onerror="this.style.display='none'"/>
+                                <i v-else class="fa fa-globe dp-league-flag-icon"></i>
+                                <h3 class="dp-league-title-text">${campeonato.title}</h3>
+                            </div>
+                            <button type="button" class="dp-league-minus-btn d-none d-md-inline-block" data-toggle="collapse" v-bind:data-target="'#c-' + campeonato.id">
+                                -
+                            </button>
+                        </div>
+
+                        <div class="dp-league-separator"></div>
+
+                        <!-- Lista de Partidas da Liga -->
+                        <div class="dp-matches-list collapse show" v-bind:id="'c-' + campeonato.id">
+                            <div v-for="jogo in getJogos(campeonato)" :key="jogo.id" class="dp-match-item">
+                                
+                                <!-- ================= DESKTOP ROW ================= -->
+                                <div class="dp-match-row-desktop d-none d-md-flex">
+                                    
+                                    <!-- Data e Hora (ex: 08/out 20:00) -->
+                                    <div class="dp-match-date-col">
+                                        <span class="dp-date">${jogo.data.split('-')[2] + '/' + (['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][parseInt(jogo.data.split('-')[1])-1] || jogo.data.split('-')[1])}</span>
+                                        <span class="dp-time">${jogo.hora.replace(/:00$/, '')}</span>
+                                    </div>
+
+                                    <!-- Times com Escudos Oficiais (Em Linha Única sem quebra) -->
+                                    <div class="dp-match-teams-col" v-on:click="maisCotacoes(jogo)">
+                                        <div class="dp-times-box text-nowrap" style="display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; white-space: nowrap !important; align-items: center !important;">
+                                            <span class="dp-time-casa text-nowrap" style="display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; white-space: nowrap !important; align-items: center !important;">
+                                                <img v-if="jogo.imgCasa" v-bind:src="jogo.imgCasa" class="dp-crest-img mr-1" v-bind:alt="jogo.casa" loading="lazy" onerror="this.style.display='none'"/>
+                                                <i v-else class="fa fa-shield dp-crest-none mr-1"></i>
+                                                <span class="dp-team-name text-nowrap" style="white-space: nowrap !important;">${jogo.casa}</span>
+                                            </span>
+                                            <span class="dp-versus" style="white-space: nowrap !important; display: inline-block !important; padding: 0 6px; font-weight: 700; color: #94a3b8;">x</span>
+                                            <span class="dp-time-fora text-nowrap" style="display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; white-space: nowrap !important; align-items: center !important;">
+                                                <img v-if="jogo.imgFora" v-bind:src="jogo.imgFora" class="dp-crest-img mr-1" v-bind:alt="jogo.fora" loading="lazy" onerror="this.style.display='none'"/>
+                                                <i v-else class="fa fa-shield dp-crest-none mr-1"></i>
+                                                <span class="dp-team-name text-nowrap" style="white-space: nowrap !important;">${jogo.fora}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Botões de Odds Escuros + Botão +Mercados -->
+                                    <div class="dp-odds-group">
+                                        <button type="button" 
+                                                v-for="c in getCotacoesPrincipais()" 
+                                                :key="c.campo"
+                                                class="dp-odd-btn"
+                                                v-bind:class="{ active: jogo.apostaEm == '90' + c.campo }"
+                                                v-on:click="apostar(jogo, '90', c)">
+                                            <span class="dp-odd-type">${c.title == '1' ? 'Casa' : (c.title == 'X' ? 'Empate' : (c.title == '2' ? 'Fora' : c.title))}</span>
+                                            <span class="dp-odd-val">${(jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo]) ? maskReal(jogo.cotacoes['90'][c.campo]) : '-'}</span>
+                                        </button>
+
+                                        <!-- Botão +Outras Cotações -->
+                                        <button type="button" class="dp-more-btn" v-on:click="maisCotacoes(jogo)" title="Mais Cotações">
+                                            +${Math.max(0, totalCotacoes(jogo.cotacoes) - getCotacoesPrincipais().length)}
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                                <!-- ================= MOBILE ROW (1:1 com dpsportsbr.com) ================= -->
+                                <div class="dp-match-row-mobile d-flex d-md-none">
+                                    <div class="dp-match-mobile-left" v-on:click="maisCotacoes(jogo)">
+                                        <div class="dp-times-box text-nowrap" style="display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; white-space: nowrap !important; align-items: center !important; margin-bottom: 4px;">
+                                            <span class="dp-time-casa text-nowrap" style="display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; white-space: nowrap !important; align-items: center !important;">
+                                                <img v-if="jogo.imgCasa" v-bind:src="jogo.imgCasa" class="dp-crest-img mr-1" v-bind:alt="jogo.casa" onerror="this.style.display='none'"/>
+                                                <i v-else class="fa fa-shield dp-crest-none mr-1"></i>
+                                                <span class="dp-team-name text-nowrap" style="white-space: nowrap !important;">${jogo.casa}</span>
+                                            </span>
+                                            <span class="dp-versus" style="white-space: nowrap !important; display: inline-block !important; padding: 0 4px; font-weight: 700; color: #94a3b8;">x</span>
+                                            <span class="dp-time-fora text-nowrap" style="display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; white-space: nowrap !important; align-items: center !important;">
+                                                <img v-if="jogo.imgFora" v-bind:src="jogo.imgFora" class="dp-crest-img mr-1" v-bind:alt="jogo.fora" onerror="this.style.display='none'"/>
+                                                <i v-else class="fa fa-shield dp-crest-none mr-1"></i>
+                                                <span class="dp-team-name text-nowrap" style="white-space: nowrap !important;">${jogo.fora}</span>
+                                            </span>
+                                        </div>
+                                        <div class="dp-match-mobile-meta">
+                                            <i class="fa fa-clock-o mr-1"></i>
+                                            <span>${jogo.data.split('-')[2] + '/' + (['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][parseInt(jogo.data.split('-')[1])-1] || jogo.data.split('-')[1])} - ${jogo.hora.replace(/:00$/, '')}</span>
+                                            <span class="dp-mobile-more-tag ml-1">+${Math.max(0, totalCotacoes(jogo.cotacoes) - getCotacoesPrincipais().length)}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="dp-odds-group">
+                                        <button type="button" 
+                                                v-for="c in getCotacoesPrincipais()" 
+                                                :key="c.campo"
+                                                class="dp-odd-btn"
+                                                v-bind:class="{ active: jogo.apostaEm == '90' + c.campo }"
+                                                v-on:click="apostar(jogo, '90', c)">
+                                            <span class="dp-odd-type">${c.title == '1' ? 'Casa' : (c.title == 'X' ? 'Empate' : (c.title == '2' ? 'Fora' : c.title))}</span>
+                                            <span class="dp-odd-val">${(jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo]) ? maskReal(jogo.cotacoes['90'][c.campo]) : '-'}</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ============================================================
+                 COLUNA 3 (DIREITA): CUPOM DE APOSTAS OFICIAL (Desktop)
+                 ============================================================ -->
+            <aside class="dp-col-right d-none d-lg-block">
+                {{ block('cupom') }}
+            </aside>
+
+        </div>
+    </div>
+
+    <!-- Modal Mobile do Cupom de Apostas (1:1 Oficial dpsportsbr.com) -->
+    <div class="dp-mobile-betslip-modal d-lg-none" id="dpMobileBetslipModal">
+        <div class="dp-mobile-betslip-sheet">
+            <div class="dp-mobile-betslip-header">
+                <span class="dp-mobile-betslip-title">CUPOM</span>
+                <button type="button" class="dp-mobile-betslip-close" onclick="$('#dpMobileBetslipModal').removeClass('open');" aria-label="Fechar">
+                    &times;
+                </button>
+            </div>
+            <div class="dp-mobile-betslip-body">
+                {{ block('cupom') }}
+            </div>
+        </div>
+    </div>
+
+    {{ block('modalCotacoes') }}
+{% endblock %}
+
+{% block cupom %}
+    <div class="dp-betslip-card">
+        
+        <!-- Header Oficial DP Sports: CUPOM DE APOSTAS -->
+        <div class="dp-betslip-header-bar">
+            CUPOM DE APOSTAS
+        </div>
+
+        <!-- Conteúdo do Cupom -->
+        <div class="dp-betslip-content">
+            
+            <!-- Seleções -->
+            <div v-if="aposta.jogos.length > 0">
+                <div v-for="(v, i) in aposta.jogos" :key="i" class="dp-selection-card">
+                    <div class="dp-selection-head">
+                        <span class="time">
+                            <i class="fa fa-calendar-o mr-1"></i> ${v.jogo.data.split('-').reverse().join('/')} às ${v.jogo.hora.replace(/:00$/, '')}
+                        </span>
+                        <button type="button" class="dp-selection-remove" v-on:click="rmAposta(i)" title="Remover seleção">
+                            <i class="fa fa-trash-o"></i>
+                        </button>
+                    </div>
+                    <div class="dp-selection-teams">
+                        ${v.jogo.casa} x ${v.jogo.fora}
+                    </div>
+                    <div class="dp-selection-footer">
+                        <div class="dp-selection-market">
+                            <b>${v.cotacao.sigla || v.cotacao.title}</b>
+                            <span class="badge badge-secondary ml-1" v-if="v.tempo != '90'">
+                                ${v.tempo == 'pt' ? '1ºT' : '2ºT'}
+                            </span>
+                        </div>
+                        <div class="dp-selection-odd-pill">
+                            ${(v && v.jogo && v.jogo.cotacoes && v.jogo.cotacoes[v.tempo] && v.cotacao && v.jogo.cotacoes[v.tempo][v.cotacao.campo]) ? maskReal(v.jogo.cotacoes[v.tempo][v.cotacao.campo]) : '-'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cupom Vazio -->
+            <div v-else class="dp-betslip-empty-state">
+                <i class="fa fa-ticket"></i>
+                <div class="title">Seu cupom está vazio</div>
+                <div class="desc">Clique nas cotações dos jogos para montar sua aposta.</div>
+            </div>
+
+        </div>
+
+        <!-- Rodapé do Cupom (Cotação Total, Possível Retorno, Input Stake e Botão) -->
+        <div class="dp-betslip-summary-box">
+            <div class="dp-summary-grid">
+                <div class="dp-summary-col left">
+                    <span class="label">Cotação Total</span>
+                    <span class="odd-val">${valorCotacao || '-'}</span>
+                </div>
+                <div class="dp-summary-col right">
+                    <span class="label">Possível Retorno</span>
+                    <span class="retorno-val">R$ ${premio || '0,00'}</span>
+                </div>
+            </div>
+
+            <!-- Input do Valor da Aposta (R$) -->
+            <div class="dp-stake-input-wrap">
+                <span class="dp-stake-currency">Valor R$</span>
+                <input type="number" 
+                       v-model="valorAposta" 
+                       v-bind:min="apostaMinima" 
+                       v-bind:max="apostaMaxima" 
+                       step="1.00" 
+                       class="dp-stake-input" 
+                       placeholder="Digite o valor"/>
+            </div>
+
+            <!-- Nome do Cliente (Opcional) -->
+            <div class="form-group mb-2" v-if="aposta.jogos.length > 0">
+                <input type="text" v-model="cliente" class="form-control form-control-sm" placeholder="Nome do cliente (opcional)" maxlength="50"/>
+            </div>
+
+            <!-- Botão CRIAR BILHETE (1:1 Oficial dpsportsbr.com) -->
+            <button type="button" 
+                    class="dp-btn-criar-aposta" 
+                    v-bind:class="{ ready: aposta.jogos.length > 0 && apostaValida }"
+                    v-bind:disabled="!apostaValida" 
+                    v-on:click="finalizarAposta">
+                {{ user ? 'FINALIZAR APOSTA' : 'CRIAR BILHETE' }}
+            </button>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block modalCotacoes %}
+    <!-- Modal Mais Cotações DP Sports -->
+    <div id="modal-cotacoes" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content dp-modal-content">
+                <div class="dp-modal-header">
+                    <h5><i class="fa fa-sliders mr-2 text-warning"></i> Todos os Mercados</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body p-3" v-if="mJogo.jogo">
+                    
+                    <div class="text-center mb-3 pb-2 border-bottom">
+                        <h4 class="font-weight-bold m-0 d-inline-flex align-items-center justify-content-center">
+                            <span class="d-inline-flex align-items-center">
+                                <img v-if="mJogo.jogo.imgCasa" v-bind:src="mJogo.jogo.imgCasa" class="dp-crest-img mr-2" v-bind:alt="mJogo.jogo.casa" onerror="this.style.display='none'"/>
+                                ${mJogo.jogo.casa}
+                            </span>
+                            <span class="text-muted mx-3">x</span>
+                            <span class="d-inline-flex align-items-center">
+                                <img v-if="mJogo.jogo.imgFora" v-bind:src="mJogo.jogo.imgFora" class="dp-crest-img mr-2" v-bind:alt="mJogo.jogo.fora" onerror="this.style.display='none'"/>
+                                ${mJogo.jogo.fora}
+                            </span>
+                        </h4>
+                        <div class="small text-muted mt-2">
+                            <i class="fa fa-calendar-o"></i> ${mJogo.jogo.data.split('-').reverse().join('/')} às ${mJogo.jogo.hora.replace(/:00$/, '')}
+                        </div>
+                    </div>
+
+                    <!-- Abas de Tempo (90 min, 1º Tempo, 2º Tempo) -->
+                    <ul class="nav nav-pills nav-fill mb-3">
+                        <li class="nav-item">
+                            <a class="nav-link font-weight-bold" v-bind:class="{ 'active': mJogo.tempo == '90' }" href="javascript:;" v-on:click="mJogo.tempo = '90'">
+                                Tempo Regulamentar (90 min)
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link font-weight-bold" v-bind:class="{ 'active': mJogo.tempo == 'pt' }" href="javascript:;" v-on:click="mJogo.tempo = 'pt'">
+                                1º Tempo
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link font-weight-bold" v-bind:class="{ 'active': mJogo.tempo == 'st' }" href="javascript:;" v-on:click="mJogo.tempo = 'st'">
+                                2º Tempo
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Grupos de Mercados -->
+                    <div v-for="(grupo, id) in grupos" class="dp-market-group-card">
+                        <div class="dp-market-group-title">
+                            <i class="fa fa-futbol-o mr-2"></i> ${grupo}
+                        </div>
+                        <div class="p-2">
+                            <div class="row no-gutters">
+                                <div class="col-6 col-md-4 col-lg-3 p-1" v-for="c in cotacoes" v-if="c.grupo == id && mJogo.jogo && mJogo.jogo.cotacoes && mJogo.jogo.cotacoes[mJogo.tempo] && mJogo.jogo.cotacoes[mJogo.tempo][c.campo] > 1">
+                                    <button type="button" 
+                                            class="dp-odd-btn w-100" 
+                                            v-bind:class="{ active: mJogo.jogo.apostaEm == mJogo.tempo + c.campo }"
+                                            v-on:click="apostar(mJogo.jogo, mJogo.tempo, c)">
+                                        <span class="dp-odd-type text-truncate w-100 text-center">${c.sigla || c.title}</span>
+                                        <span class="dp-odd-val">${(mJogo.jogo.cotacoes && mJogo.jogo.cotacoes[mJogo.tempo] && mJogo.jogo.cotacoes[mJogo.tempo][c.campo]) ? maskReal(mJogo.jogo.cotacoes[mJogo.tempo][c.campo]) : '-'}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    {% set selector = '#website' %}
+    {{ block('script', 'website/page/apostar.twig') }}
+
+    <script>
+        var currentBanner = 0;
+        function switchBanner(idx) {
+            var slides = document.querySelectorAll('.dp-banner-slide');
+            var dots = document.querySelectorAll('.dp-banner-dot');
+            if (!slides || !slides.length) return;
+            currentBanner = idx % slides.length;
+            for (var i = 0; i < slides.length; i++) {
+                slides[i].style.opacity = (i === currentBanner) ? '1' : '0';
+                slides[i].style.zIndex = (i === currentBanner) ? '2' : '1';
+                slides[i].style.transition = 'opacity 0.5s ease';
+            }
+            for (var j = 0; j < dots.length; j++) {
+                dots[j].className = (j === currentBanner) ? 'dp-banner-dot active' : 'dp-banner-dot';
+            }
+        }
+
+        setInterval(function() {
+            var slides = document.querySelectorAll('.dp-banner-slide');
+            if (slides && slides.length > 1) {
+                switchBanner((currentBanner + 1) % slides.length);
+            }
+        }, 5000);
+
+        function renderDrawerCompeticoes() {
+            var el = document.getElementById('dpDrawerCompeticoes');
+            if (!el || typeof app === 'undefined') return;
+            var camps = (typeof app.getCampeonatos === 'function') ? app.getCampeonatos(null, false) : [];
+            if (!camps || camps.length === 0) {
+                el.innerHTML = '';
+                return;
+            }
+            var html = '<div class="dp-drawer-section-title" style="padding-top: 14px;">COMPETIÇÕES (' + camps.length + ')</div>';
+            camps.forEach(function(c) {
+                var isActive = (app.findCampeonato == c.id);
+                var num = (c.jogos && c.jogos.length) ? c.jogos.length : 0;
+                var safeTitle = $('<div>').text(c.title).html();
+                html += '<a href="javascript:;" onclick="selectDrawerComp(' + c.id + ')" class="dp-drawer-comp-link' + (isActive ? ' active' : '') + '">' +
+                    '<span class="text-truncate mr-2"><i class="fa fa-angle-right mr-2 text-primary"></i>' + safeTitle + '</span>' +
+                    '<span class="badge">' + num + '</span>' +
+                '</a>';
+            });
+            el.innerHTML = html;
+        }
+
+        window.renderDrawerCompeticoes = renderDrawerCompeticoes;
+
+        window.selectDrawerComp = function(id) {
+            $('html').removeClass('show-menu');
+            if (typeof app !== 'undefined' && app.paises) {
+                var found = null;
+                app.paises.forEach(function(p) {
+                    if (p.campeonatos) {
+                        p.campeonatos.forEach(function(c) {
+                            if (c.id == id) found = c;
+                        });
+                    }
+                });
+                if (found) {
+                    app.setCampeonato(found);
+                }
+                renderDrawerCompeticoes();
+            }
+        };
+
+        if (typeof app !== 'undefined') {
+            window.appApostar = app;
+
+            app.$watch('aposta.jogos.length', function(newVal) {
+                var badge = document.getElementById('mobileTicketBadge');
+                if (badge) {
+                    badge.innerText = newVal;
+                    badge.style.display = newVal > 0 ? 'inline-block' : 'none';
+                }
+            });
+
+            app.$watch('findCampeonato', function() {
+                setTimeout(renderDrawerCompeticoes, 100);
+            });
+
+            app.$watch('paises', function() {
+                setTimeout(renderDrawerCompeticoes, 300);
+            });
+
+            setTimeout(renderDrawerCompeticoes, 500);
+        }
+    </script>
+{% endblock %}

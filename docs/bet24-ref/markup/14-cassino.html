@@ -1,0 +1,59 @@
+<!--
+  TEMA BET24 (site11) - REFERENCIA v4
+  Arquivo: 14 - Cassino (lista): cas-layout + cas-side + grade de cards
+  Origem: pages/cassino.html linhas 447-495
+  Obs.: Layout proprio do cassino (sem coluna de bilhete): menu de categorias a esquerda, busca e grade. Os cards sao montados por assets/js/v4-cassino.js (ver o template no fim deste arquivo).
+
+  Recorte REAL do site antigo bet24hs.site/v4 (classes e estrutura preservadas).
+  Os links /v4/..., as imagens do CDN e os ids/onclick do backend v4 sao apenas
+  referencia: no tema novo troque por rotas Twig e dados do sistema atual.
+-->
+    <main class="content">
+        <div class="cas-layout">
+
+            <nav class="cas-side" aria-label="Categorias do cassino">
+                <div class="cas-side-head cas-side-head-open">
+                    <a class="cas-side-head-link active" href="/v4/cassino" data-v4-cas-nav="inicio">
+                        <span class="cas-side-icon"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M6.5 10h2.6l-1.6 4M10.7 10h2.6l-1.6 4M14.9 10h2.6l-1.6 4"/></svg></span>Cassino
+                    </a>
+                    <button type="button" class="cas-side-toggle" id="v4CasToggle" aria-expanded="true" aria-label="Recolher as categorias">
+                        <svg width="14" height="9" viewBox="0 0 14 9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 8l6-6 6 6"></path></svg>
+                    </button>
+                </div>
+
+                <!-- Preenchido pelo v4-cassino.js -->
+                <div class="cas-side-list" id="v4CasLista">
+                                            <span class="cas-side-link v4-cas-sk" aria-hidden="true"></span>
+                                            <span class="cas-side-link v4-cas-sk" aria-hidden="true"></span>
+                                            <span class="cas-side-link v4-cas-sk" aria-hidden="true"></span>
+                                            <span class="cas-side-link v4-cas-sk" aria-hidden="true"></span>
+                                            <span class="cas-side-link v4-cas-sk" aria-hidden="true"></span>
+                                            <span class="cas-side-link v4-cas-sk" aria-hidden="true"></span>
+                                    </div>
+            </nav>
+
+            <div class="cas-main">
+                <form class="cas-search" role="search" id="v4CasBuscaForm">
+                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>                    <input id="v4CasBusca" placeholder="Buscar jogo" aria-label="Buscar jogo" maxlength="60" type="search" autocomplete="off" value="">
+                </form>
+
+                <!-- Preenchido pelo v4-cassino.js -->
+                <div id="v4CasConteudo" aria-live="polite">
+                    <div class="cas-grid cas-grid-wide">
+                                                    <span class="cas-card"><span class="cas-card-pic cas-card-skeleton"></span></span>
+                                                    <span class="cas-card"><span class="cas-card-pic cas-card-skeleton"></span></span>
+                                                    <span class="cas-card"><span class="cas-card-pic cas-card-skeleton"></span></span>
+                                                    <span class="cas-card"><span class="cas-card-pic cas-card-skeleton"></span></span>
+                                                    <span class="cas-card"><span class="cas-card-pic cas-card-skeleton"></span></span>
+                                                    <span class="cas-card"><span class="cas-card-pic cas-card-skeleton"></span></span>
+                                                    <span class="cas-card"><span class="cas-card-pic cas-card-skeleton"></span></span>
+                                                    <span class="cas-card"><span class="cas-card-pic cas-card-skeleton"></span></span>
+                                                    <span class="cas-card"><span class="cas-card-pic cas-card-skeleton"></span></span>
+                                                    <span class="cas-card"><span class="cas-card-pic cas-card-skeleton"></span></span>
+                                                    <span class="cas-card"><span class="cas-card-pic cas-card-skeleton"></span></span>
+                                                    <span class="cas-card"><span class="cas-card-pic cas-card-skeleton"></span></span>
+                                            </div>
+                </div>
+            </div>
+        </div>
+    </main>

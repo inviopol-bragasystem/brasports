@@ -1,0 +1,95 @@
+{% extends layout %}
+
+{% block list %}
+
+    <div class="container-fluid px-0 pb-3">
+        {% if busca.getCount() %}
+            <div class="bca-card">
+                <div class="card-body p-0">
+                    <div class="table-responsive m-0">
+                        <table class="table bca-table m-0">
+                            <thead>
+                            <tr>
+                                <th class="text-center">Código</th>
+                                <th>Data</th>
+                                <th>Descrição</th>
+                                <th class="text-right">Valor / Saldo</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="text-center text-muted">-/-</td>
+                                <td class="text-muted">-/-</td>
+                                <td class="font-weight-bold text-white">Saldo anterior</td>
+                                <td class="text-right font-weight-bold text-warning">R$ {{ v.credito|number_format(2, ',', '.') }}</td>
+                            </tr>
+                            {% for v in busca.getRegistros() %}
+                                <tr class="bca-match-row">
+                                    <td class="text-center text-warning font-weight-bold">#{{ v.getId() }}</td>
+                                    <td class="text-white-50">{{ v.getInsert()|date('d/m/Y \\à\\s H\\hi') }}</td>
+                                    <td class="text-white">{{ v.getDescricao()|raw }}</td>
+                                    <td class="text-right font-weight-bold">
+                                        <div>{{ fncSinal(v.getValor(), true) }}</div>
+                                        <small class="text-white-50">{{ fncSinal(v.getSaldoCreditos(), true) }}</small>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-3 bg-dark border-top" style="border-color: var(--bca-border) !important;">{{ busca }}</div>
+                </div>
+            </div>
+        {% elseif message %}
+            <div class="alert alert-warning m-0">
+                <i class="fa fa-warning"></i> {{ message }}
+            </div>
+        {% else %}
+            <div class="alert alert-warning m-0">
+                <i class="fa fa-warning"></i> Nenhum registro encontrado
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block main %}
+
+    <div class="container-fluid px-lg-4 px-3 py-4">
+        <div class="bca-page-card">
+            <h3 class="bca-page-title"><i class="fa fa-history"></i> Extrato Financeiro</h3>
+
+            <form class="admpage-form-search mb-4" onsubmit="javascript:return false;">
+                <div class="row align-items-end">
+                    <div class="form-group col-md-5 col-12 mb-3 mb-md-0">
+                        <label class="text-white-50 small font-weight-bold">DE:</label>
+                        <input type="date" name="dataInicial" class="form-control bg-dark border-secondary text-white" value="{{ 'now'|date('Y-m-01') }}"/>
+                    </div>
+                    <div class="form-group col-md-5 col-12 mb-3 mb-md-0">
+                        <label class="text-white-50 small font-weight-bold">ATÉ:</label>
+                        <input type="date" name="dataFinal" class="form-control bg-dark border-secondary text-white" value="{{ 'now'|date('Y-m-t') }}"/>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <button class="btn btn-success btn-block font-weight-bold" style="background-color: var(--bca-green); border-color: var(--bca-green);">
+                            <i class="fa fa-filter"></i> Filtrar
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="admpage-container"></div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $.adminPage({
+            formSearch: '.admpage-form-search',
+            container: '.admpage-container',
+            autoSearch: false,
+        });
+        $('.admpage-form-search').submit();
+    </script>
+{% endblock %}

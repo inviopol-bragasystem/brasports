@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    {{ seo_header() }}
+
+    <link rel="stylesheet" href="css/bootstrap4.css"/>
+    <link rel="stylesheet" href="css/betano.css?v=2.2.0"/>
+    <link rel="stylesheet" href="css/loading.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+    {% block head %}{% endblock %}
+
+    {{ dados.getHtmlHead()|raw }}
+    {% include 'website/inc/personalizacao-css.twig' %}
+</head>
+<body>
+
+{% set hoje = 'now'|date('Y-m-d') %}
+{% set amanha = '+1day'|date('Y-m-d') %}
+
+<!-- Modal de Login -->
+<form id="modal-login" class="modal fade" method="post">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="background-color: var(--btn-bg-card); border: 1px solid var(--btn-border);">
+            <div class="modal-header border-bottom border-secondary">
+                <h5 class="modal-title font-weight-bold text-white"><i class="fa fa-lock text-warning mr-1"></i> Acessar Betano</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="form-group">
+                    <label class="text-white-50 small font-weight-bold">USUÁRIO OU E-MAIL</label>
+                    <input type="text" name="username" class="form-control" style="background:#0b1220; border-color:var(--btn-border); color:#fff;" placeholder="Digite seu login" required/>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="text-white-50 small font-weight-bold">SENHA</label>
+                    <input type="password" name="password" class="form-control" style="background:#0b1220; border-color:var(--btn-border); color:#fff;" placeholder="Digite sua senha" required minlength="5" maxlength="20"/>
+                </div>
+                <button type="submit" class="btn-btn-bet w-100">
+                    <i class="fa fa-sign-in"></i> Entrar na Conta
+                </button>
+                {% if dados.getExibirRegistro() %}
+                    <div class="text-center mt-3">
+                        <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="btn btn-link btn-sm text-white-50">
+                            Não tem conta? <span class="text-warning font-weight-bold">Cadastre-se</span>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
+<div id="website">
+
+    <!-- Header Betano -->
+    <header class="btn-header">
+        <div class="container-fluid px-lg-4 px-3">
+            <div class="btn-header-top">
+                <div class="row align-items-center justify-content-between">
+                    
+                    <!-- Logo / Marca -->
+                    <div class="col-auto">
+                        <div class="btn-logo-container">
+                            <a href="{{ url() }}" class="d-flex align-items-center text-decoration-none">
+                                {% if dados.imgCapa(true, 'logo').getSource() %}
+                                    <img src="{{ dados.imgCapa(true, 'logo').getSource(true) }}" class="brand-img mr-2" alt="{{ dados.getBanca() }}"/>
+                                {% else %}
+                                    <div class="btn-logo">
+                                        BET<span class="btn-logo-badge">ANO</span>
+                                    </div>
+                                {% endif %}
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Top Menu / Ações do Usuário (Desktop) -->
+                    <div class="col-auto d-none d-md-block">
+                        <ul class="btn-top-nav">
+                            {% if dados.getExibirApp() %}
+                                <li>
+                                    <a href="{{ dados.getApp()|default(url('app')) }}" target="_blank">
+                                        <i class="fa fa-android text-warning mr-1"></i> APP Betano
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if user.getType() == 1 %}
+                                <li>
+                                    <a href="{{ url('twig') }}" title="Limpar Cache Twig">
+                                        <i class="fa fa-refresh mr-1"></i> Twig Clean
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if not user %}
+                                {% if dados.getExibirLogin() %}
+                                    <li>
+                                        <a href="#modal-login" data-toggle="modal" class="btn-btn-login">
+                                            <i class="fa fa-sign-in mr-1"></i> Entrar
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                {% if dados.getExibirRegistro() %}
+                                    <li>
+                                        <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="btn-btn-register">
+                                            <i class="fa fa-user-plus mr-1"></i> Registrar
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% else %}
+                                <li>
+                                    <div class="dropdown">
+                                        <a href="javascript:;" class="btn-user-balance dropdown-toggle text-decoration-none" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fa fa-wallet mr-1 text-warning"></i> Saldo: <span class="val">R$ {{ user.getCredito(true) }}</span>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right" style="background-color: var(--btn-bg-card); border: 1px solid var(--btn-border);">
+                                            <a class="dropdown-item text-white" href="{{ url("financeiro/extrato") }}"><i class="fa fa-list-alt text-warning mr-2"></i> Extrato</a>
+                                            <a class="dropdown-item text-white" href="{{ url("financeiro/caixa") }}"><i class="fa fa-calculator text-warning mr-2"></i> Caixa</a>
+                                            <a class="dropdown-item text-white" href="{{ url("financeiro/deposito") }}"><i class="fa fa-arrow-down text-success mr-2"></i> Depósito</a>
+                                            <a class="dropdown-item text-white" href="{{ url("financeiro/transferencia") }}"><i class="fa fa-exchange text-info mr-2"></i> Transferência</a>
+                                            <a class="dropdown-item text-white" href="{{ url("financeiro/saque") }}"><i class="fa fa-arrow-up text-danger mr-2"></i> Saque</a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a href="{{ url('apostas') }}"><i class="fa fa-history mr-1"></i> Minhas Apostas</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url('perfil') }}"><i class="fa fa-user mr-1"></i> Perfil</a>
+                                </li>
+                                {% if dados.getExibirComunicados() %}
+                                    <li>
+                                        <a href="{{ url('comunicados') }}"><i class="fa fa-bullhorn mr-1"></i> Comunicados</a>
+                                    </li>
+                                {% endif %}
+                                <li>
+                                    <a href="{{ url('logout') }}" class="text-danger"><i class="fa fa-sign-out mr-1"></i> Sair</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <!-- Botão Menu Mobile -->
+                    <div class="col-auto d-block d-md-none">
+                        <button class="btn btn-sm btn-outline-warning" onclick="$('html').toggleClass('show-menu');">
+                            <i class="fa fa-bars fa-lg"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Submenu / Abas de Esportes Betano -->
+            <div class="btn-subnav">
+                <ul>
+                    <li class="active"><a href="{{ url() }}"><i class="fa fa-futbol-o"></i> Futebol</a></li>
+                        {% if dados.getExibirCassino() %}<li><a href="{{ url('cassino') }}"><i class="fa fa-gamepad text-warning"></i> Cassino</a></li>{% endif %}
+                    {% if dados.getExibirBilhete() %}<li><a href="{{ url('bilhete') }}"><i class="fa fa-ticket"></i> Consultar Bilhete</a></li>{% endif %}
+                    {% if user %}
+                        <li><a href="{{ url('apostas') }}"><i class="fa fa-list"></i> Minhas Apostas</a></li>
+                        <li><a href="{{ url('financeiro/extrato') }}"><i class="fa fa-money"></i> Financeiro</a></li>
+                    {% endif %}
+                    {% if dados.getExibirCotacoes() %}<li><a href="{{ url('cotacoes') }}"><i class="fa fa-line-chart"></i> SuperOdds</a></li>{% endif %}
+                    {% if dados.getExibirRegras() %}<li><a href="{{ url('regras') }}"><i class="fa fa-book"></i> Regulamento</a></li>{% endif %}
+                    <li><a href="{{ url('perguntas-frequentes') }}"><i class="fa fa-question-circle"></i> Ajuda Betano</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main id="main">
+        {% block main %}{% endblock %}
+    </main>
+
+    <!-- Rodapé Betano -->
+    <footer class="btn-footer">
+        <div class="container-fluid px-lg-4 px-3">
+            <div class="row align-items-center">
+                <div class="col-12 col-md-7">
+                    <div class="mb-2">
+                        <a href="{{ url('termos-uso') }}">Termos e Condições</a>
+                        {% if dados.getExibirRegras() %}<a href="{{ url('regras') }}">Regras de Apostas</a>{% endif %}
+                        {% if dados.getExibirCotacoes() %}<a href="{{ url('cotacoes') }}">SuperOdds</a>{% endif %}
+                        {% if dados.getExibirBilhete() %}<a href="{{ url('bilhete') }}">Consultar Bilhete</a>{% endif %}
+                        {% if dados.getExibirApp() %}<a href="{{ dados.getApp()|default(url('app')) }}" target="_blank">Aplicativo Mobile</a>{% endif %}
+                    </div>
+                    <div class="small text-muted">
+                        <span class="btn-age-badge">18+</span>
+                        A Betano promove o jogo responsável. Proibido para menores de 18 anos. Apostas esportivas são para maiores de idade.
+                    </div>
+                </div>
+                <div class="col-12 col-md-5 text-md-right mt-3 mt-md-0">
+                    <div class="small">
+                        ©{{ 'now'|date('Y') }} <b>{{ dados.getBanca() }}</b>. Todos os direitos reservados.<br/>
+                        Experiência Betano Sportsbook.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<!-- Drawer Menu Mobile Betano -->
+<div class="btn-menu-mobile">
+    <div class="btn-menu-mobile-header">
+        <span><i class="fa fa-futbol-o text-warning mr-2"></i> Betano Sports</span>
+        <button class="close text-white" onclick="$('html').removeClass('show-menu');">&times;</button>
+    </div>
+    <ul>
+        <li><a href="{{ url() }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-home"></i> Apostas Esportivas</a></li>
+        {% if dados.getExibirBilhete() %}<li><a href="{{ url('bilhete') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-ticket"></i> Consultar Bilhete</a></li>{% endif %}
+        
+        {% if user %}
+            <li><a href="{{ url('apostas') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-history"></i> Minhas Apostas</a></li>
+            <li><a href="{{ url('perfil') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-user"></i> Perfil</a></li>
+            <li><a href="{{ url('financeiro/extrato') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-money"></i> Extrato</a></li>
+            <li><a href="{{ url('financeiro/deposito') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-arrow-down text-success"></i> Depósito</a></li>
+            <li><a href="{{ url('financeiro/saque') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-arrow-up text-danger"></i> Saque</a></li>
+            {% if dados.getExibirComunicados() %}<li><a href="{{ url('comunicados') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-bullhorn"></i> Comunicados</a></li>{% endif %}
+            <li><a href="{{ url('logout') }}" class="text-danger" onclick="$('html').removeClass('show-menu');"><i class="fa fa-sign-out"></i> Sair</a></li>
+        {% else %}
+            {% if dados.getExibirLogin() %}
+                <li>
+                    <a href="#modal-login" data-toggle="modal" onclick="$('html').removeClass('show-menu');">
+                        <i class="fa fa-sign-in text-warning"></i> Entrar
+                    </a>
+                </li>
+            {% endif %}
+            {% if dados.getExibirRegistro() %}
+                <li>
+                    <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" onclick="$('html').removeClass('show-menu');" class="text-warning font-weight-bold">
+                        <i class="fa fa-user-plus text-warning"></i> Registrar Conta
+                    </a>
+                </li>
+            {% endif %}
+        {% endif %}
+
+        {% if dados.getExibirCotacoes() %}<li><a href="{{ url('cotacoes') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-line-chart"></i> SuperOdds</a></li>{% endif %}
+        {% if dados.getExibirRegras() %}<li><a href="{{ url('regras') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-book"></i> Regulamento</a></li>{% endif %}
+        <li><a href="{{ url('termos-uso') }}" onclick="$('html').removeClass('show-menu');"><i class="fa fa-file-text-o"></i> Termos</a></li>
+        {% if dados.getExibirApp() %}<li><a href="{{ dados.getApp()|default(url('app')) }}" target="_blank"><i class="fa fa-android text-warning"></i> Baixar App</a></li>{% endif %}
+    </ul>
+</div>
+
+{{ seo_footer() }}
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="node_modules/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.mask.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.form.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.serializeObject.js"></script>
+<script type="text/javascript" src="cdn/js/fastclick.js"></script>
+<script type="text/javascript" src="cdn/js/modernizr.min.js"></script>
+<script type="text/javascript" src="cdn/js/mask.js"></script>
+<script type="text/javascript" src="cdn/js/string.js"></script>
+<script type="text/javascript" src="node_modules/owl.carousel2/dist/owl.carousel.js"></script>
+<script type="text/javascript" src="cdn/js/clipboard.min.js"></script>
+<script type="text/javascript" src="cdn/js/admin.js"></script>
+<script type="text/javascript" src="js/site.js?v=1.0.0"></script>
+
+<script>
+    $('#modal-login')
+        .adminPage({
+            autoSearch: false,
+            controller: 'login',
+            module: 'entrar',
+        })
+        .on("success", function (event, e) {
+            if (e.result == 1) {
+                window.location.href = e.url;
+            }
+        });
+</script>
+
+{% block script %}{% endblock %}
+
+{{ dados.getHtmlFooter()|raw }}
+
+</body>
+</html>

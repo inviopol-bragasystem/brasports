@@ -1,0 +1,104 @@
+================================================================================
+             TUTORIAL DE INSTALAÇÃO - SISTEMA BANCA ESPORTIVA + CASSINO VIP
+                          VERSÃO MULTI-TEMAS (12 TEMAS INCLUSOS)
+================================================================================
+
+Este pacote contém o sistema completo de apostas esportivas integrado com
+módulo de cassino online (240+ jogos de provedores oficiais como PG Soft,
+Pragmatic Play, TaDa Gaming, Aviator, Spribe Mines, CP Games, PopOK, WG, G759).
+
+Compatível com: cPanel, aaPanel, Plesk, VPS Ubuntu/Debian/CentOS, Windows Server.
+PHP Recomendado: PHP 8.0 ou 8.1
+Extensões PHP necessárias: pdo_mysql, mysqli, mbstring, curl, json, gd, openssl, fileinfo.
+
+--------------------------------------------------------------------------------
+1. BANCO DE DADOS
+--------------------------------------------------------------------------------
+1.1. No painel da sua hospedagem ou VPS (phpMyAdmin / MySQL):
+     - Crie um novo banco de dados (ex: banca).
+     - Crie um usuário MySQL com privilégios totais sobre o banco e defina uma senha.
+1.2. Importe o arquivo 'banca.sql' fornecido na pasta para o banco recém-criado.
+
+--------------------------------------------------------------------------------
+2. ARQUIVOS DO SISTEMA
+--------------------------------------------------------------------------------
+2.1. Extraia todos os arquivos do sistema na raiz do seu site (public_html, wwwroot ou htdocs).
+2.2. Certifique-se de que as permissões das pastas temporárias estejam liberadas para escrita (chmod 755 ou 777):
+     - _temp/
+     - _temp/cache/
+     - _temp/session/
+     - imagens/
+     - arquivos/
+
+--------------------------------------------------------------------------------
+3. CONFIGURAÇÃO UNIFICADA (inc.config.php)
+--------------------------------------------------------------------------------
+Abra o arquivo 'inc.config.php' na raiz do site e edite apenas o bloco inicial:
+
+// --- BANCO DE DADOS ---
+$DB_HOST = 'localhost';
+$DB_USER = 'seu_usuario_banco';
+$DB_PASS = 'sua_senha_banco';
+$DB_NAME = 'nome_do_banco';
+
+// --- DOMÍNIO / URL DO SITE ---
+// Deixe vazio ('') para detectar automaticamente o domínio, ou fixe a URL se preferir:
+$SITE_URL = 'https://seusite.com';
+
+// --- INFORMAÇÕES BÁSICAS ---
+$SITE_TITLE = 'Sua Banca Esportiva';
+$SITE_EMAIL = 'contato@seusite.com';
+
+// --- TEMA PADRÃO (Pode ser alterado no Painel Admin) ---
+// Opções disponíveis:
+// 'site1'  -> Bonanza Sport (Padrão)
+// 'site2'  -> Layout Alternativo 2
+// 'site3'  -> Layout Alternativo 3
+// 'site4'  -> Bet365 (Verde & Amarelo)
+// 'site5'  -> Banca de Apostas (Vermelho & Preto)
+// 'site6'  -> Betano (Laranja & Grafite)
+// 'site7'  -> Primor Bet (Cyber Neon Verde)
+// 'site8'  -> Superbet (Verde Esmeralda & Escuro)
+// 'site9'  -> Moderno Escuro (Minimalista)
+// 'site10' -> DP Sports (Azul Royal & Marinho)
+// 'site11' -> Bet24
+// 'site12' -> GoldEsporte (Clássico Dourado & Preto)
+$SITE_LAYOUT = 'site1';
+
+--------------------------------------------------------------------------------
+4. ACESSO AO PAINEL ADMINISTRATIVO
+--------------------------------------------------------------------------------
+URL de Acesso:
+https://seusite.com/admin
+
+Credenciais Padrão:
+Login: admin (ou seu email de admin cadastrado)
+Senha: admin (ou cadastrada no banco)
+
+Recursos Principais no Painel Admin:
+- "Personalização > Temas":
+  Selecione com 1 clique qualquer um dos 12 temas visuais.
+- "Habilitar Módulo Cassino":
+  Ative ou desative o cassino instantaneamente para todos os temas.
+- "Exibir Escudos dos Times":
+  Ative ou oculte os escudos e bandeiras dos clubes nos confrontos.
+- "Cassino > Configurações & API":
+  Configure o Agregador de Jogos (Acelora / GamesVIP) e sincronize os jogos.
+- "Gateway PIX":
+  Configuração nativa de depósitos e saques automáticos via PixUp e VeoPag.
+
+--------------------------------------------------------------------------------
+5. CRON JOBS (TAREFAS AUTOMÁTICAS)
+--------------------------------------------------------------------------------
+Configure as tarefas agendadas no crontab da sua hospedagem:
+
+A cada 1 minuto (Atualização de Jogos, Placares e Finalizações):
+* * * * * curl -s https://seusite.com/cron/jogos > /dev/null 2>&1
+
+A cada 5 minutos (Validação de Depósitos PIX pendentes):
+*/5 * * * * curl -s https://seusite.com/cron/pix > /dev/null 2>&1
+
+================================================================================
+               SISTEMA PRONTO PARA OPERAÇÃO E FATURAMENTO!
+================================================================================
+

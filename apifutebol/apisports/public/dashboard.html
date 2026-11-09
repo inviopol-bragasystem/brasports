@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Sportsbook API · Console</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --border-strong: #d1d5db;
+      --text: #111827;
+      --text-secondary: #4b5563;
+      --muted: #6b7280;
+      --primary: #0f766e;
+      --primary-hover: #0d9488;
+      --primary-soft: #f0fdfa;
+      --danger: #b91c1c;
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+      --ok: #15803d;
+      --ok-bg: #f0fdf4;
+      --warn: #b45309;
+      --live: #dc2626;
+      --live-bg: #fef2f2;
+      --radius: 10px;
+      --shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
+      --font: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      --mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+      --header-h: 64px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+    }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    button, input, select { font: inherit; }
+
+    /* Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      min-height: var(--header-h);
+    }
+    .topbar-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .brand p {
+      margin: 2px 0 0;
+      font-size: 0.78rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Layout */
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 16px 16px 48px;
+      display: grid;
+      gap: 16px;
+    }
+    @media (min-width: 900px) {
+      .page { padding: 24px 20px 56px; gap: 20px; }
+      .layout-2 {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 20px;
+        align-items: start;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-hd {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .card-hd h2 {
+      margin: 0;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .card-hd .hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .card-bd { padding: 16px; }
+
+    /* Controls */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+    .field label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .control, select.control, input.control {
+      width: 100%;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:disabled { opacity: 0.55; cursor: wait; }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); border-color: var(--primary-hover); }
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+    .btn-secondary:hover:not(:disabled) { background: #f9fafb; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border-color: transparent;
+    }
+    .btn-ghost:hover:not(:disabled) { background: #f3f4f6; color: var(--text); }
+    .btn-sm { padding: 7px 10px; font-size: 0.8rem; }
+    .btn-block { width: 100%; }
+
+    .toolbar {
+      display: grid;
+      gap: 10px;
+    }
+    .toolbar-row {
+      display: grid;
+      gap: 10px;
+    }
+    @media (min-width: 640px) {
+      .toolbar-row.cols-2 { grid-template-columns: 1fr 1fr; }
+      .toolbar-row.cols-3 { grid-template-columns: 1.2fr 1fr auto; align-items: end; }
+      .toolbar-row.actions {
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      }
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .stat {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat b {
+      display: block;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .stat span {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 600;
+    }
+
+    /* Source status */
+    .sources {
+      display: grid;
+      gap: 10px;
+    }
+    .source-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: grid;
+      gap: 4px;
+      background: var(--surface);
+    }
+    .source-item.ok { border-color: #bbf7d0; background: var(--ok-bg); }
+    .source-item.bad { border-color: var(--danger-border); background: var(--danger-bg); }
+    .source-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .source-name {
+      font-weight: 650;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #9ca3af;
+      flex-shrink: 0;
+    }
+    .dot.ok { background: var(--ok); }
+    .dot.bad { background: var(--live); }
+    .source-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      word-break: break-word;
+    }
+    .pill {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: var(--text-secondary);
+    }
+    .pill.ok { background: #dcfce7; color: var(--ok); }
+    .pill.bad { background: #fee2e2; color: var(--danger); }
+    .pill.off { background: #f3f4f6; color: var(--muted); }
+
+    /* Events - desktop table */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    table.events {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+    table.events th,
+    table.events td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    table.events th {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      background: #fafafa;
+      position: sticky;
+      top: 0;
+    }
+    table.events tbody tr:hover td { background: #fafafa; }
+    table.events td { font-size: 0.875rem; }
+    .match-cell { font-weight: 600; color: var(--text); }
+    .match-cell .league-line {
+      display: block;
+      margin-top: 3px;
+      font-weight: 400;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 2px 7px;
+      border-radius: 4px;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    .badge-live {
+      background: var(--live-bg);
+      color: var(--live);
+      border: 1px solid #fecaca;
+    }
+    .badge-src {
+      background: #f3f4f6;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      text-transform: uppercase;
+    }
+    .odds {
+      font-variant-numeric: tabular-nums;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      white-space: nowrap;
+      color: var(--text);
+    }
+    .odds span {
+      display: inline-block;
+      min-width: 2.4em;
+      text-align: center;
+      padding: 4px 6px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+    .score {
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 36px 16px;
+      font-size: 0.9rem;
+    }
+
+    /* Mobile event cards */
+    .event-cards { display: none; }
+    @media (max-width: 767px) {
+      .table-wrap { display: none; }
+      .event-cards { display: grid; gap: 10px; }
+      .topbar-inner { padding: 12px; }
+      .brand p { max-width: 180px; }
+      .stats { gap: 8px; }
+      .stat b { font-size: 1.15rem; }
+      .card-bd { padding: 14px; }
+    }
+    .event-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      background: var(--surface);
+    }
+    .event-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .event-card-title {
+      font-weight: 650;
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
+    .event-card-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 6px;
+      display: grid;
+      gap: 3px;
+    }
+    .event-card-odds {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .event-card-odds .label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-right: 4px;
+    }
+
+    /* Alert / JSON / docs */
+    .alert {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--danger-border);
+      background: var(--danger-bg);
+      color: var(--danger);
+      font-size: 0.875rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .alert.show { display: block; }
+    .tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+      padding: 0 12px;
+      background: #fafafa;
+    }
+    .tab {
+      border: none;
+      background: transparent;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    pre.json {
+      margin: 0;
+      padding: 14px 16px;
+      max-height: 420px;
+      overflow: auto;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      line-height: 1.45;
+      background: #111827;
+      color: #e5e7eb;
+      border: none;
+      border-radius: 0;
+    }
+    .endpoints {
+      display: grid;
+      gap: 8px;
+    }
+    .endpoint {
+      display: grid;
+      gap: 2px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    .endpoint code {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--primary);
+      font-weight: 600;
+      word-break: break-all;
+    }
+    .endpoint span {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      padding: 8px 0 24px;
+    }
+    .loading-bar {
+      height: 3px;
+      background: transparent;
+      overflow: hidden;
+    }
+    .loading-bar.active {
+      background: #e5e7eb;
+    }
+    .loading-bar.active::after {
+      content: "";
+      display: block;
+      height: 100%;
+      width: 40%;
+      background: var(--primary);
+      animation: load 0.9s ease-in-out infinite;
+    }
+    @keyframes load {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(280%); }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">SB</div>
+        <div>
+          <h1>Sportsbook API</h1>
+          <p>Console de demonstração · SofaScore · Vai de Bet · Pix.bet</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <a class="btn btn-secondary btn-sm" href="/api" target="_blank" rel="noopener">Docs JSON</a>
+        <button type="button" class="btn btn-secondary btn-sm" id="btnHealth">Testar fontes</button>
+      </div>
+    </div>
+    <div class="loading-bar" id="loadingBar"></div>
+  </header>
+
+  <main class="page">
+    <div class="layout-2">
+      <section class="card">
+        <div class="card-hd">
+          <h2>Consultar dados</h2>
+          <span class="hint">Live, pré-jogo e odds em tempo real</span>
+        </div>
+        <div class="card-bd toolbar">
+          <div class="toolbar-row cols-2">
+            <div class="field">
+              <label for="source">Fonte</label>
+              <select id="source" class="control">
+                <option value="sofascore">SofaScore</option>
+                <option value="vaidebet">Vai de Bet</option>
+                <option value="pixbet">Pix.bet</option>
+                <option value="all">Todas (merge)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="mode">Modo</label>
+              <select id="mode" class="control">
+                <option value="live">Ao vivo</option>
+                <option value="today">Hoje / próximos</option>
+                <option value="odds">Odds live (1X2)</option>
+                <option value="compare">Comparar fontes</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="toolbar-row actions">
+            <button type="button" class="btn btn-primary" id="btnRun">Carregar</button>
+            <button type="button" class="btn btn-secondary" id="btnRefresh">Atualizar health</button>
+          </div>
+
+          <div class="toolbar-row cols-3">
+            <div class="field">
+              <label for="q">Buscar time / jogo</label>
+              <input id="q" class="control" type="search" placeholder="Ex: Flamengo" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="eventId">ID do evento</label>
+              <input id="eventId" class="control" type="text" placeholder="ID da fonte" autocomplete="off" />
+            </div>
+            <div class="field" style="justify-content:flex-end">
+              <label style="opacity:0">.</label>
+              <div style="display:flex;gap:8px">
+                <button type="button" class="btn btn-secondary" id="btnSearch">Buscar</button>
+                <button type="button" class="btn btn-secondary" id="btnEvent">Detalhe</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats" aria-live="polite">
+            <div class="stat"><b id="stCount">—</b><span>Eventos</span></div>
+            <div class="stat"><b id="stLive">—</b><span>Ao vivo</span></div>
+            <div class="stat"><b id="stMs">—</b><span>Latência</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-hd">
+          <h2>Status das fontes</h2>
+          <span class="hint" id="healthTime">—</span>
+        </div>
+        <div class="card-bd">
+          <div class="sources" id="sources">
+            <div class="empty">Carregando status…</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="errorBox" class="alert" role="alert"></div>
+
+    <section class="card">
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-view="list" id="tabList">Eventos</button>
+        <button type="button" class="tab" data-view="json" id="tabJson">Resposta JSON</button>
+        <button type="button" class="tab" data-view="docs" id="tabDocs">Endpoints</button>
+      </div>
+
+      <div id="viewList">
+        <div class="table-wrap">
+          <table class="events">
+            <thead>
+              <tr>
+                <th>Partida</th>
+                <th>Horário BR</th>
+                <th>Placar</th>
+                <th>1X2</th>
+                <th>Fonte</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <tr><td colspan="5" class="empty">Selecione uma fonte e clique em Carregar</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="event-cards" id="cards">
+          <div class="empty">Selecione uma fonte e clique em Carregar</div>
+        </div>
+      </div>
+
+      <div id="viewJson" hidden>
+        <pre class="json" id="jsonView">{}</pre>
+      </div>
+
+      <div id="viewDocs" hidden>
+        <div class="card-bd endpoints" id="endpoints">
+          <div class="endpoint"><code>GET /api</code><span>Documentação da API</span></div>
+          <div class="endpoint"><code>GET /api/health?deep=1</code><span>Health check de cada fonte</span></div>
+          <div class="endpoint"><code>GET /api/sources</code><span>Lista fontes habilitadas</span></div>
+          <div class="endpoint"><code>GET /api/football/live?source=</code><span>Jogos ao vivo + odds</span></div>
+          <div class="endpoint"><code>GET /api/football/today?source=</code><span>Hoje e próximos + odds</span></div>
+          <div class="endpoint"><code>GET /api/football/leagues?source=</code><span>Ligas disponíveis</span></div>
+          <div class="endpoint"><code>GET /api/football/events/:id?source=</code><span>Detalhe do evento</span></div>
+          <div class="endpoint"><code>GET /api/football/events/:id/odds?source=</code><span>Odds do evento</span></div>
+          <div class="endpoint"><code>GET /api/football/search?q=</code><span>Busca por texto</span></div>
+          <div class="endpoint"><code>GET /api/football/compare?mode=live</code><span>Mescla todas as fontes</span></div>
+          <div class="endpoint"><code>GET /api/odds/live?source=</code><span>Live focado em 1X2</span></div>
+          <div class="endpoint"><code>GET /api/cache/clear?confirm=1</code><span>Limpa cache</span></div>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer">Sportsbook API · Node.js · Uso comercial · Fontes: SofaScore, Vai de Bet (Altenar), Pix.bet (FSSB)</p>
+  </main>
+
+  <script>
+    (function () {
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      let loading = false;
+      let lastPayload = null;
+
+      function setLoading(on) {
+        loading = on;
+        $('#loadingBar').classList.toggle('active', on);
+        $$('button').forEach((b) => {
+          if (b.id && b.id.startsWith('btn')) b.disabled = on;
+        });
+      }
+
+      function showErr(msg) {
+        const el = $('#errorBox');
+        if (!msg) {
+          el.classList.remove('show');
+          el.textContent = '';
+          return;
+        }
+        el.textContent = msg;
+        el.classList.add('show');
+      }
+
+      function esc(s) {
+        return String(s ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function srcQuery() {
+        const s = $('#source').value;
+        return s === 'all' ? '' : 'source=' + encodeURIComponent(s);
+      }
+
+      function fmtOdds(ev) {
+        const mr = ev?.odds?.match_result || ev?.match_result;
+        if (!mr) return '<span class="muted">—</span>';
+        const a = mr['1'] ?? '—';
+        const x = mr.X ?? mr['X'] ?? '—';
+        const b = mr['2'] ?? '—';
+        return `<span class="odds"><span>${esc(a)}</span><span>${esc(x)}</span><span>${esc(b)}</span></span>`;
+      }
+
+      function fmtScore(ev) {
+        if (!ev?.score) return '—';
+        return `${ev.score.home ?? '-'} × ${ev.score.away ?? '-'}`;
+      }
+
+      function fmtTime(ev) {
+        const s = ev?.schedule || {};
+        if (s.date_br && s.time_br) return `${s.date_br} ${s.time_br}`;
+        return s.time_br || s.date_br || '—';
+      }
+
+      function matchTitle(ev) {
+        return esc(ev.name || [ev.home, ev.away].filter(Boolean).join(' - ') || '—');
+      }
+
+      function extractEvents(payload) {
+        const data = payload?.data ?? payload;
+        if (Array.isArray(data?.events)) return data.events;
+        if (data?.event) return [data.event];
+        return [];
+      }
+
+      function renderList(payload, ms) {
+        lastPayload = payload;
+        $('#stMs').textContent = ms != null ? ms + ' ms' : '—';
+        $('#jsonView').textContent = JSON.stringify(payload, null, 2);
+
+        const events = extractEvents(payload);
+        const liveN = events.filter((e) => e.is_live).length;
+        $('#stCount').textContent = String(events.length);
+        $('#stLive').textContent = String(liveN);
+
+        const tbody = $('#tbody');
+        const cards = $('#cards');
+
+        if (!events.length) {
+          tbody.innerHTML = '<tr><td colspan="5" class="empty">Nenhum evento retornado</td></tr>';
+          cards.innerHTML = '<div class="empty">Nenhum evento retornado</div>';
+          return;
+        }
+
+        const slice = events.slice(0, 250);
+
+        tbody.innerHTML = slice.map((ev) => {
+          const live = ev.is_live ? '<span class="badge badge-live">LIVE</span>' : '';
+          return `<tr>
+            <td>
+              <div class="match-cell">${live}${matchTitle(ev)}
+                <span class="league-line">${esc(ev.league || '—')}${ev.country ? ' · ' + esc(ev.country) : ''}</span>
+              </div>
+            </td>
+            <td>${esc(fmtTime(ev))}</td>
+            <td class="score">${esc(fmtScore(ev))}</td>
+            <td>${fmtOdds(ev)}</td>
+            <td><span class="badge badge-src">${esc(ev.source || '—')}</span></td>
+          </tr>`;
+        }).join('');
+
+        cards.innerHTML = slice.map((ev) => {
+          const live = ev.is_live ? '<span class="badge badge-live">LIVE</span>' : '';
+          return `<article class="event-card">
+            <div class="event-card-top">
+              <div class="event-card-title">${live}${matchTitle(ev)}</div>
+              <span class="badge badge-src">${esc(ev.source || '—')}</span>
+            </div>
+            <div class="event-card-meta">
+              <div>${esc(ev.league || '—')}${ev.country ? ' · ' + esc(ev.country) : ''}</div>
+              <div>${esc(fmtTime(ev))} · Placar: <strong>${esc(fmtScore(ev))}</strong></div>
+            </div>
+            <div class="event-card-odds">
+              <span class="label">1X2</span>
+              ${fmtOdds(ev)}
+            </div>
+          </article>`;
+        }).join('');
+      }
+
+      function renderSources(json) {
+        const sources = json?.data?.health?.sources || {};
+        const time = json?.data?.time || '';
+        $('#healthTime').textContent = time ? new Date(time).toLocaleString('pt-BR') : '—';
+        const entries = Object.entries(sources);
+        if (!entries.length) {
+          $('#sources').innerHTML = '<div class="empty">Sem dados de health</div>';
+          return;
+        }
+        $('#sources').innerHTML = entries.map(([key, v]) => {
+          let state = 'off';
+          let pill = 'off';
+          let pillText = 'off';
+          if (v.enabled === false) {
+            state = '';
+            pill = 'off';
+            pillText = 'disabled';
+          } else if (v.ok === true) {
+            state = 'ok';
+            pill = 'ok';
+            pillText = 'online';
+          } else if (v.ok === false) {
+            state = 'bad';
+            pill = 'bad';
+            pillText = 'offline';
+          } else {
+            pillText = 'idle';
+          }
+          const msg = v.message || (v.enabled ? 'enabled' : 'disabled');
+          const lat = v.latency_ms != null ? ` · ${v.latency_ms} ms` : '';
+          return `<div class="source-item ${state}">
+            <div class="source-top">
+              <div class="source-name"><span class="dot ${state}"></span>${esc(key)}</div>
+              <span class="pill ${pill}">${pillText}</span>
+            </div>
+            <div class="source-meta">${esc(msg)}${esc(lat)}</div>
+          </div>`;
+        }).join('');
+      }
+
+      async function api(path) {
+        const t0 = performance.now();
+        const res = await fetch(path, { headers: { Accept: 'application/json' } });
+        let json;
+        try {
+          json = await res.json();
+        } catch {
+          json = { success: false, error: 'Resposta inválida do servidor' };
+        }
+        return { res, json, ms: Math.round(performance.now() - t0) };
+      }
+
+      async function loadHealth(deep = true) {
+        setLoading(true);
+        showErr('');
+        try {
+          const { json } = await api('/api/health' + (deep ? '?deep=1' : ''));
+          renderSources(json);
+          if (!json.success) showErr(json.error || 'Falha no health');
+        } catch (e) {
+          showErr(e.message || String(e));
+          $('#sources').innerHTML = '<div class="empty">Falha ao carregar status</div>';
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      function pathForMode() {
+        const mode = $('#mode').value;
+        const sq = srcQuery();
+        if (mode === 'live') return '/api/football/live' + (sq ? '?' + sq : '');
+        if (mode === 'today') return '/api/football/today' + (sq ? '?' + sq : '');
+        if (mode === 'odds') return '/api/odds/live' + (sq ? '?' + sq : '');
+        return '/api/football/compare?mode=live';
+      }
+
+      async function run(path) {
+        setLoading(true);
+        showErr('');
+        try {
+          const { json, ms } = await api(path);
+          if (!json.success) showErr(json.error || 'Erro na requisição');
+          renderList(json, ms);
+          switchView('list');
+        } catch (e) {
+          showErr(e.message || String(e));
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      function switchView(name) {
+        $('#viewList').hidden = name !== 'list';
+        $('#viewJson').hidden = name !== 'json';
+        $('#viewDocs').hidden = name !== 'docs';
+        $$('.tab').forEach((t) => t.classList.toggle('active', t.dataset.view === name));
+      }
+
+      $('#btnRun').addEventListener('click', () => run(pathForMode()));
+      $('#btnRefresh').addEventListener('click', () => loadHealth(true));
+      $('#btnHealth').addEventListener('click', () => loadHealth(true));
+
+      $('#btnSearch').addEventListener('click', () => {
+        const q = $('#q').value.trim();
+        if (!q) return showErr('Digite um termo para buscar.');
+        const sq = srcQuery();
+        run('/api/football/search?q=' + encodeURIComponent(q) + (sq ? '&' + sq : ''));
+      });
+
+      $('#btnEvent').addEventListener('click', () => {
+        const id = $('#eventId').value.trim();
+        if (!id) return showErr('Informe o ID do evento.');
+        let s = $('#source').value;
+        if (s === 'all') s = 'sofascore';
+        run('/api/football/events/' + encodeURIComponent(id) + '?source=' + encodeURIComponent(s) + '&odds=1');
+      });
+
+      $('#q').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') $('#btnSearch').click();
+      });
+      $('#eventId').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') $('#btnEvent').click();
+      });
+
+      $$('.tab').forEach((t) => {
+        t.addEventListener('click', () => switchView(t.dataset.view));
+      });
+
+      loadHealth(true);
+    })();
+  </script>
+</body>
+</html>

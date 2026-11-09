@@ -1,0 +1,240 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - MINHAS APOSTAS
+   Visual: v4 (cartoes .bet24-card, tabela .bet24-table, filtros
+   .v4-filtros com .account-field/.account-input, .bet24-badge).
+
+   LOGICA PRESERVADA DO TEMPLATE BASE (website/page/apostas.twig):
+     - form de filtro .admpage-form-search com os campos
+       dataInicial, horaInicial, dataFinal, horaFinal, orderby, apostadornome
+     - <div class="admpage-container"></div> recebe o block `list`
+       via POST /apostas/list (a busca e automatica no carregamento)
+     - link do codigo: url('apostas/bilhete', [v.getToken()])
+     - paginacao: {{ busca|raw }} e {{ busca.getPageDescription() }}
+   ===================================================================== #}
+
+{% block main %}
+
+    <div class="bet24-page-wide contas-apostas">
+
+        <div class="bet24-page-head">
+            <div>
+                <h1 class="bet24-page-title">Minhas apostas</h1>
+                <p class="bet24-page-sub">
+                    Acompanhe todas as suas apostas, os prêmios e a situação de cada bilhete.
+                </p>
+            </div>
+            <a class="bet24-voltar" href="{{ url('apostar') }}">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 5l-7 7 7 7"/>
+                </svg>
+                Voltar aos jogos
+            </a>
+        </div>
+
+        {% if user %}
+
+            <div class="bet24-card contas-filtros-card">
+                <form class="admpage-form-search v4-filtros contas-filtros" onsubmit="return false;">
+
+                    <div class="account-field">
+                        <span class="account-label">De</span>
+                        <div class="contas-duplo">
+                            <input type="date" name="dataInicial" class="account-input"
+                                   aria-label="Data inicial"/>
+                            <input type="time" name="horaInicial" class="account-input"
+                                   aria-label="Hora inicial"/>
+                        </div>
+                    </div>
+
+                    <div class="account-field">
+                        <span class="account-label">Até</span>
+                        <div class="contas-duplo">
+                            <input type="date" name="dataFinal" class="account-input"
+                                   aria-label="Data final"/>
+                            <input type="time" name="horaFinal" class="account-input"
+                                   aria-label="Hora final"/>
+                        </div>
+                    </div>
+
+                    <div class="account-field">
+                        <span class="account-label">Ordenar por</span>
+                        <select name="orderby" class="account-input">
+                            <option value="data-desc">Data (decrescente)</option>
+                            <option value="data-asc">Data (crescente)</option>
+                            <option value="valor-desc">Valor da aposta (decrescente)</option>
+                            <option value="valor-asc">Valor da aposta (crescente)</option>
+                            <option value="retorno-desc">Valor do prêmio (decrescente)</option>
+                            <option value="retorno-asc">Valor do prêmio (crescente)</option>
+                        </select>
+                    </div>
+
+                    <div class="account-field">
+                        <span class="account-label">Cliente</span>
+                        <input type="text" name="apostadornome" class="account-input"
+                               placeholder="Nome do cliente"/>
+                    </div>
+
+                    <button type="submit" class="account-submit contas-filtrar">
+                        <i class="fas fa-search" aria-hidden="true"></i> Pesquisar
+                    </button>
+
+                </form>
+            </div>
+
+            <div class="admpage-container"></div>
+
+        {% else %}
+
+            <div class="bet24-card">
+                <div class="empty-state">
+                    <span class="empty-icon" aria-hidden="true">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 3h14v18l-2.3-1.6L14.3 21 12 19.4 9.7 21l-2.4-1.6L5 21z"/>
+                            <path d="M9 8h6M9 12h6"/>
+                        </svg>
+                    </span>
+                    <p class="empty-title">Entre para ver suas apostas</p>
+                    <p class="empty-text">
+                        Faça login na sua conta para consultar o histórico e acompanhar
+                        o resultado dos seus bilhetes.
+                    </p>
+                    <div class="empty-actions">
+                        {% if dados.getExibirLogin() %}
+                            <button type="button" class="empty-button" data-toggle="modal"
+                                    data-target="#modal-login">Entrar
+                            </button>
+                        {% endif %}
+                        {% if dados.getExibirRegistro() %}
+                            <a class="empty-button is-quiet"
+                               href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}">Criar conta</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+{% endblock %}
+
+{# =====================================================================
+   LISTA (renderizada via AJAX em POST /apostas/list)
+   ===================================================================== #}
+{% block list %}
+
+    {% set badges = {'info': 'is-ganha', 'danger': 'is-perdida', 'warning': 'is-pendente', 'default': 'is-aberta'} %}
+
+    {% if busca.getCount() %}
+
+        <div class="bet24-card contas-lista">
+
+            <div class="contas-scroll">
+                <table class="bet24-table contas-tabela">
+                    <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Cliente</th>
+                        <th class="contas-col-centro">Jogos</th>
+                        <th class="contas-col-direita">Valor</th>
+                        <th class="contas-col-direita">Prêmio</th>
+                        <th class="contas-col-centro">Data</th>
+                        <th>Usuário</th>
+                        <th class="contas-col-centro">Situação</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for v in busca.getRegistros() %}
+                        <tr>
+                            <td class="contas-col-codigo">
+                                <a href="{{ url('apostas/bilhete', [v.getToken()]) }}" target="_blank"
+                                   rel="noopener" title="Abrir o comprovante da aposta">
+                                    #{{ v.getId() }}
+                                </a>
+                                {% if v.getCodigoBilhete() %}
+                                    <small>{{ v.getCodigoBilhete() }}</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ v.getApostadorNome() }}</td>
+                            <td class="contas-col-centro">{{ v.getJogos() }}</td>
+                            <td class="contas-col-direita">R$ {{ v.getValor(true) }}</td>
+                            <td class="contas-col-direita contas-premio">R$ {{ v.getRetornoValido(true) }}</td>
+                            <td class="contas-col-centro contas-col-data">{{ v.getData(true) }}</td>
+                            <td>{{ v.getUserNome() }}</td>
+                            <td class="contas-col-centro">
+                                <span class="bet24-badge {{ badges[v.getStatusClass()]|default('is-aberta') }}">
+                                    {{ v.getStatusTitle() }}
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="contas-lista-rodape">
+                <span class="contas-lista-desc">{{ busca.getPageDescription() }}</span>
+                <div class="contas-paginacao">{{ busca|raw }}</div>
+            </div>
+
+            <div class="contas-legenda">
+                <span><i class="contas-legenda-dot is-ganha"></i> Ganhou a aposta</span>
+                <span><i class="contas-legenda-dot is-perdida"></i> Perdeu a aposta</span>
+                <span><i class="contas-legenda-dot is-aberta"></i> Aguardando o jogo terminar</span>
+                <span><i class="contas-legenda-dot is-pendente"></i> Cancelada / aguardando pagamento</span>
+            </div>
+
+        </div>
+
+    {% elseif message %}
+
+        <div class="bet24-card">
+            <div class="bet24-msg is-aviso contas-msg">
+                <i class="fas fa-exclamation-circle" aria-hidden="true"></i> {{ message }}
+            </div>
+        </div>
+
+    {% else %}
+
+        <div class="bet24-card">
+            <div class="empty-state">
+                <span class="empty-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 3h14v18l-2.3-1.6L14.3 21 12 19.4 9.7 21l-2.4-1.6L5 21z"/>
+                        <path d="M9 8h6M9 12h6"/>
+                    </svg>
+                </span>
+                <p class="empty-title">Nenhuma aposta encontrada</p>
+                <p class="empty-text">
+                    Não encontramos apostas para os filtros informados.
+                    Monte um bilhete clicando nas cotações dos jogos.
+                </p>
+                <div class="empty-actions">
+                    <a class="empty-button" href="{{ url('apostar') }}">Jogos de hoje</a>
+                    <a class="empty-button is-quiet"
+                       href="{{ url('apostar', null, null, {'data': '+1day'|date('Y-m-d')}) }}">Próximos jogos</a>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+{% endblock %}
+
+{% block script %}
+
+    {% if user %}
+        <script>
+            $.adminPage({
+                formSearch: '.admpage-form-search',
+                container: '.admpage-container',
+            });
+        </script>
+    {% endif %}
+
+{% endblock %}

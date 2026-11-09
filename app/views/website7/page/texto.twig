@@ -1,0 +1,15 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="container-fluid px-lg-4 px-3 py-4">
+        <div class="pri-page-card">
+            <h3 class="pri-page-title"><i class="fa fa-file-text-o"></i> {{ pagina.getTitle()|raw }}</h3>
+
+            <div class="p-3 bg-dark rounded border text-white" style="border-color: var(--pri-border) !important; line-height: 1.8;">
+                {{ pagina.getTexto()|raw }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

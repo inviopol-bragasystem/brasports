@@ -1,0 +1,600 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - CASSINO (lobby)
+   Visual do antigo bet24hs.site/v4 (spec 4.15):
+     .cas-layout   grade 250px | 1fr, max-width 1560px
+     .cas-side     menu de categorias sticky
+     .cas-search   busca por jogo
+     .cas-section  secao com titulo + contador .cas-count
+     .cas-grid.cas-grid-wide  grade de capas (6/7 no v4.css)
+     .cas-card     .cas-card-pic + .cas-card-name
+   A LOGICA (catalogo do PHP, categorias via ?category=, busca via ?search=,
+   modal do jogo e AJAX /cassino/jogar/{codigo}) continua exatamente a do
+   template base website/page/cassino.twig.
+   ===================================================================== #}
+
+{% set cat = category|default('all') %}
+{% set busca = search|default('') %}
+{% set categoriasPopulares = ['Destaque', 'featured', 'Destaques'] %}
+{% set visaoInicio = not busca and (cat == 'all' or cat == 'Todos' or cat == '') %}
+{% set visaoPopulares = not busca and cat in categoriasPopulares %}
+
+{# Rotulos dos provedores (os mesmos valores do CassinoModel::getGames) #}
+{% set rotulosProvider = {
+    'PRAGMATIC': 'Pragmatic Play',
+    'PRAGMATICPLAY': 'Pragmatic Play',
+    'PGSOFT': 'PG Soft',
+    'TADA': 'TaDa Gaming',
+    'CRASH': 'Aviator & Crash',
+    'CPGAMES': 'CP Games',
+    'POPOK': 'Popok',
+    'WG': 'WG',
+    'G759': 'G759'
+} %}
+{% set chavesConhecidas = ['PRAGMATIC', 'PRAGMATICPLAY', 'PGSOFT', 'TADA', 'CRASH', 'AVIATOR', 'MINES', 'CPGAMES', 'POPOK', 'WG', 'G759'] %}
+{% set provedoresSecoes = [
+    {'chave': 'PRAGMATIC', 'rotulo': 'Pragmatic Play'},
+    {'chave': 'PGSOFT', 'rotulo': 'PG Soft'},
+    {'chave': 'TADA', 'rotulo': 'TaDa Gaming'},
+    {'chave': 'CRASH', 'rotulo': 'Aviator & Crash'},
+    {'chave': 'CPGAMES', 'rotulo': 'CP Games'},
+    {'chave': 'POPOK', 'rotulo': 'Popok'},
+    {'chave': 'WG', 'rotulo': 'WG'}
+] %}
+
+{# ---------------------------------------------------------------------
+   CONTAGENS DO CATALOGO
+   No inicio a lista vem completa (category=all), entao da para contar
+   quantos jogos tem em cada aba. Nas visoes filtradas o contador da
+   cabecalho usa o tamanho da propria lista.
+   --------------------------------------------------------------------- #}
+{% set totalJogos = jogos|length %}
+{% set qtdPRAGMATIC = 0 %}
+{% set qtdPGSOFT = 0 %}
+{% set qtdTADA = 0 %}
+{% set qtdCRASH = 0 %}
+{% set qtdCPGAMES = 0 %}
+{% set qtdPOPOK = 0 %}
+{% set qtdWG = 0 %}
+{% for j in jogos %}
+    {% if j.provider|default('') in ['PRAGMATIC', 'PRAGMATICPLAY'] %}
+        {% set qtdPRAGMATIC = qtdPRAGMATIC + 1 %}
+    {% elseif j.provider|default('') == 'PGSOFT' %}
+        {% set qtdPGSOFT = qtdPGSOFT + 1 %}
+    {% elseif j.provider|default('') == 'TADA' %}
+        {% set qtdTADA = qtdTADA + 1 %}
+    {% elseif j.provider|default('') in ['CRASH', 'AVIATOR', 'MINES'] %}
+        {% set qtdCRASH = qtdCRASH + 1 %}
+    {% elseif j.provider|default('') == 'CPGAMES' %}
+        {% set qtdCPGAMES = qtdCPGAMES + 1 %}
+    {% elseif j.provider|default('') == 'POPOK' %}
+        {% set qtdPOPOK = qtdPOPOK + 1 %}
+    {% elseif j.provider|default('') == 'WG' %}
+        {% set qtdWG = qtdWG + 1 %}
+    {% endif %}
+{% endfor %}
+
+{# A aba "Populares" usa o modo Destaque do CassinoModel: no maximo 33 jogos #}
+{% set qtdPopulares = totalJogos > 33 ? 33 : totalJogos %}
+
+{# ---------------------------------------------------------------------
+   TITULO DA VISAO FILTRADA (categoria ou busca)
+   --------------------------------------------------------------------- #}
+{% if cat in categoriasPopulares %}
+    {% set tituloCategoria = 'Populares' %}
+{% elseif cat in ['PRAGMATIC', 'PRAGMATICPLAY', 'Pragmatic'] %}
+    {% set tituloCategoria = 'Pragmatic Play' %}
+{% elseif cat in ['PGSOFT', 'PG Soft'] %}
+    {% set tituloCategoria = 'PG Soft' %}
+{% elseif cat in ['TADA', 'TaDa'] %}
+    {% set tituloCategoria = 'TaDa Gaming' %}
+{% elseif cat in ['Crash', 'CRASH'] %}
+    {% set tituloCategoria = 'Aviator & Crash' %}
+{% elseif cat in ['CPGAMES', 'CP Games'] %}
+    {% set tituloCategoria = 'CP Games' %}
+{% elseif cat in ['POPOK', 'PopOK'] %}
+    {% set tituloCategoria = 'Popok' %}
+{% elseif cat == 'WG' %}
+    {% set tituloCategoria = 'WG' %}
+{% else %}
+    {% set tituloCategoria = cat|replace({'-': ' ', '_': ' '})|title %}
+{% endif %}
+
+{% if busca %}
+    {% set tituloSecao = 'Resultados para "' ~ busca ~ '"' %}
+{% else %}
+    {% set tituloSecao = tituloCategoria %}
+{% endif %}
+
+{# ---------------------------------------------------------------------
+   SECOES
+   No inicio: "Destaques" (featured) + um bloco por provedor, sem repetir
+   os destaques. Filtrado: uma unica secao com o resultado do PHP.
+   --------------------------------------------------------------------- #}
+{% set secoes = [] %}
+{% if visaoInicio and totalJogos > 0 %}
+    {% set destaques = [] %}
+    {% for j in jogos %}
+        {% if j.featured %}
+            {% set destaques = destaques|merge([j]) %}
+        {% endif %}
+    {% endfor %}
+    {% if destaques|length %}
+        {% set secoes = secoes|merge([{'titulo': 'Destaques', 'jogos': destaques}]) %}
+    {% endif %}
+
+    {% for p in provedoresSecoes %}
+        {% set lista = [] %}
+        {% for j in jogos %}
+            {% if j.provider|default('') == p.chave and not j.featured %}
+                {% set lista = lista|merge([j]) %}
+            {% endif %}
+        {% endfor %}
+        {% if lista|length %}
+            {% set secoes = secoes|merge([{'titulo': p.rotulo, 'jogos': lista}]) %}
+        {% endif %}
+    {% endfor %}
+
+    {% set outros = [] %}
+    {% for j in jogos %}
+        {% if j.provider|default('') not in chavesConhecidas %}
+            {% set outros = outros|merge([j]) %}
+        {% endif %}
+    {% endfor %}
+    {% if outros|length %}
+        {% set secoes = secoes|merge([{'titulo': 'Outros jogos', 'jogos': outros}]) %}
+    {% endif %}
+{% elseif totalJogos > 0 %}
+    {% set secoes = [{'titulo': tituloSecao, 'jogos': jogos}] %}
+{% endif %}
+
+{% block main %}
+    <div class="cas-layout">
+
+        {# ============================================================
+             MENU LATERAL DE CATEGORIAS (.cas-side)
+             ============================================================ #}
+        <nav class="cas-side" aria-label="Categorias do cassino">
+            <div class="cas-side-head cas-side-head-open">
+                <a class="cas-side-head-link{{ visaoInicio ? ' active' : '' }}"
+                   href="{{ url('cassino') }}"{{ visaoInicio ? ' aria-current=page' : '' }}>
+                    <span class="cas-side-icon">
+                        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <rect x="3" y="6" width="18" height="12" rx="3"/>
+                            <path d="M6.5 10h2.6l-1.6 4M10.7 10h2.6l-1.6 4M14.9 10h2.6l-1.6 4"/>
+                        </svg>
+                    </span>
+                    Cassino
+                </a>
+                <button type="button" class="cas-side-toggle" id="v4CasToggle" aria-expanded="true"
+                        aria-label="Recolher as categorias">
+                    <svg width="14" height="9" viewBox="0 0 14 9" fill="none" stroke="currentColor"
+                         stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M1 8l6-6 6 6"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="cas-side-list" id="v4CasLista">
+                <a class="cas-side-link{{ visaoPopulares ? ' cas-side-active active' : '' }}"
+                   href="{{ url('cassino?category=Destaque') }}"{{ visaoPopulares ? ' aria-current=page' : '' }}>
+                    <span class="cas-side-icon">
+                        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <path d="M12 2.5c.8 3.5 6 6 6 12a6 6 0 0 1-12 0c0-2.5 1.2-4.5 2.6-5.8.2 1.9.9 3 2 3.4-.5-3.6.2-7.3 1.4-9.6z"/>
+                            <path d="M12 20.5c1.4 0 2.5-1.1 2.5-2.6 0-1.4-1.2-2.4-2.5-3.9-1.3 1.5-2.5 2.5-2.5 3.9 0 1.5 1.1 2.6 2.5 2.6z"/>
+                        </svg>
+                    </span>
+                    <span class="cas-side-name">Populares</span>
+                    {% if visaoInicio %}<span class="cas-side-count">{{ qtdPopulares }}</span>{% endif %}
+                </a>
+
+                <a class="cas-side-link{{ cat in ['PRAGMATIC', 'PRAGMATICPLAY', 'Pragmatic'] ? ' cas-side-active active' : '' }}"
+                   href="{{ url('cassino?category=PRAGMATIC') }}"{{ cat in ['PRAGMATIC', 'PRAGMATICPLAY', 'Pragmatic'] ? ' aria-current=page' : '' }}>
+                    <span class="cas-side-icon">
+                        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                    </span>
+                    <span class="cas-side-name">Pragmatic</span>
+                    {% if visaoInicio %}<span class="cas-side-count">{{ qtdPRAGMATIC }}</span>{% endif %}
+                </a>
+
+                <a class="cas-side-link{{ cat in ['PGSOFT', 'PG Soft'] ? ' cas-side-active active' : '' }}"
+                   href="{{ url('cassino?category=PGSOFT') }}"{{ cat in ['PGSOFT', 'PG Soft'] ? ' aria-current=page' : '' }}>
+                    <span class="cas-side-icon">
+                        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <path d="M6.5 7V5.5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2V7"/>
+                            <rect x="3.5" y="7" width="14" height="13.5" rx="2.5"/>
+                            <rect x="6.2" y="10" width="8.6" height="6" rx="1" stroke-width="1.5"/>
+                            <path d="M9.1 10v6M11.9 10v6" stroke-width="1.5"/>
+                            <path d="M17.5 14.5h1.2a1.3 1.3 0 0 0 1.3-1.3V8.5"/>
+                            <circle cx="20" cy="6.5" r="1.6" fill="currentColor" stroke="none"/>
+                        </svg>
+                    </span>
+                    <span class="cas-side-name">PG Soft</span>
+                    {% if visaoInicio %}<span class="cas-side-count">{{ qtdPGSOFT }}</span>{% endif %}
+                </a>
+
+                <a class="cas-side-link{{ cat in ['TADA', 'TaDa'] ? ' cas-side-active active' : '' }}"
+                   href="{{ url('cassino?category=TADA') }}"{{ cat in ['TADA', 'TaDa'] ? ' aria-current=page' : '' }}>
+                    <span class="cas-side-icon">
+                        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                    </span>
+                    <span class="cas-side-name">TaDa Gaming</span>
+                    {% if visaoInicio %}<span class="cas-side-count">{{ qtdTADA }}</span>{% endif %}
+                </a>
+
+                <a class="cas-side-link{{ cat in ['Crash', 'CRASH'] ? ' cas-side-active active' : '' }}"
+                   href="{{ url('cassino?category=Crash') }}"{{ cat in ['Crash', 'CRASH'] ? ' aria-current=page' : '' }}>
+                    <span class="cas-side-icon">
+                        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/>
+                        </svg>
+                    </span>
+                    <span class="cas-side-name">Aviator & Crash</span>
+                    {% if visaoInicio %}<span class="cas-side-count">{{ qtdCRASH }}</span>{% endif %}
+                </a>
+
+                <a class="cas-side-link{{ cat in ['CPGAMES', 'CP Games'] ? ' cas-side-active active' : '' }}"
+                   href="{{ url('cassino?category=CPGAMES') }}"{{ cat in ['CPGAMES', 'CP Games'] ? ' aria-current=page' : '' }}>
+                    <span class="cas-side-icon">
+                        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                        </svg>
+                    </span>
+                    <span class="cas-side-name">CP Games</span>
+                    {% if visaoInicio %}<span class="cas-side-count">{{ qtdCPGAMES }}</span>{% endif %}
+                </a>
+
+                <a class="cas-side-link{{ cat == 'POPOK' ? ' cas-side-active active' : '' }}"
+                   href="{{ url('cassino?category=POPOK') }}"{{ cat == 'POPOK' ? ' aria-current=page' : '' }}>
+                    <span class="cas-side-icon">
+                        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <path d="M13 2 4.5 13.5H11l-1 8.5L19.5 10.5H13z"/>
+                        </svg>
+                    </span>
+                    <span class="cas-side-name">Popok</span>
+                    {% if visaoInicio %}<span class="cas-side-count">{{ qtdPOPOK }}</span>{% endif %}
+                </a>
+
+                <a class="cas-side-link{{ cat == 'WG' ? ' cas-side-active active' : '' }}"
+                   href="{{ url('cassino?category=WG') }}"{{ cat == 'WG' ? ' aria-current=page' : '' }}>
+                    <span class="cas-side-icon">
+                        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <rect x="3.5" y="3.5" width="17" height="17" rx="4"/>
+                            <circle cx="8.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/>
+                            <circle cx="15.5" cy="8.5" r="1.1" fill="currentColor" stroke="none"/>
+                            <circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/>
+                            <circle cx="8.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/>
+                            <circle cx="15.5" cy="15.5" r="1.1" fill="currentColor" stroke="none"/>
+                        </svg>
+                    </span>
+                    <span class="cas-side-name">WG</span>
+                    {% if visaoInicio %}<span class="cas-side-count">{{ qtdWG }}</span>{% endif %}
+                </a>
+            </div>
+        </nav>
+
+        {# ============================================================
+             CONTEUDO (.cas-main): busca + categorias/secoes de jogos
+             ============================================================ #}
+        <div class="cas-main">
+            <form class="cas-search" role="search" id="v4CasBuscaForm"
+                  method="get" action="{{ url('cassino') }}">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <circle cx="10.5" cy="10.5" r="6.5"/>
+                    <path d="m20 20-4.8-4.8"/>
+                </svg>
+                <input id="casinoSearch" name="search" type="search" placeholder="Buscar jogo"
+                       aria-label="Buscar jogo" maxlength="60" autocomplete="off"
+                       value="{{ busca }}" oninput="filtrarJogosNaTela()"/>
+                {% if cat not in ['all', '', 'Todos'] and cat not in categoriasPopulares %}
+                    <input type="hidden" name="category" value="{{ cat }}"/>
+                {% endif %}
+                {% if busca %}
+                    <a class="cas-search-limpar"
+                       href="{{ cat in ['all', '', 'Todos'] or cat in categoriasPopulares ? url('cassino') : url('cassino?category=' ~ cat) }}"
+                       aria-label="Limpar busca" title="Limpar busca">
+                        <svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true">
+                            <path d="M1 1l12 12M13 1 1 13" stroke="currentColor" stroke-width="2"
+                                  stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                {% endif %}
+            </form>
+
+            {% if not visaoInicio %}
+                {# ---------- Cabecalho da visao filtrada ---------- #}
+                <nav class="cas-crumbs" aria-label="Você está em">
+                    <a href="{{ url('cassino') }}">Cassino</a>
+                    <svg width="5" height="9" viewBox="0 0 7 12" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M1 1l5 5-5 5"/>
+                    </svg>
+                    <span>{{ tituloSecao }}</span>
+                </nav>
+
+                <div class="cas-cat-head">
+                    <div>
+                        <h1 class="cas-cat-title">{{ tituloSecao }}</h1>
+                        <p class="cas-cat-count">
+                            {{ totalJogos }}
+                            {% if busca %}
+                                {{ totalJogos == 1 ? 'jogo encontrado' : 'jogos encontrados' }}
+                            {% else %}
+                                {{ totalJogos == 1 ? 'jogo' : 'jogos' }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if totalJogos == 0 %}
+                {# ---------- Estado vazio ---------- #}
+                <div class="empty">
+                    <div class="empty-state">
+                        <span class="empty-icon"><i class="fas fa-gamepad" aria-hidden="true"></i></span>
+                        <p class="empty-title">Nenhum jogo encontrado</p>
+                        <p class="empty-text">
+                            {% if busca %}
+                                Não encontramos jogos para "{{ busca }}". Tente outro nome ou veja o catálogo completo.
+                            {% else %}
+                                Ainda não há jogos disponíveis nesta categoria. Veja o catálogo completo.
+                            {% endif %}
+                        </p>
+                        <div class="empty-actions">
+                            <a class="empty-button" href="{{ url('cassino') }}">Ver todos os jogos</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                {# ---------- Grade de jogos (uma secao por grupo) ---------- #}
+                {% for secao in secoes %}
+                    <section class="cas-section" aria-label="{{ secao.titulo }}">
+                        {% if visaoInicio %}
+                            <div class="cas-section-head">
+                                <h2 class="cas-section-title">{{ secao.titulo }}</h2>
+                                <span class="cas-count">{{ secao.jogos|length }}</span>
+                            </div>
+                        {% endif %}
+
+                        <div class="cas-grid cas-grid-wide">
+                            {% for j in secao.jogos %}
+                                {% set prov = j.provider|default('') %}
+                                {% set rotuloProv = rotulosProvider[prov]|default('') %}
+                                {% if not rotuloProv %}
+                                    {% set rotuloProv = prov|title %}
+                                {% endif %}
+                                {% set nomeJogo = j.name|default('Jogo') %}
+                                {% set capaJogo = j.image|default('') %}
+                                {# Card identico ao v4: capa 6/7 + nome. Os data-* e o onclick sao
+                                   o contrato do JS do base (iniciarJogoCard -> /cassino/jogar). #}
+                                <a class="cas-card"
+                                   href="{{ url('cassino/jogar', [j.game_code|default(j.code)]) }}"
+                                   data-code="{{ j.game_code }}" data-title="{{ nomeJogo }}"
+                                   data-id="{{ j.game_id }}" data-name="{{ nomeJogo|lower }}"
+                                   data-v4-cas-jogo="{{ j.game_id }}"
+                                   title="{{ nomeJogo }} · {{ rotuloProv }}">
+                                    <span class="cas-card-pic">
+                                        {% if capaJogo %}
+                                            <img class="cas-card-img" src="{{ capaJogo }}" alt=""
+                                                 loading="lazy" decoding="async" referrerpolicy="no-referrer"
+                                                 onerror="this.style.display='none'"/>
+                                        {% else %}
+                                            <span class="cas-card-blank" aria-hidden="true">{{ nomeJogo }}</span>
+                                        {% endif %}
+                                        {% if j.featured %}
+                                            <span class="cas-card-tag">
+                                                <svg aria-hidden="true" width="10" height="10"
+                                                     viewBox="0 0 11 14">
+                                                    <path d="M6.5 0 0 8h4.5L3.5 14 11 5.5H6.3L6.5 0Z"
+                                                          fill="currentColor"/>
+                                                </svg>
+                                                Destaque
+                                            </span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="cas-card-name">{{ nomeJogo }}</span>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    {# =========================================================================
+         MODAL IMERSIVO DO JOGO (tela cheia) - mesmos ids do template base.
+         Aberto/fechado por iniciarJogo()/fecharJogo() no bloco script.
+         ========================================================================= #}
+    <div class="cas-game casino-game-modal" id="casinoGameModal" aria-hidden="true">
+        <div class="cas-game-bar">
+            <button type="button" class="cas-game-back" onclick="fecharJogo()" id="btnSairJogo"
+                    title="Sair do jogo">
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M19 12H5M11 19l-7-7 7-7"/>
+                </svg>
+                <span>Sair</span>
+            </button>
+
+            <div class="cas-game-name">
+                <span id="activeGameTitle">Jogo</span>
+                <span class="cas-game-tag is-live" id="casinoLiveBadge">Ao vivo</span>
+                <span class="cas-game-tag is-demo" id="casinoDemoBadge" style="display:none;">Demo</span>
+            </div>
+
+            <span class="cas-game-balance" id="casinoSaldoWrap" title="Saldo disponível">
+                R$ <b id="casinoModalSaldo">{{ user ? user.getCredito(true) : '1.000,00' }}</b>
+            </span>
+
+            <button type="button" class="cas-game-btn" onclick="recarregarJogo()"
+                    id="btnAtualizarJogo" title="Atualizar jogo">
+                <i class="fas fa-sync-alt"></i>
+                <span class="cas-game-btn-text">Atualizar</span>
+            </button>
+        </div>
+
+        <div class="cas-game-stage">
+            <div class="casino-loader" id="casinoIframeLoader">
+                <span class="cas-game-wait" aria-hidden="true"></span>
+                <span class="casino-loader-text">Carregando jogo...</span>
+            </div>
+            <iframe src="" class="cas-game-frame" id="casinoIframe" title="Jogo"
+                    allow="fullscreen; autoplay; screen-wake-lock"></iframe>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        var isUsuarioLogado = {{ user ? 'true' : 'false' }};
+        var baseUrlApp = '{{ url("") }}'.replace(/\/+$/, '');
+        var activeGameUrl = '';
+
+        /* -------------------------------------------------------------
+           Menu lateral: recolher/expandir as categorias (desktop)
+           ------------------------------------------------------------- */
+        $('#v4CasToggle').on('click', function () {
+            var aberto = $(this).attr('aria-expanded') !== 'false';
+            $(this).attr('aria-expanded', aberto ? 'false' : 'true')
+                .attr('aria-label', aberto ? 'Expandir as categorias' : 'Recolher as categorias');
+            $('#v4CasLista').toggleClass('cas-side-list-closed', aberto);
+        });
+
+        /* -------------------------------------------------------------
+           Filtro instantaneo da busca (mesmo comportamento do base)
+           ------------------------------------------------------------- */
+        function filtrarJogosNaTela() {
+            var q = ($('#casinoSearch').val() || '').toLowerCase().trim();
+            $('.cas-card').each(function () {
+                var nome = ($(this).attr('data-name') || '');
+                $(this).toggle(!q || nome.indexOf(q) !== -1);
+            });
+            // Esconde secoes que ficaram sem nenhum jogo visivel
+            $('.cas-section').each(function () {
+                $(this).toggle($(this).find('.cas-card:visible').length > 0);
+            });
+        }
+
+        function iniciarJogoCard(el) {
+            var $el = $(el);
+            iniciarJogo($el.attr('data-code'), $el.attr('data-title'), $el.attr('data-id'));
+        }
+
+        /* -------------------------------------------------------------
+           Abre o jogo no modal imersivo (mesmo fluxo do template base)
+           ------------------------------------------------------------- */
+        function iniciarJogo(gameCode, gameName, gameId) {
+            $('#activeGameTitle').text(gameName);
+            $('#casinoGameModal').css('display', 'flex').attr('aria-hidden', 'false');
+            $('body').addClass('casino-jogo-aberto');
+            $('#casinoIframe').attr('src', 'about:blank');
+            $('#casinoIframeLoader').show();
+
+            var gid = gameId || '126';
+            var fallbackUrl = baseUrlApp + '/games/pgv4/src/public/' + gid
+                + '/index.html?operator_token=Zm9saWFiZXQ=&btt=1&gi=' + gid + '&n=' + gid
+                + '&l=pt&ct=BRL';
+            var playEndpoint = baseUrlApp + '/cassino/jogar/' + encodeURIComponent(gameCode);
+
+            activeGameUrl = fallbackUrl;
+
+            $.ajax({
+                url: playEndpoint,
+                type: 'GET',
+                dataType: 'json',
+                success: function (res) {
+                    $('#casinoIframeLoader').hide();
+                    if (res && res.result && res.url) {
+                        activeGameUrl = res.url;
+                        $('#casinoIframe').attr('src', res.url);
+                        if (res.isDemo) {
+                            $('#casinoDemoBadge').show();
+                            $('#casinoLiveBadge').hide();
+                        } else {
+                            $('#casinoDemoBadge').hide();
+                            $('#casinoLiveBadge').show();
+                        }
+                        if (res.saldo) {
+                            $('#casinoModalSaldo').text('R$ ' + res.saldo);
+                        }
+                    } else if (res && res.auth === false) {
+                        fecharJogo();
+                        $('#modal-login').modal('show');
+                    } else {
+                        // Fallback direto nos arquivos do jogo
+                        activeGameUrl = fallbackUrl;
+                        $('#casinoIframe').attr('src', fallbackUrl);
+                    }
+                },
+                error: function () {
+                    $('#casinoIframeLoader').hide();
+                    // Fallback para carregamento direto local
+                    activeGameUrl = fallbackUrl;
+                    $('#casinoIframe').attr('src', fallbackUrl);
+                }
+            });
+        }
+
+        function fecharJogo() {
+            $('#casinoGameModal').hide().attr('aria-hidden', 'true');
+            $('body').removeClass('casino-jogo-aberto');
+            $('#casinoIframe').attr('src', 'about:blank');
+            $('#casinoIframeLoader').hide();
+        }
+
+        function recarregarJogo() {
+            var frame = document.getElementById('casinoIframe');
+            if (frame) {
+                var url = activeGameUrl || frame.getAttribute('src');
+                if (url && url !== 'about:blank') {
+                    $('#btnAtualizarJogo i').addClass('fa-spin');
+                    $('#casinoIframeLoader').show();
+
+                    frame.src = 'about:blank';
+                    setTimeout(function () {
+                        frame.src = url;
+                        setTimeout(function () {
+                            $('#btnAtualizarJogo i').removeClass('fa-spin');
+                            $('#casinoIframeLoader').hide();
+                        }, 1200);
+                    }, 100);
+                }
+            }
+        }
+
+        // Fechar ao pressionar ESC (igual ao base)
+        $(document).keyup(function (e) {
+            if (e.key === 'Escape') {
+                fecharJogo();
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,439 @@
+{% extends layout %}
+
+{% block main %}
+    <div class="sb-main-wrapper">
+        <div class="container-fluid px-lg-4 px-3">
+            <div class="sb-layout-grid">
+                
+                <!-- 1. Barra Lateral Esquerda: Sports Rail Superbet -->
+                <aside class="sb-col-left">
+                    
+                    <!-- Card Busca de Bilhete -->
+                    <div class="sb-card">
+                        <div class="sb-card-header">
+                            <span><i class="fa fa-ticket text-success mr-1"></i> Verificar Bilhete</span>
+                        </div>
+                        <div class="p-3">
+                            <form method="post" action="{{ url('bilhete') }}">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" name="codigo" class="form-control" placeholder="Código do bilhete" style="background:#071c15; border-color:var(--sb-border); color:#fff;" required/>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-success font-weight-bold" type="submit" style="background:var(--sb-primary); color:#001510; border:none;">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Card Filtros Rápidos -->
+                    <div class="sb-card">
+                        <div class="sb-card-header">
+                            <span><i class="fa fa-calendar-check-o text-success mr-1"></i> Programação</span>
+                        </div>
+                        <ul class="sb-menu-list">
+                            <li>
+                                <a href="javascript:;" v-on:click="setCampeonato()" v-bind:class="{ active: !checkFiltros() }">
+                                    <span><i class="fa fa-futbol-o"></i> Todos os Jogos</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" v-on:click="setData('{{ hoje }}')" v-bind:class="{ active: findData == '{{ hoje }}' }">
+                                    <span><i class="fa fa-bolt text-success"></i> Jogos de Hoje</span>
+                                    <span class="badge badge-success text-dark font-weight-bold" style="background:var(--sb-primary); color:#001510;">{{ hoje|split('-')|reverse|join('/') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:;" v-on:click="setData('{{ amanha }}')" v-bind:class="{ active: findData == '{{ amanha }}' }">
+                                    <span><i class="fa fa-calendar"></i> Jogos de Amanhã</span>
+                                    <span class="badge badge-secondary">{{ amanha|split('-')|reverse|join('/') }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Card Ligas & Competições -->
+                    <div class="sb-card">
+                        <div class="sb-card-header">
+                            <span><i class="fa fa-trophy text-success mr-1"></i> Competições</span>
+                        </div>
+                        <ul class="sb-menu-list" style="max-height: 480px; overflow-y: auto;">
+                            <li v-for="c in getCampeonatos(null, false)">
+                                <a href="javascript:;" v-on:click="setCampeonato(c)" v-bind:class="{ active: findCampeonato == c.id }">
+                                    <span><i class="fa fa-angle-right"></i> ${c.title}</span>
+                                    <span class="badge badge-dark">${c.jogos ? c.jogos.length : ''}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </aside>
+
+                <!-- 2. Coluna Central: Jogos Superbet & SuperOdds -->
+                <section class="sb-col-center">
+                    
+                    <!-- Barra de Ferramentas / Filtros -->
+                    <div class="sb-toolbar">
+                        <div class="row align-items-center">
+                            
+                            <!-- Botões Rápidos Mobile -->
+                            <div class="col-12 d-block d-lg-none mb-2">
+                                <div class="btn-group btn-group-sm w-100">
+                                    <button type="button" class="btn btn-dark" v-on:click="setCampeonato()" v-bind:class="{ 'btn-success text-dark font-weight-bold': !checkFiltros() }" style="background:var(--sb-primary); color:#001510;">
+                                        Todos
+                                    </button>
+                                    <button type="button" class="btn btn-dark" v-on:click="setData('{{ hoje }}')" v-bind:class="{ 'btn-success text-dark font-weight-bold': findData == '{{ hoje }}' }">
+                                        Hoje
+                                    </button>
+                                    <button type="button" class="btn btn-dark" v-on:click="setData('{{ amanha }}')" v-bind:class="{ 'btn-success text-dark font-weight-bold': findData == '{{ amanha }}' }">
+                                        Amanhã
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Campo de Busca -->
+                            <div class="col-12 col-md-5 mb-2 mb-md-0">
+                                <div class="input-group input-group-sm">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-dark border-secondary text-success"><i class="fa fa-search"></i></span>
+                                    </div>
+                                    <input type="text" v-model="search" class="form-control" placeholder="Buscar clube, seleção ou torneio..."/>
+                                </div>
+                            </div>
+
+                            <!-- Seleção de Competição -->
+                            <div class="col-12 col-md-4 mb-2 mb-md-0">
+                                <select v-model="findCampeonato" class="form-control form-control-sm">
+                                    <option value="*">-- Todas as Competições --</option>
+                                    <optgroup v-for="p in paises" v-bind:label="p.title">
+                                        <option v-for="c in p.campeonatos" v-bind:value="c.id">
+                                            ${c.title}
+                                        </option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <!-- Ações (Limpar / Imprimir) -->
+                            <div class="col-6 col-md-auto ml-auto">
+                                <button type="button" class="btn btn-sm btn-outline-danger btn-block" v-on:click="setCampeonato()" title="Limpar Filtros">
+                                    <i class="fa fa-times"></i> Limpar
+                                </button>
+                            </div>
+                            <div class="col-6 col-md-auto">
+                                <button type="button" class="btn btn-sm btn-outline-success btn-block" v-on:click="imprimir()" title="Imprimir Cotações">
+                                    <i class="fa fa-print"></i> Imprimir
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Banner Slideshow -->
+                    {% include 'website/inc/slideshow.twig' with {ref: 'site-slideshow'} %}
+
+                    <!-- Partidas e Mercados Superbet -->
+                    <div>
+                        {{ block('jogos') }}
+                    </div>
+
+                </section>
+
+                <!-- 3. Barra Lateral Direita: Boletim Superbet -->
+                <aside class="sb-col-right">
+                    {{ block('bilhete') }}
+                </aside>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block jogos %}
+    <div class="mb-3" v-if="getCampeonatos().length">
+        <div v-for="campeonato in getCampeonatos(null, true)" class="sb-league-section">
+            
+            <!-- Cabeçalho do Campeonato -->
+            <div class="sb-league-header">
+                <div class="sb-league-title">
+                    <img v-if="campeonato.paisImg" v-bind:src="campeonato.paisImg" class="sb-league-flag mr-1" onerror="this.style.display='none'"/>
+                    <i v-else class="fa fa-trophy mr-1"></i>
+                    <a href="javascript:;" v-on:click="setCampeonato(campeonato)" class="text-white text-decoration-none">
+                        ${campeonato.title}
+                    </a>
+                </div>
+                <div>
+                    <button type="button" v-on:click="imprimir(campeonato.id)" class="btn btn-sm btn-link text-success p-0" title="Imprimir Campeonato">
+                        <i class="fa fa-print fa-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabela de Partidas Superbet -->
+            <div class="table-responsive m-0">
+                <table class="sb-table">
+                    <thead>
+                        <tr>
+                            <th class="text-left" style="min-width: 220px;">PARTIDA</th>
+                            <th style="width: 140px;" class="d-none d-md-table-cell">DATA / HORA</th>
+                            <th style="width: 70px;" v-for="c in getCotacoesPrincipais()" v-bind:title="c.title">
+                                ${c.title}
+                            </th>
+                            <th style="width: 60px;">MAIS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="jogo in getJogos(campeonato)" class="sb-match-row">
+                            
+                            <!-- Times -->
+                            <td class="text-nowrap" style="white-space: nowrap !important;">
+                                <div v-on:click="maisCotacoes(jogo)" class="sb-teams text-nowrap" style="white-space: nowrap !important; overflow: hidden !important;">
+                                    <div class="sb-times-box text-nowrap" style="display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; white-space: nowrap !important; align-items: center !important;">
+                                        <span class="sb-time-casa text-nowrap" style="display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; white-space: nowrap !important; align-items: center !important;">
+                                            <img v-if="jogo.imgCasa" v-bind:src="jogo.imgCasa" class="sb-team-flag" v-bind:alt="jogo.casa" loading="lazy" onerror="this.style.display='none'"/>
+                                            <span class="sb-team-name text-nowrap" style="white-space: nowrap !important;">${jogo.casa}</span>
+                                        </span>
+                                        <span class="sb-versus" style="white-space: nowrap !important; display: inline-block !important;">x</span>
+                                        <span class="sb-time-fora text-nowrap" style="display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; white-space: nowrap !important; align-items: center !important;">
+                                            <img v-if="jogo.imgFora" v-bind:src="jogo.imgFora" class="sb-team-flag" v-bind:alt="jogo.fora" loading="lazy" onerror="this.style.display='none'"/>
+                                            <span class="sb-team-name text-nowrap" style="white-space: nowrap !important;">${jogo.fora}</span>
+                                        </span>
+                                    </div>
+                                    <div class="sb-match-time d-block d-md-none">
+                                        <i class="fa fa-clock-o"></i> ${jogo.data.split('-').reverse().join('/')} às ${jogo.hora.replace(/:00$/, '')}
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Data e Hora (Desktop) -->
+                            <td class="d-none d-md-table-cell text-center">
+                                <div class="sb-match-time justify-content-center">
+                                    <i class="fa fa-calendar"></i>
+                                    <time v-bind:datetime="jogo.data + 'T' + jogo.hora">
+                                        ${jogo.data.split('-').reverse().join('/')}<br/>${jogo.hora.replace(/:00$/, '')}
+                                    </time>
+                                </div>
+                            </td>
+
+                            <!-- Cotações Principais Superbet (1, X, 2) -->
+                            <td class="text-center p-1" v-for="c in getCotacoesPrincipais()">
+                                <div class="sb-odd-btn" 
+                                     v-bind:class="{ active: jogo.apostaEm == '90' + c.campo }"
+                                     v-bind:title="c.title + ': ' + ((jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo]) ? maskReal(jogo.cotacoes['90'][c.campo]) : '-')"
+                                     v-on:click="apostar(jogo, '90', c)">
+                                    <span class="sb-odd-label">${c.title}</span>
+                                    <span class="sb-odd-val">${(jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo]) ? maskReal(jogo.cotacoes['90'][c.campo]) : '-'}</span>
+                                </div>
+                            </td>
+
+                            <!-- Botão +Outras Cotações -->
+                            <td class="text-center p-1">
+                                <div class="sb-more-odds-btn" 
+                                     v-bind:class="{ active: jogo.outras }" 
+                                     v-on:click="maisCotacoes(jogo)"
+                                     title="Mais Cotações">
+                                    +${Math.max(0, totalCotacoes(jogo.cotacoes) - getCotacoesPrincipais().length)}
+                                </div>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    {{ block('modalCotacoes') }}
+{% endblock %}
+
+{% block modalCotacoes %}
+    <!-- Modal Mais Cotações Superbet -->
+    <div id="modal-cotacoes" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background-color: var(--sb-bg-card); border: 1px solid var(--sb-border);">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title font-weight-bold text-white">
+                        <i class="fa fa-sliders text-success mr-2"></i> Todos os Mercados
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body p-3" v-if="mJogo.jogo">
+                    <div class="text-center mb-3 pb-2 border-bottom border-secondary">
+                        <h4 class="font-weight-bold text-white m-0 d-inline-flex align-items-center justify-content-center flex-nowrap text-nowrap" style="white-space: nowrap !important;">
+                            <span class="d-inline-flex align-items-center text-nowrap" style="white-space: nowrap !important;">
+                                <img v-if="mJogo.jogo.imgCasa" v-bind:src="mJogo.jogo.imgCasa" class="sb-team-flag mr-1" v-bind:alt="mJogo.jogo.casa" onerror="this.style.display='none'"/>
+                                ${mJogo.jogo.casa}
+                            </span>
+                            <span class="text-success mx-2">x</span>
+                            <span class="d-inline-flex align-items-center text-nowrap" style="white-space: nowrap !important;">
+                                <img v-if="mJogo.jogo.imgFora" v-bind:src="mJogo.jogo.imgFora" class="sb-team-flag mr-1" v-bind:alt="mJogo.jogo.fora" onerror="this.style.display='none'"/>
+                                ${mJogo.jogo.fora}
+                            </span>
+                        </h4>
+                        <div class="small text-muted mt-1">
+                            <i class="fa fa-calendar-o"></i> ${mJogo.jogo.data.split('-').reverse().join('/')} às ${mJogo.jogo.hora.replace(/:00$/, '')}
+                        </div>
+                    </div>
+
+                    <!-- Abas de Tempo Superbet -->
+                    <ul class="nav nav-pills nav-fill mb-3">
+                        <li class="nav-item">
+                            <a class="nav-link text-white font-weight-bold" v-bind:class="{ 'btn-success active text-dark font-weight-bold': mJogo.tempo == '90' }" style="background:var(--sb-primary); color:#001510;" href="javascript:;" v-on:click="mJogo.tempo = '90'">
+                                Tempo Regulamentar (90 min)
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white font-weight-bold" v-bind:class="{ 'btn-success active text-dark font-weight-bold': mJogo.tempo == 'pt' }" href="javascript:;" v-on:click="mJogo.tempo = 'pt'">
+                                1º Tempo
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white font-weight-bold" v-bind:class="{ 'btn-success active text-dark font-weight-bold': mJogo.tempo == 'st' }" href="javascript:;" v-on:click="mJogo.tempo = 'st'">
+                                2º Tempo
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Grupos de Cotações -->
+                    <div v-for="(grupo, id) in grupos" class="mb-3">
+                        <div class="sb-card-header rounded-top">
+                            <span><i class="fa fa-futbol-o mr-1"></i> ${grupo}</span>
+                        </div>
+                        <div class="p-2 border border-top-0 border-secondary rounded-bottom" style="background:#071c15;">
+                            <div class="row no-gutters">
+                                <div class="col-6 col-md-4 col-lg-3 p-1" v-for="c in cotacoes" v-if="c.grupo == id && mJogo.jogo && mJogo.jogo.cotacoes && mJogo.jogo.cotacoes[mJogo.tempo] && mJogo.jogo.cotacoes[mJogo.tempo][c.campo] > 1">
+                                    <div class="sb-odd-btn w-100" 
+                                         v-bind:class="{ active: mJogo.jogo.apostaEm == mJogo.tempo + c.campo }"
+                                         v-on:click="apostar(mJogo.jogo, mJogo.tempo, c)">
+                                        <span class="sb-odd-label text-truncate w-100 text-center">${c.sigla || c.title}</span>
+                                        <span class="sb-odd-val">${(mJogo.jogo.cotacoes && mJogo.jogo.cotacoes[mJogo.tempo] && mJogo.jogo.cotacoes[mJogo.tempo][c.campo]) ? maskReal(mJogo.jogo.cotacoes[mJogo.tempo][c.campo]) : '-'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block bilhete %}
+    <!-- Boletim de Apostas Superbet -->
+    <div class="sb-betslip">
+        
+        <!-- Cabeçalho do Boletim -->
+        <div class="sb-betslip-header">
+            <h4><i class="fa fa-ticket text-success"></i> Boletim de Apostas</h4>
+            <span class="sb-betslip-badge">${aposta.jogos.length}</span>
+        </div>
+
+        <!-- Conteúdo do Boletim -->
+        <div class="sb-betslip-body">
+
+            <!-- Valor da Aposta (Stake) -->
+            <div class="mb-2">
+                <label class="small text-white-50 font-weight-bold mb-1">VALOR DA APOSTA (R$)</label>
+                <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-dark border-secondary text-success font-weight-bold">R$</span>
+                    </div>
+                    <input type="number" v-model="valorAposta" v-bind:min="apostaMinima" v-bind:max="apostaMaxima" step="1.00" class="form-control font-weight-bold" style="background:#071c15; border-color:var(--sb-border); color:#fff;"/>
+                </div>
+            </div>
+
+            <!-- Chips de Valores Rápidos Superbet -->
+            <div class="sb-quick-stakes">
+                <button type="button" class="sb-chip-btn" v-on:click="valorAposta = 5">R$ 5</button>
+                <button type="button" class="sb-chip-btn" v-on:click="valorAposta = 10">R$ 10</button>
+                <button type="button" class="sb-chip-btn" v-on:click="valorAposta = 20">R$ 20</button>
+                <button type="button" class="sb-chip-btn" v-on:click="valorAposta = 50">R$ 50</button>
+                <button type="button" class="sb-chip-btn" v-on:click="valorAposta = 100">R$ 100</button>
+            </div>
+
+            <!-- Alerta Mínimo de Jogos -->
+            <div v-if="aposta.jogos.length > 0 && aposta.jogos.length < minJogos" class="alert alert-warning py-1 px-2 small mb-2 text-center font-weight-bold">
+                <i class="fa fa-warning"></i> Mínimo de jogos: ${minJogos}
+            </div>
+
+            <!-- Seleções -->
+            <div v-if="aposta.jogos.length > 0">
+                <div v-for="(v, i) in aposta.jogos" class="sb-selection-item">
+                    <span class="sb-selection-remove" v-on:click="rmAposta(i)" title="Remover seleção">
+                        <i class="fa fa-times-circle"></i>
+                    </span>
+                    <div class="sb-selection-teams d-flex align-items-center flex-nowrap text-nowrap" style="white-space: nowrap !important; overflow: hidden !important;">
+                        <span class="d-inline-flex align-items-center mr-1 text-nowrap" style="white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis;">
+                            <img v-if="v.jogo.imgCasa" v-bind:src="v.jogo.imgCasa" class="sb-team-flag mr-1" style="width: 14px; height: 14px; min-width: 14px;" onerror="this.style.display='none'"/>
+                            ${v.jogo.casa}
+                        </span>
+                        <span class="text-success mx-1">x</span>
+                        <span class="d-inline-flex align-items-center ml-1 text-nowrap" style="white-space: nowrap !important; overflow: hidden; text-overflow: ellipsis;">
+                            <img v-if="v.jogo.imgFora" v-bind:src="v.jogo.imgFora" class="sb-team-flag mr-1" style="width: 14px; height: 14px; min-width: 14px;" onerror="this.style.display='none'"/>
+                            ${v.jogo.fora}
+                        </span>
+                    </div>
+                    <div class="sb-selection-market">
+                        ${v.jogo.data.split('-').reverse().join('/')} às ${v.jogo.hora.replace(/:00$/, '')}
+                    </div>
+                    <div class="sb-selection-odd-row">
+                        <span class="small font-weight-bold text-white">
+                            Palpite: <b class="text-success">${v.cotacao.sigla}</b>
+                            <span class="badge badge-secondary ml-1" v-if="v.tempo != '90'">
+                                ${v.tempo == 'pt' ? '1ºT': '2ºT'}
+                            </span>
+                        </span>
+                        <span class="rate">${(v && v.jogo && v.jogo.cotacoes && v.jogo.cotacoes[v.tempo] && v.cotacao && v.jogo.cotacoes[v.tempo][v.cotacao.campo]) ? maskReal(v.jogo.cotacoes[v.tempo][v.cotacao.campo]) : '-'}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cupom Vazio -->
+            <div v-else class="text-center py-4 text-muted small">
+                <i class="fa fa-ticket fa-3x mb-2 d-block text-secondary" style="opacity: 0.4;"></i>
+                <div>Boletim sem apostas</div>
+                <div class="text-white-50 mt-1">Clique nas cotações para montar seu bilhete.</div>
+            </div>
+
+            <!-- Resumo Financeiro -->
+            <div class="sb-betslip-summary" v-if="aposta.jogos.length > 0">
+                <div class="sb-summary-row">
+                    <span>Nº de Apostas:</span>
+                    <b class="text-white">${aposta.jogos.length}</b>
+                </div>
+                <div class="sb-summary-row">
+                    <span>Cotação Total:</span>
+                    <b class="text-warning">${valorCotacao}</b>
+                </div>
+                <div class="sb-summary-row total-return">
+                    <span>Possível Retorno:</span>
+                    <span class="val">R$ ${premio}</span>
+                </div>
+            </div>
+
+            <!-- Nome do Cliente -->
+            <div class="form-group mb-3" v-if="aposta.jogos.length > 0">
+                <label class="small text-white-50 font-weight-bold mb-1">NOME DO APOSTADOR</label>
+                <input type="text" v-model="cliente" class="form-control form-control-sm" style="background:#071c15; border-color:var(--sb-border); color:#fff;" placeholder="Ex: Roberto Gomes" maxlength="50"/>
+            </div>
+
+            <!-- Botões de Ação do Cupom -->
+            <div v-if="aposta.jogos.length > 0">
+                <button type="button" class="sb-btn-bet" v-bind:disabled="!apostaValida" v-on:click="finalizarAposta">
+                    <i class="fa fa-check-circle"></i> {{ user ? 'Colocar Aposta' : 'Gerar Pré-Bilhete' }}
+                </button>
+                <button type="button" class="sb-btn-clear" v-on:click="limpaAposta">
+                    <i class="fa fa-trash-o"></i> Limpar Boletim
+                </button>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    {% set selector = '#website' %}
+    {{ block('script', 'website/page/apostar.twig') }}
+{% endblock %}

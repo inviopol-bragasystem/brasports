@@ -1,0 +1,36 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="container-fluid px-lg-4 px-3 py-4">
+        <div class="dp-page-card">
+            <h3 class="dp-page-title"><i class="fa fa-line-chart"></i> Tabela Explicativa de Cotações</h3>
+
+            {% for id, g in grupos %}
+                <div class="mb-4">
+                    <h5 class="text-warning font-weight-bold text-uppercase pb-2 border-bottom mb-3" style="border-color: var(--dp-border) !important;">
+                        <i class="fa fa-tag mr-1"></i> {{ g }}
+                    </h5>
+                    <div class="row">
+                        {% for c in cotacoes %}
+                            {% if id == c.getGrupo() %}
+                                <div class="col-12 col-sm-6 col-md-4 col-xl-3 mb-3">
+                                    <div class="dp-card h-100">
+                                        <div class="dp-card-header">
+                                            <span class="font-weight-bold">{{ c.getTitulo() }}</span>
+                                            <span class="badge badge-warning text-dark font-weight-bold">{{ c.getSigla() }}</span>
+                                        </div>
+                                        <div class="p-3 bg-dark text-white-50 small" style="min-height: 70px;">
+                                            {{ c.getDescricao()|raw }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

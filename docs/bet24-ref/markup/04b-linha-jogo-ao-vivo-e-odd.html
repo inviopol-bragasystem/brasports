@@ -1,0 +1,147 @@
+<!--
+  TEMA BET24 (site11) - REFERENCIA v4
+  Arquivo: 04b - Linha de jogo AO VIVO + todos os estados do botao de odd
+  Origem: o HTML do ao vivo e montado por JavaScript em pages/aovivo.html (funcoes
+          oddAoVivo() e atualizaAovivo(), linhas 2828-2915). Abaixo o resultado
+          renderizado, com dados de exemplo do proprio site.
+
+  Diferencas em relacao ao pre-jogo (.match-row simples):
+    - a linha recebe .is-live
+    - .when recebe .when-live; .when-top mostra o minuto com o raio em vez do horario
+    - cada .team ganha um `span.team-score` com o placar
+    - o botao de odd pode ter .odd-up / .odd-down (variacao) com seta e .odd-glow
+    - o botao de odd travado usa .odd-locked.disable e um <i class="fas fa-lock">
+-->
+
+<!-- =====================================================================
+     1) Linha de jogo ao vivo (.match-row.match-item.is-live)
+     ===================================================================== -->
+<div class="match-row match-item is-live" data-search="coritiba x vitoria">
+
+    <div class="when when-live">
+        <span class="when-top">
+            <svg aria-hidden="true" class="bolt" width="11" height="13" viewBox="0 0 11 14"><path d="M6.5 0 0 8h4.5L3.5 14 11 5.5H6.3L6.5 0Z" fill="currentColor"/></svg>
+            <span>67'</span>
+        </span>
+        <span class="when-sub">2º tempo</span>
+    </div>
+
+    <div class="teams">
+        <a class="teams-link" href="/v4/jogos/aovivo/196785640">
+            <div class="team">
+                <img class="logo" width="16" height="16" alt="" src="https://images.wolfsistemas.me/s/29f69c1dd4c7e607d114c7ba8a27313a.png">
+                <span class="team-name">Coritiba</span>
+                <span class="team-score">1</span>
+            </div>
+            <div class="team">
+                <img class="logo" width="16" height="16" alt="" src="https://images.wolfsistemas.me/s/dd5c2c38b23d35cdaca50f1b1bd99ef3.png">
+                <span class="team-name">Vitoria</span>
+                <span class="team-score">0</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="row-odds">
+        <!-- 1 com odd que SUBIU (seta + .odd-glow) -->
+        <button type="button" class="odd odd-pickable odd-up rate-up-small" id="tx-77715154" onclick="adicionaAovivo(196785640, 77715154);">
+            <span class="odd-label"><span class="odd-label-text">1</span></span>
+            <span class="odd-price"><span class="odd-arrow odd-arrow-up">&#9650;</span>2,15</span>
+            <span class="odd-glow"></span>
+        </button>
+        <!-- X normal -->
+        <button type="button" class="odd odd-pickable" id="tx-77715155" onclick="adicionaAovivo(196785640, 77715155);">
+            <span class="odd-label"><span class="odd-label-text">X</span></span>
+            <span class="odd-price">3,10</span>
+        </button>
+        <!-- 2 travado (mercado suspenso) -->
+        <button type="button" class="odd odd-locked disable" disabled aria-disabled="true">
+            <span class="odd-label"><span class="odd-label-text">2</span></span>
+            <span class="odd-price"><i class="fas fa-lock"></i></span>
+        </button>
+    </div>
+
+    <a class="row-more" href="/v4/jogos/aovivo/196785640" title="Mais mercados">+245</a>
+</div>
+
+<!-- =====================================================================
+     2) Estados do botao de odd (o componente mais usado do tema)
+     =====================================================================
+
+     .odd                  base: fundo --surface-2, borda --odd-border, radius 8px,
+                           min-height 38px, padding 6px 12px, flex entre rotulo e preco
+     .odd-label-text       rotulo (1 / X / 2 / "Mais de 2.5") - 12px
+     .odd-price            preco - 13px/700, cor --price (verde), numeros tabulares
+     .odd-pickable         clicavel (cursor pointer, hover --surface-3)
+     .active               SELECIONADO - fundo --primary-color, texto --text-primary-color
+     .disable              TRAVADO - opacity .5, cursor not-allowed, preco --muted
+     .odd-up / .odd-down   variacao ao vivo: preco --up-text / --down-text + .odd-arrow
+     .odd-glow             brilho animado (4s) quando a odd muda
+     .odd-empty            mercado sem preco - opacity .55
+-->
+
+<!-- 2.1 Normal (pre-jogo) -->
+<button type="button" class="odd odd-pickable prematch" data-jogo-id="196785640" data-id="77715154">
+    <span class="odd-label"><span class="odd-label-text">1</span></span>
+    <span class="odd-price">2,11</span>
+</button>
+
+<!-- 2.2 Selecionado (o backend v4 marca com .active; o layout antigo usava .odd-selected) -->
+<button type="button" class="odd odd-pickable prematch active" data-jogo-id="196785640" data-id="77715154">
+    <span class="odd-label"><span class="odd-label-text">1</span></span>
+    <span class="odd-price">2,11</span>
+</button>
+
+<!-- 2.3 Travado / sem cotacao -->
+<button type="button" class="odd odd-locked disable" disabled aria-disabled="true">
+    <span class="odd-label"><span class="odd-label-text">X</span></span>
+    <span class="odd-price"><i class="fas fa-lock"></i></span>
+</button>
+
+<!-- 2.4 Vazio (mercado existe mas sem preco) -->
+<button type="button" class="odd odd-pickable odd-empty" disabled>
+    <span class="odd-label"><span class="odd-label-text">2</span></span>
+    <span class="odd-price">—</span>
+</button>
+
+<!-- 2.5 Variacao para cima (ao vivo) -->
+<button type="button" class="odd odd-pickable odd-up" id="tx-77715154">
+    <span class="odd-label"><span class="odd-label-text">1</span></span>
+    <span class="odd-price"><span class="odd-arrow odd-arrow-up">&#9650;</span>2,15</span>
+    <span class="odd-glow"></span>
+</button>
+
+<!-- 2.6 Variacao para baixo (ao vivo) -->
+<button type="button" class="odd odd-pickable odd-down" id="tx-77715155">
+    <span class="odd-label"><span class="odd-label-text">X</span></span>
+    <span class="odd-price"><span class="odd-arrow odd-arrow-down">&#9660;</span>3,05</span>
+    <span class="odd-glow"></span>
+</button>
+
+<!-- 2.7 Odd de 2 vias (esportes sem empate): o container usa .row-odds-2 e o
+         cabecalho do campeonato usa .league-cols.row-odds-2 com apenas 1 e 2 -->
+<div class="row-odds row-odds-2" data-v4-jogo="123">
+    <button type="button" class="odd odd-pickable prematch" data-jogo-id="123" data-id="1">
+        <span class="odd-label"><span class="odd-label-text">Casa</span></span>
+        <span class="odd-price">1,55</span>
+    </button>
+    <button type="button" class="odd odd-pickable prematch" data-jogo-id="123" data-id="2">
+        <span class="odd-label"><span class="odd-label-text">Fora</span></span>
+        <span class="odd-price">2,40</span>
+    </button>
+</div>
+
+<!-- 2.8 Odd dentro do cartao de destaque (home) - mesma classe, container .highlight-odds -->
+<div class="highlight-odds">
+    <button type="button" class="odd odd-pickable prematch" data-jogo-id="196786856" data-id="77912332">
+        <span class="odd-label"><span class="odd-label-text">1</span></span>
+        <span class="odd-price">1,87</span>
+    </button>
+    <button type="button" class="odd odd-pickable prematch" data-jogo-id="196786856" data-id="77912333">
+        <span class="odd-label"><span class="odd-label-text">X</span></span>
+        <span class="odd-price">3,58</span>
+    </button>
+    <button type="button" class="odd odd-pickable prematch" data-jogo-id="196786856" data-id="77912334">
+        <span class="odd-label"><span class="odd-label-text">2</span></span>
+        <span class="odd-price">3,55</span>
+    </button>
+</div>

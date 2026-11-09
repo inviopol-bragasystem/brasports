@@ -1,0 +1,1762 @@
+/* ==========================================================================
+   TEMA 9: LEON BET (1:1 Oficial leon824.bet)
+   Design: Obsidian Black (#0b0d0e), Dark Slate (#171a1c, #1e2226)
+   Accent: Leon Emerald Green (#1fad66), Alert Red (#e22626)
+   ========================================================================== */
+
+[v-cloak] {
+  display: none !important;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,700;1,900&display=swap');
+
+:root {
+  --leon-bg: #0b0d0e;
+  --leon-header: #171a1c;
+  --leon-card: #171a1c;
+  --leon-inner: #1e2226;
+  --leon-hover: #262b31;
+  --leon-border: #23282e;
+  --leon-border-subtle: #1c2024;
+  
+  --leon-green: #1fad66;
+  --leon-green-hover: #1cd478;
+  --leon-green-glow: rgba(31, 173, 102, 0.35);
+  
+  --leon-red: #e22626;
+  --leon-pink: #d91456;
+  --leon-turbinada: #e22626;
+  
+  --leon-odd-bg: #22262b;
+  --leon-odd-border: #2c3239;
+  --leon-odd-hover: #2d343c;
+  
+  --leon-text-main: #ffffff;
+  --leon-text-sub: #cfd4d8;
+  --leon-text-muted: #88919a;
+  
+  --leon-font: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Base & Reset */
+html, body {
+  background-color: var(--leon-bg) !important;
+  color: var(--leon-text-main);
+  font-family: var(--leon-font);
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  padding-bottom: 65px; /* Espaço para o bottom bar mobile */
+}
+
+@media (min-width: 992px) {
+  body {
+    padding-bottom: 0;
+  }
+}
+
+a {
+  color: var(--leon-text-sub);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   HEADER OFICIAL LEON BET (Desktop & Mobile)
+   ========================================================================== */
+.leon-header {
+  background: var(--leon-header);
+  border-bottom: 1px solid var(--leon-border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
+.leon-header-top {
+  height: 54px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.leon-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.leon-burger-btn {
+  background: transparent;
+  border: none;
+  color: #cfd4d8;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none !important;
+}
+
+.leon-burger-btn svg {
+  display: block;
+}
+
+.leon-logo-wrap {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.leon-logo-svg {
+  height: 22px;
+  width: auto;
+  fill: #ffffff;
+}
+
+/* Top Nav Links (INÍCIO, AO VIVO, ESPORTES, E-SPORTS) */
+.leon-top-tabs {
+  display: flex;
+  align-items: center;
+  height: 54px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 4px;
+}
+
+.leon-top-tabs li {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.leon-top-tabs a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 14px;
+  color: var(--leon-text-sub);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  transition: color 0.15s ease;
+}
+
+.leon-top-tabs a:hover {
+  color: #ffffff;
+}
+
+.leon-top-tabs li.active a {
+  color: #ffffff;
+}
+
+.leon-top-tabs li.active a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--leon-green);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Header Right Actions */
+.leon-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.leon-search-icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--leon-text-sub);
+  font-size: 16px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.leon-search-icon-btn:hover {
+  color: #ffffff;
+}
+
+.leon-btn-entrar {
+  background: transparent;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.leon-btn-entrar:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.leon-btn-cadastre {
+  background: var(--leon-green);
+  color: #ffffff !important;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 2px 8px var(--leon-green-glow);
+  white-space: nowrap;
+}
+
+.leon-btn-cadastre:hover {
+  background: var(--leon-green-hover);
+  box-shadow: 0 4px 12px var(--leon-green-glow);
+}
+
+.leon-user-balance-badge {
+  background: var(--leon-inner);
+  border: 1px solid var(--leon-border);
+  color: #ffffff;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.leon-user-balance-badge .val {
+  color: var(--leon-green);
+}
+
+/* ==========================================================================
+   HERO SHOWCASE BANNER (1:1 Oficial leon824.bet "ODDS TURBINADAS")
+   ========================================================================== */
+.leon-hero-wrapper {
+  max-width: 1440px;
+  margin: 14px auto;
+  padding: 0 16px;
+}
+
+@media (max-width: 768px) {
+  .leon-hero-wrapper {
+    margin: 8px auto;
+    padding: 0 10px;
+  }
+}
+
+.leon-hero-banner {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #111417;
+  background-image: linear-gradient(180deg, rgba(14, 17, 20, 0.4) 0%, rgba(14, 17, 20, 0.85) 100%), url('../img/leon-hero.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: 230px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid var(--leon-border);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 576px) {
+  .leon-hero-banner {
+    min-height: 210px;
+    padding: 16px 14px;
+  }
+}
+
+.leon-hero-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.leon-hero-tag-futebol {
+  background: var(--leon-red);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 12px;
+  display: inline-block;
+  box-shadow: 0 2px 6px rgba(226, 38, 38, 0.4);
+}
+
+.leon-hero-teams-box {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.leon-hero-team-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.leon-hero-crest {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.leon-hero-team-name {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+@media (max-width: 576px) {
+  .leon-hero-team-name {
+    font-size: 17px;
+  }
+}
+
+/* Countdown: 00 : 04 : 19 */
+.leon-countdown-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.leon-countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.leon-countdown-val {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.leon-countdown-sep {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: -8px;
+}
+
+.leon-countdown-lbl {
+  color: var(--leon-text-muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* Barra Vermelha ODDS TURBINADAS + Odds Boxes */
+.leon-hero-odds-area {
+  margin-top: 16px;
+  max-width: 320px;
+}
+
+.leon-turbinadas-header {
+  background: linear-gradient(90deg, #d91456 0%, #b91c1c 100%);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+}
+
+.leon-hero-odds-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  background: rgba(14, 17, 20, 0.85);
+  padding: 6px;
+  border-radius: 0 6px 6px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+.leon-hero-odd-btn {
+  background: #ffffff;
+  color: #111417;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.leon-hero-odd-btn:hover {
+  transform: translateY(-1px);
+  background: #f0fdf4;
+}
+
+.leon-hero-odd-btn.active {
+  background: var(--leon-green);
+  color: #ffffff;
+}
+
+.leon-hero-odd-type {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.leon-hero-odd-btn.active .leon-hero-odd-type {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.leon-hero-odd-val {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+/* ==========================================================================
+   CARROSSEL HERO LEON (ESPORTES & BANNERS ADMIN)
+   ========================================================================== */
+.leon-hero-wrapper {
+  position: relative;
+  max-width: 1440px;
+  margin: 14px auto 16px auto;
+  padding: 0 16px;
+  border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  .leon-hero-wrapper {
+    margin: 8px auto 12px auto;
+    padding: 0 10px;
+  }
+}
+
+.leon-hero-slide {
+  display: none;
+  opacity: 0;
+}
+
+.leon-hero-slide.active,
+.leon-hero-slideactive {
+  display: block;
+  opacity: 1;
+  animation: leonFadeIn 0.35s ease-out;
+}
+
+@keyframes leonFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.leon-hero-banner-admin {
+  min-height: 230px;
+  max-height: 280px;
+  height: 230px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--leon-border);
+  display: block;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  background: #101418;
+  position: relative;
+}
+
+.leon-hero-banner-admin picture,
+.leon-hero-banner-admin img {
+  width: 100%;
+  height: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 576px) {
+  .leon-hero-banner-admin {
+    min-height: 200px;
+    max-height: 240px;
+    height: 200px;
+  }
+  .leon-hero-banner-admin picture,
+  .leon-hero-banner-admin img {
+    max-height: 240px;
+  }
+}
+
+.leon-hero-casino {
+  min-height: 230px;
+  max-height: 280px;
+  padding: 20px 24px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--leon-border);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media (max-width: 576px) {
+  .leon-hero-casino {
+    min-height: 200px;
+    padding: 16px 14px;
+    flex-direction: column-reverse;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+.leon-carousel-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  z-index: 25;
+  background: rgba(0, 0, 0, 0.65);
+  padding: 5px 12px;
+  border-radius: 20px;
+  backdrop-filter: blur(6px);
+  max-width: 90%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.leon-carousel-dots::-webkit-scrollbar {
+  display: none;
+}
+
+.leon-carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.leon-carousel-dot.active,
+.leon-carousel-dotactive {
+  background: var(--leon-green);
+  width: 22px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px var(--leon-green);
+}
+
+.leon-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(17, 20, 23, 0.85);
+  border: 1px solid var(--leon-border);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 25;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  opacity: 0.75;
+}
+
+.leon-hero-wrapper:hover .leon-carousel-arrow,
+.casino-hero-carousel:hover .leon-carousel-arrow {
+  opacity: 1;
+}
+
+.leon-carousel-arrow:hover {
+  background: var(--leon-green);
+  color: #000000;
+  border-color: var(--leon-green);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.leon-carousel-arrow.prev {
+  left: 12px;
+}
+
+.leon-carousel-arrow.next {
+  right: 12px;
+}
+
+.leon-hero-wrapper .leon-carousel-arrow.prev {
+  left: 28px;
+}
+
+.leon-hero-wrapper .leon-carousel-arrow.next {
+  right: 28px;
+}
+
+@media (max-width: 768px) {
+  .leon-hero-wrapper .leon-carousel-arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+    opacity: 0.9;
+  }
+  .leon-hero-wrapper .leon-carousel-arrow.prev {
+    left: 18px;
+  }
+  .leon-hero-wrapper .leon-carousel-arrow.next {
+    right: 18px;
+  }
+}
+
+/* ==========================================================================
+   CARROSSEL HERO CASSINO & SLOTS
+   ========================================================================== */
+.casino-hero-carousel {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 22px;
+  border: 1px solid var(--leon-border);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  background: #101418;
+}
+
+.casino-hero-slide {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.45s ease-in-out;
+  min-height: 220px;
+  padding: 24px 32px;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+}
+
+.casino-hero-slide.active,
+.casino-hero-slideactive {
+  display: flex;
+  opacity: 1;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.casino-hero-slide.slide-banner {
+  padding: 0;
+  min-height: 220px;
+  max-height: 280px;
+}
+
+.casino-hero-slide.slide-banner img {
+  width: 100%;
+  height: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+.casino-hero-slide-content {
+  max-width: 580px;
+  z-index: 2;
+  position: relative;
+}
+
+.casino-hero-slide-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.casino-hero-slide-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.casino-hero-slide-desc {
+  color: #cbd5e1;
+  font-size: 13px;
+  line-height: 1.45;
+  margin-bottom: 16px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.casino-hero-slide-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.casino-hero-slide-thumb-wrap {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.casino-hero-slide-thumb {
+  width: 140px;
+  height: 140px;
+  border-radius: 18px;
+  object-fit: cover;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  animation: floatHeroThumb 4s ease-in-out infinite;
+}
+
+@keyframes floatHeroThumb {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@media (max-width: 768px) {
+  .casino-hero-slide {
+    padding: 16px 14px;
+    min-height: 190px;
+  }
+  .casino-hero-slide-title {
+    font-size: 20px;
+  }
+  .casino-hero-slide-desc {
+    font-size: 11px;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .casino-hero-slide-thumb {
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+  }
+  .leon-carousel-arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .casino-hero-slide-thumb-wrap {
+    display: none;
+  }
+  .casino-hero-slide-content {
+    max-width: 100%;
+  }
+}
+
+/* ==========================================================================
+   QUICK CATEGORY ICONS STRIP (Ao vivo, Cassino, Poker, etc.)
+   ========================================================================== */
+.leon-quick-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 16px 12px 16px;
+  max-width: 1440px;
+  margin: 0 auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.leon-quick-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.leon-quick-card {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 86px;
+  height: 64px;
+  background: var(--leon-inner);
+  border: 1px solid var(--leon-border);
+  border-radius: 8px;
+  padding: 8px;
+  color: var(--leon-text-sub);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.leon-quick-card:hover {
+  background: var(--leon-hover);
+  color: #ffffff;
+  border-color: #353c44;
+}
+
+.leon-quick-card.active {
+  background: var(--leon-hover);
+  border-color: var(--leon-green);
+  color: #ffffff;
+}
+
+.leon-quick-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.leon-quick-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   MAIN LAYOUT GRID (Left: Sports | Center: Matches | Right: Betslip)
+   ========================================================================== */
+.leon-main-wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.leon-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+@media (max-width: 768px) {
+  .leon-main-wrap,
+  .leon-container {
+    padding: 0 10px;
+  }
+}
+
+.leon-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr 340px;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .leon-grid {
+    grid-template-columns: 210px 1fr;
+  }
+  .leon-col-right {
+    display: none !important;
+  }
+}
+
+@media (max-width: 991px) {
+  .leon-grid {
+    grid-template-columns: 1fr;
+  }
+  .leon-col-left {
+    display: none !important;
+  }
+}
+
+/* Coluna 1: Sidebar de Modalidades e Competições */
+.leon-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.leon-sidebar-block {
+  background: var(--leon-card);
+  border: 1px solid var(--leon-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.leon-sidebar-header {
+  padding: 12px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--leon-text-muted);
+  border-bottom: 1px solid var(--leon-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leon-side-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  color: var(--leon-text-sub);
+  font-size: 13px;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.leon-side-item:hover {
+  background: var(--leon-hover);
+  color: #ffffff;
+}
+
+.leon-side-item.active {
+  background: var(--leon-hover);
+  color: #ffffff;
+  border-left: 3px solid var(--leon-green);
+  font-weight: 700;
+}
+
+.leon-side-badge {
+  background: var(--leon-inner);
+  color: var(--leon-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+/* Coluna 2: Lista de Jogos e Cotações */
+.leon-col-center {
+  min-width: 0;
+}
+
+/* Seção de Filtro de Datas (Hoje, Amanhã, etc.) */
+.leon-date-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+}
+
+.leon-date-chips-row::-webkit-scrollbar {
+  display: none;
+}
+
+.leon-day-chip {
+  flex: 0 0 auto;
+  background: var(--leon-card);
+  border: 1px solid var(--leon-border);
+  color: var(--leon-text-sub);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.leon-day-chip:hover {
+  background: var(--leon-hover);
+  color: #ffffff;
+}
+
+.leon-day-chip.active {
+  background: var(--leon-inner);
+  border-color: var(--leon-green);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Seção Header: Futebol ⌃ + Dropdown Vencedor ⬍ */
+.leon-section-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12px 0 8px 0;
+}
+
+.leon-section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.leon-section-title-wrap i.fa-angle-down {
+  font-size: 16px;
+  color: var(--leon-text-muted);
+}
+
+.leon-market-dropdown {
+  background: var(--leon-inner);
+  border: 1px solid var(--leon-border);
+  color: var(--leon-text-sub);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Card de Liga / Campeonato */
+.leon-league-card {
+  background: var(--leon-card);
+  border: 1px solid var(--leon-border);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 200px;
+}
+
+.leon-league-header {
+  padding: 10px 16px;
+  background: #141719;
+  border-bottom: 1px solid var(--leon-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leon-league-title-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.leon-league-flag {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  border-radius: 2px;
+}
+
+.leon-league-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leon-league-odds-header {
+  display: grid;
+  grid-template-columns: repeat(3, 58px);
+  gap: 6px;
+  text-align: center;
+}
+
+.leon-league-odds-header span {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--leon-text-muted);
+}
+
+@media (max-width: 576px) {
+  .leon-league-odds-header {
+    grid-template-columns: repeat(3, 50px);
+    gap: 4px;
+  }
+}
+
+/* Match Row (1:1 com Leon Bet) */
+.leon-match-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--leon-border-subtle);
+  transition: background 0.15s ease;
+}
+
+.leon-match-row:last-child {
+  border-bottom: none;
+}
+
+.leon-match-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.leon-match-info {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  padding-right: 12px;
+}
+
+.leon-match-teams,
+.leon-times-box {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+  align-items: center !important;
+  gap: 6px;
+  max-width: 100%;
+}
+
+.leon-time-casa,
+.leon-time-fora {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+  align-items: center !important;
+  gap: 5px;
+  min-width: 0;
+  max-width: 220px;
+}
+
+.leon-team-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.leon-team-crest {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.leon-team-name {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+.leon-versus {
+  white-space: nowrap !important;
+  display: inline-block !important;
+  padding: 0 4px;
+  font-weight: 700;
+  color: var(--leon-text-muted);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.leon-match-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--leon-text-muted);
+}
+
+.leon-more-markets-tag {
+  color: var(--leon-text-muted);
+  font-weight: 700;
+  transition: color 0.15s ease;
+}
+
+.leon-match-info:hover .leon-more-markets-tag {
+  color: var(--leon-green);
+}
+
+/* Odds Group */
+.leon-odds-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.leon-odds-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 58px);
+  gap: 6px;
+}
+
+@media (max-width: 576px) {
+  .leon-odds-buttons {
+    grid-template-columns: repeat(3, 50px);
+    gap: 4px;
+  }
+}
+
+.leon-odd-btn {
+  background: var(--leon-odd-bg);
+  border: 1px solid var(--leon-odd-border);
+  color: #ffffff;
+  height: 38px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.leon-odd-btn:hover {
+  background: var(--leon-odd-hover);
+  border-color: #3b434d;
+}
+
+.leon-odd-btn.active {
+  background: var(--leon-green) !important;
+  border-color: var(--leon-green) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 10px var(--leon-green-glow);
+}
+
+.leon-odd-val {
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+@media (max-width: 576px) {
+  .leon-odd-val {
+    font-size: 12px;
+  }
+}
+
+.leon-turbinada-badge {
+  color: var(--leon-red);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* ==========================================================================
+   COLUNA 3: BOLETIM DE APOSTAS (Betslip Desktop)
+   ========================================================================== */
+.leon-col-right {
+  position: sticky;
+  top: 70px;
+}
+
+.leon-betslip-card {
+  background: var(--leon-card);
+  border: 1px solid var(--leon-border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.leon-betslip-header {
+  background: #141719;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--leon-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leon-betslip-title {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.leon-betslip-badge {
+  background: var(--leon-green);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.leon-betslip-body {
+  padding: 14px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.leon-empty-betslip {
+  text-align: center;
+  padding: 30px 10px;
+  color: var(--leon-text-muted);
+}
+
+.leon-empty-betslip i {
+  font-size: 32px;
+  color: #2c3239;
+  margin-bottom: 10px;
+}
+
+.leon-bet-card {
+  background: var(--leon-inner);
+  border: 1px solid var(--leon-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.leon-bet-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.leon-bet-teams {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.leon-bet-remove {
+  background: transparent;
+  border: none;
+  color: var(--leon-text-muted);
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+}
+
+.leon-bet-remove:hover {
+  color: var(--leon-red);
+}
+
+.leon-bet-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.leon-bet-market {
+  color: var(--leon-text-sub);
+}
+
+.leon-bet-odd {
+  color: var(--leon-green);
+  font-weight: 900;
+  background: rgba(31, 173, 102, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Resumo Financeiro do Cupom */
+.leon-betslip-footer {
+  padding: 14px;
+  background: #141719;
+  border-top: 1px solid var(--leon-border);
+}
+
+.leon-summary-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--leon-text-sub);
+}
+
+.leon-summary-line.total-return {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--leon-border);
+}
+
+.leon-summary-line.total-return .val {
+  color: var(--leon-green);
+  font-size: 16px;
+}
+
+.leon-stake-input-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.leon-stake-prefix {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--leon-text-muted);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.leon-stake-input {
+  width: 100%;
+  background: var(--leon-inner);
+  border: 1px solid var(--leon-border);
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 8px 12px 8px 36px;
+  outline: none;
+}
+
+.leon-stake-input:focus {
+  border-color: var(--leon-green);
+}
+
+.leon-btn-apostar {
+  width: 100%;
+  background: var(--leon-green);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 12px var(--leon-green-glow);
+}
+
+.leon-btn-apostar:hover:not(:disabled) {
+  background: var(--leon-green-hover);
+}
+
+.leon-btn-apostar:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   MOBILE BOTTOM BAR (1:1 com Leon Bet)
+   ========================================================================== */
+.leon-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 58px;
+  background: var(--leon-header);
+  border-top: 1px solid var(--leon-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 1050;
+}
+
+@media (min-width: 992px) {
+  .leon-bottom-nav {
+    display: none !important;
+  }
+}
+
+.leon-bottom-item,
+.leon-bottom-itemactive {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  color: var(--leon-text-muted) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  flex: 1 1 0 !important;
+  height: 100% !important;
+  cursor: pointer;
+  position: relative;
+  text-decoration: none !important;
+  transition: color 0.2s ease;
+  white-space: nowrap !important;
+}
+
+.leon-bottom-item.active,
+.leon-bottom-itemactive {
+  color: #ffffff !important;
+  /* Sombra leve por cima para destacar a aba ativa sem deformar o ícone */
+  background: rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.leon-bottom-item.active::before,
+.leon-bottom-itemactive::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 22%;
+  right: 22%;
+  height: 2px;
+  background: var(--leon-green);
+  box-shadow: 0 0 6px rgba(0, 230, 118, 0.6);
+  border-radius: 2px;
+}
+
+.leon-bottom-item.active i,
+.leon-bottom-item.active svg,
+.leon-bottom-itemactive i,
+.leon-bottom-itemactive svg {
+  color: var(--leon-green) !important;
+  fill: var(--leon-green) !important;
+  filter: drop-shadow(0 2px 5px rgba(0, 230, 118, 0.3));
+}
+
+.leon-bottom-item.active span,
+.leon-bottom-itemactive span {
+  color: #ffffff !important;
+}
+
+.leon-bottom-item i,
+.leon-bottom-item svg,
+.leon-bottom-itemactive i,
+.leon-bottom-itemactive svg {
+  font-size: 18px !important;
+  width: 22px !important;
+  height: 22px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: color 0.2s ease, filter 0.2s ease;
+}
+
+.leon-bottom-item span,
+.leon-bottom-itemactive span {
+  display: block !important;
+  font-size: 10px !important;
+  line-height: 1.1 !important;
+  text-align: center !important;
+}
+
+.leon-bottom-badge {
+  position: absolute;
+  top: 6px;
+  right: calc(50% - 18px);
+  background: var(--leon-green);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 900;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   MOBILE BETSLIP BOTTOM SHEET / MODAL
+   ========================================================================== */
+.leon-mobile-betslip-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: none;
+  align-items: flex-end;
+}
+
+.leon-mobile-betslip-modal.open {
+  display: flex;
+}
+
+.leon-mobile-betslip-sheet {
+  width: 100%;
+  max-height: 85vh;
+  background: var(--leon-header);
+  border-radius: 16px 16px 0 0;
+  border-top: 1px solid var(--leon-border);
+  overflow-y: auto;
+  padding: 16px;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.6);
+  animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.leon-mobile-betslip-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--leon-border);
+}
+
+/* ==========================================================================
+   DRAWER / OFFCANVAS MENU
+   ========================================================================== */
+.leon-drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: -280px;
+  width: 280px;
+  background: var(--leon-header);
+  border-right: 1px solid var(--leon-border);
+  z-index: 2100;
+  overflow-y: auto;
+  transition: left 0.25s ease;
+  box-shadow: 8px 0 24px rgba(0, 0, 0, 0.6);
+}
+
+html.show-menu .leon-drawer {
+  left: 0;
+}
+
+.leon-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2050;
+  display: none;
+}
+
+html.show-menu .leon-drawer-overlay {
+  display: block;
+}
+
+.leon-drawer-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--leon-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leon-drawer-body {
+  padding: 10px 0;
+}
+
+.leon-drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  color: var(--leon-text-sub);
+  font-size: 13px;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.leon-drawer-item:hover {
+  background: var(--leon-hover);
+  color: #ffffff;
+}
+
+.leon-drawer-item i {
+  width: 18px;
+  text-align: center;
+  font-size: 15px;
+}
+
+/* ==========================================================================
+   FOOTER (1:1 com Leon Bet)
+   ========================================================================== */
+.leon-footer {
+  background: var(--leon-header);
+  border-top: 1px solid var(--leon-border);
+  padding: 30px 16px;
+  margin-top: 40px;
+}
+
+.leon-footer-wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.leon-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.leon-footer-links a {
+  color: var(--leon-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.leon-footer-links a:hover {
+  color: #ffffff;
+}
+
+.leon-18-badge {
+  display: inline-block;
+  background: #1e2226;
+  border: 1px solid var(--leon-red);
+  color: var(--leon-red);
+  font-weight: 900;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 8px;
+}

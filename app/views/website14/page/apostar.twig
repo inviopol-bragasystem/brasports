@@ -1,0 +1,480 @@
+{% extends layout %}
+
+{% set hoje = 'now'|date('Y-m-d') %}
+{% set amanha = '+1day'|date('Y-m-d') %}
+{% set selector = '#website' %}
+{% set activeNav = 'apostar' %}
+
+{% block main %}
+
+    <!-- Carousel Banner 1:1 TopSportsBet (Mesma largura exata da grid de jogos) -->
+    <div id="myCarousel" data-ride="carousel" class="carousel slide mb-3">
+        <div class="carousel-inner">
+            <div class="item active">
+                <a>
+                    <img loading="lazy" src="cdn/topsportsbet/banner.png" alt="Aqui tem as melhores cotações! TopSportsBet" style="width: 100%; height: auto; border-radius: 4px; display: block;">
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Atalhos de Ligas Principais (1:1 lnv-comps da Referência) -->
+    <div class="lnv-comps mb-3">
+        <button type="button" class="lnv-comp" v-on:click="setCampeonato(); search='Brasil';">
+            <img loading="lazy" src="cdn/topsportsbet/br.png" alt="">
+            <span class="lnv-comp__name">Brasil - Série A</span>
+        </button>
+        <button type="button" class="lnv-comp" v-on:click="setCampeonato(); search='Brasil';">
+            <img loading="lazy" src="cdn/topsportsbet/br.png" alt="">
+            <span class="lnv-comp__name">Brasil - Série B</span>
+        </button>
+        <button type="button" class="lnv-comp" v-on:click="setCampeonato(); search='Colômbia';">
+            <img loading="lazy" src="cdn/topsportsbet/co.png" alt="">
+            <span class="lnv-comp__name">Colômbia - Primera A</span>
+        </button>
+        <button type="button" class="lnv-comp" v-on:click="setCampeonato(); search='Costa Rica';">
+            <img loading="lazy" src="cdn/topsportsbet/cr.png" alt="">
+            <span class="lnv-comp__name">Costa Rica - Primera División</span>
+        </button>
+    </div>
+
+    <!-- Card de Eventos 1:1 TopSportsBet -->
+    <section class="lnv-card lnv-events" v-cloak>
+        <div class="lnv-events__head">
+            <h2 class="lnv-events__title">Próximas partidas</h2>
+            <div class="lnv-events__tools">
+                <div class="lnv-busca">
+                    <input type="text" v-model="search" placeholder="Buscar time, campeonato, data ou horário" aria-label="Buscar partidas">
+                    <button type="button" aria-label="Buscar partidas" class="lnv-icon-btn"><i class="fa fa-search"></i></button>
+                </div>
+                <button type="button" aria-label="Atualizar jogos" class="lnv-icon-btn" onclick="location.reload();"><i class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+
+        <!-- Abas de Data (1:1 lnv-days da Referência) -->
+        <div role="tablist" class="lnv-days">
+            <button type="button" role="tab" class="lnv-day" :class="(!findData || findData == '{{ hoje }}') ? 'is-active' : ''" v-on:click="setData('{{ hoje }}')">
+                <b>Hoje</b>
+                <small>{{ hoje|split('-')|reverse|slice(0, 2)|join('/') }}</small>
+            </button>
+            <button type="button" role="tab" class="lnv-day" :class="findData == '{{ amanha }}' ? 'is-active' : ''" v-on:click="setData('{{ amanha }}')">
+                <b>Amanhã</b>
+                <small>{{ amanha|split('-')|reverse|slice(0, 2)|join('/') }}</small>
+            </button>
+            <button type="button" role="tab" v-for="d in datas" :key="d.data"
+                    v-if="d.data != '{{ hoje }}' && d.data != '{{ amanha }}'"
+                    class="lnv-day" :class="findData == d.data ? 'is-active' : ''"
+                    v-on:click="setData(d.data)">
+                <b>${d.title || 'Data'}</b>
+                <small>${d.data.split('-').reverse().slice(0, 2).join('/')}</small>
+            </button>
+            <button type="button" role="tab" class="lnv-day" :class="findData == 'todos' ? 'is-active' : ''" v-on:click="setData('todos')">
+                <b>Todos</b>
+                <small>Jogos</small>
+            </button>
+        </div>
+
+        <!-- Lista de Campeonatos e Confrontos -->
+        <div class="lnv-events__list">
+            <template v-for="pais in paises" v-if="filterPais(pais)">
+                <div v-for="campeonato in getCampeonatos(pais, true)" :key="campeonato.id" class="lnv-league">
+                    <!-- Cabeçalho da Liga / Campeonato -->
+                    <div class="lnv-league__head">
+                        <div class="lnv-league__name">
+                            <img src="cdn/topsportsbet/1.svg" alt="" class="lnv-league__sport">
+                            <img v-if="pais.img" :src="pais.img" alt="" class="lnv-league__flag">
+                            <i v-else class="fa fa-trophy mr-1" style="color:var(--secondary-color, #00e054);"></i>
+                            <span>${pais.title} - ${campeonato.title}</span>
+                        </div>
+                        <div class="lnv-league__cols" aria-hidden="true">
+                            <span class="lnv-col">1</span>
+                            <span class="lnv-col">X</span>
+                            <span class="lnv-col">2</span>
+                            <span class="lnv-col lnv-hide-sm">Ambas S</span>
+                            <span class="lnv-col lnv-hide-sm">Ambas N</span>
+                            <span class="lnv-col lnv-col--plus lnv-hide-sm"></span>
+                        </div>
+                    </div>
+
+                    <!-- Partidas da Liga -->
+                    <div v-for="(jogo, jIdx) in getJogos(campeonato)" :key="jogo.id" class="lnv-match">
+                        <div class="lnv-match__info" v-on:click="maisCotacoes(jogo)" style="cursor:pointer;" title="Clique para ver todas as cotações">
+                            <div class="lnv-team">
+                                <img v-if="jogo.imgCasa" :src="jogo.imgCasa" class="lnv-team__crest" :alt="jogo.casa" onerror="this.style.display='none'">
+                                <i v-else class="fa fa-shield text-muted mr-1" style="font-size:13px;width:16px;"></i>
+                                <span class="lnv-team__name" :title="jogo.casa">${jogo.casa}</span>
+                            </div>
+                            <div class="lnv-team">
+                                <img v-if="jogo.imgFora" :src="jogo.imgFora" class="lnv-team__crest" :alt="jogo.fora" onerror="this.style.display='none'">
+                                <i v-else class="fa fa-shield text-muted mr-1" style="font-size:13px;width:16px;"></i>
+                                <span class="lnv-team__name" :title="jogo.fora">${jogo.fora}</span>
+                            </div>
+                            <div class="lnv-match__meta">
+                                <i class="fa fa-clock-o"></i>
+                                <span>${jogo.data.split('-').reverse().slice(0, 2).join('/')} · ${jogo.hora.replace(/:00$/, '')}</span>
+                                <span v-if="jogo.status == 'AO_VIVO'" class="badge badge-danger ml-1" style="font-size:10px;padding:2px 5px;">AO VIVO</span>
+                                <span class="lnv-match__more-sm ml-auto font-weight-bold" v-on:click.stop="maisCotacoes(jogo)">
+                                    + ${Math.max(0, totalCotacoes(jogo.cotacoes) - getCotacoesPrincipais().length)}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Odds 1X2 e Mais Mercados -->
+                        <div class="lnv-match__odds">
+                            <button type="button"
+                                    v-for="c in getCotacoesPrincipais()"
+                                    :key="c.id"
+                                    :title="c.title"
+                                    class="lnv-odd"
+                                    :class="{ 'is-selected': jogo.apostaEm == '90' + c.campo, 'lnv-hide-sm': c.campo.indexOf('ambas') !== -1 }"
+                                    v-on:click="apostar(jogo, '90', c)">
+                                ${jogo.cotacoes && jogo.cotacoes['90'] && jogo.cotacoes['90'][c.campo] ? maskReal(jogo.cotacoes['90'][c.campo]) : '-'}
+                            </button>
+
+                            <button type="button" class="lnv-plus lnv-hide-sm" v-on:click="maisCotacoes(jogo)" title="Mais opções">
+                                + ${Math.max(0, totalCotacoes(jogo.cotacoes) - getCotacoesPrincipais().length)}
+                            </button>
+
+                            <button type="button" class="lnv-icon-btn lnv-hide-sm" v-on:click="shareJogo(jogo)" title="Compartilhar">
+                                <i class="fa fa-picture-o"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </section>
+
+    <!-- ========================================================
+         RODAPÉ OFICIAL 1:1 TOPSPORTSBET (DENTRO DA COLUNA CENTRAL)
+         ======================================================== -->
+    <footer class="lnv-footer" v-pre>
+        <div class="lnv-footer__safe">
+            <img loading="lazy" src="cdn/topsportsbet/18.png" alt="+18">
+            <p>O jogo pode ser viciante. Por favor, jogue de forma responsável.</p>
+        </div>
+        <nav class="lnv-footer__links">
+            <a href="{{ url('apostar') }}">Esportes</a>
+            {% if dados.getExibirCassino() %}<a href="{{ url('cassino') }}">Cassino</a>{% endif %}
+            <a href="javascript:void(0)" onclick="$('#modal-regulamento').modal('show')">Regulamento</a>
+            <a href="{{ url('bilhete') }}">Consultar Bilhete</a>
+        </nav>
+        <p class="lnv-footer__disclaimer">
+            Ao acessar, continuar ou navegar neste site, você aceita que utilizemos certos cookies de navegador com o objetivo de melhorar a sua experiência como usuário. JOGUE COM RESPONSABILIDADE. PROIBIDO PARA MENORES DE 18 ANOS. 18+
+        </p>
+        <div class="lnv-footer__bottom">
+            <div class="lnv-footer__pay">
+                <span>Meios de pagamento</span>
+                <img loading="lazy" src="cdn/topsportsbet/PIX.png" alt="PIX" style="height:22px;width:auto;">
+            </div>
+            <p>© {{ "now"|date("Y") }} {{ dados.getBanca()|default('topsportsbet.com.br') }} · Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- ========================================================
+         BARRA FLUTUANTE DE BILHETE MOBILE (1:1 TOPSPORTSBET)
+         ======================================================== -->
+    <button type="button"
+            v-if="aposta && aposta.jogos.length > 0"
+            class="lnv-slipbar"
+            onclick="$('#modal-cupon').modal('show');">
+        <span class="lnv-badge">${aposta.jogos.length}</span>
+        <span class="font-weight-bold text-truncate" style="max-width: 170px;">Retorno: R$ ${premio}</span>
+        <span class="lnv-slipbar__go">Ver bilhete <i class="fa fa-chevron-right ml-1"></i></span>
+    </button>
+
+    <!-- ========================================================
+         MODAL DE CUPOM MOBILE (1:1 TOPSPORTSBET CUPOM SHEET)
+         ======================================================== -->
+    <div id="modal-cupon" tabindex="-1" role="dialog" aria-labelledby="cupom-sheet-title" class="modal fade cupom-sheet" v-cloak>
+        <div role="document" class="modal-dialog">
+            <div class="modal-content" v-if="aposta">
+                <span aria-hidden="true" class="cupom-sheet__grab"></span>
+                <div class="cupom-sheet__band">
+                    <h4 id="cupom-sheet-title" class="cupom-sheet__title">
+                        Cupom de apostas
+                    </h4>
+                    <span class="cupom-sheet__count">${aposta.jogos.length}</span>
+                    <button type="button" data-dismiss="modal" aria-label="Fechar cupom" class="cupom-sheet__close">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                <div class="cupom-sheet__scroll">
+                    <div v-if="aposta.jogos.length == 0" class="cupom-sheet__empty">
+                        <i class="fa fa-ticket" aria-hidden="true"></i>
+                        <b>Seu cupom está vazio</b>
+                        <span>Toque em uma cotação para começar a montar a aposta.</span>
+                    </div>
+
+                    <div v-else class="lnv-picks p-2">
+                        <div v-for="(item, index) in aposta.jogos" :key="index" class="lnv-pick mb-2 p-2 rounded" style="background:#252525;border:1px solid rgba(255,255,255,0.08);position:relative;">
+                            <button type="button" class="close text-danger" style="position:absolute;top:4px;right:6px;" v-on:click="rmAposta(index)">&times;</button>
+                            <div class="font-bold text-xs text-white pr-4">${item.jogo.casa} x ${item.jogo.fora}</div>
+                            <div class="d-flex justify-content-between align-items-center mt-1 text-xs text-white-50">
+                                <span>${item.cotacao.title || item.cotacao.sigla} (${item.tempo == '90' ? '90m' : (item.tempo == 'pt' ? '1ºT' : '2ºT')})</span>
+                                <strong class="text-white">${maskReal(item.jogo.cotacoes[item.tempo][item.cotacao.campo])}</strong>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-outline-danger w-100 my-2" v-on:click="limpaAposta" style="border-radius:6px;font-size:11px;font-weight:700;">
+                            <i class="fa fa-trash mr-1"></i> Limpar Bilhete
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cupom-sheet__pay" v-if="aposta.jogos.length > 0">
+                    <div class="cupom-sheet__form">
+                        <div class="cupom-sheet__form-inner">
+                            {% if not user %}
+                            <label class="cupom-sheet__field">
+                                <span class="cupom-sheet__label">Nome do apostador</span>
+                                <input type="text" v-model="cliente" class="input-apostador form-control" placeholder="Apostador (opcional)">
+                            </label>
+                            {% endif %}
+                            <span class="cupom-sheet__label">Valor da aposta</span>
+                            <div class="cupom-sheet__stake">
+                                <span class="cupom-sheet__currency">R$</span>
+                                <input type="number" v-model="valorAposta" :min="apostaMinima" :max="apostaMaxima" step="1.00" class="form-control">
+                            </div>
+                            <div class="cupom-sheet__chips">
+                                <button type="button" class="cupom-sheet__chip" :class="{ 'is-on': valorAposta == 2 }" v-on:click="valorAposta = 2.00">R$ 2</button>
+                                <button type="button" class="cupom-sheet__chip" :class="{ 'is-on': valorAposta == 5 }" v-on:click="valorAposta = 5.00">R$ 5</button>
+                                <button type="button" class="cupom-sheet__chip" :class="{ 'is-on': valorAposta == 10 }" v-on:click="valorAposta = 10.00">R$ 10</button>
+                                <button type="button" class="cupom-sheet__chip" :class="{ 'is-on': valorAposta == 20 }" v-on:click="valorAposta = 20.00">R$ 20</button>
+                                <button type="button" class="cupom-sheet__chip" :class="{ 'is-on': valorAposta == 50 }" v-on:click="valorAposta = 50.00">R$ 50</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center px-3 py-1 text-xs font-weight-bold text-white-50">
+                        <span>COTAÇÃO TOTAL:</span>
+                        <span class="text-warning font-weight-bold text-sm">${valorCotacao}</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center px-3 pb-2 text-xs font-weight-bold text-white-50">
+                        <span>RETORNO POSSÍVEL:</span>
+                        <strong class="text-success font-weight-bold text-sm">R$ ${premio}</strong>
+                    </div>
+
+                    <div class="cupom-sheet__actions p-3 pt-0">
+                        <button type="button" class="lnv-btn lnv-btn--send w-100" :disabled="!apostaValida" v-on:click="finalizarAposta(); $('#modal-cupon').modal('hide');">
+                            <i class="fa fa-check mr-1"></i> {{ user ? 'Confirmar aposta' : 'Enviar aposta' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         MODAL DE MAIS COTAÇÕES (DETALHES DO JOGO)
+         ======================================================== -->
+    <div id="modal-cotacoes" class="modal fade" tabindex="-1" role="dialog" v-cloak>
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content" v-if="mJogo && mJogo.jogo" style="background:#2b2b2b;border:1px solid rgba(255,255,255,0.1);border-radius:12px;overflow:hidden;">
+                <div class="modal-header d-flex align-items-center justify-content-between p-3 border-bottom" style="border-color:rgba(255,255,255,0.08)!important;">
+                    <div>
+                        <div class="small text-white-50">${mJogo.jogo.campeonato ? mJogo.jogo.campeonato.title : ''}</div>
+                        <h5 class="modal-title font-weight-bold text-white mt-1 m-0">
+                            ${mJogo.jogo.casa} x ${mJogo.jogo.fora}
+                        </h5>
+                    </div>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body p-3" style="max-height:70vh;overflow-y:auto;">
+                    <!-- Abas de Tempo (90 min, 1º Tempo, 2º Tempo) -->
+                    <div class="d-flex gap-2 mb-3">
+                        <button type="button" class="btn btn-sm" :class="mJogo.tempo == '90' ? 'btn-success text-dark font-weight-bold' : 'btn-outline-secondary text-white'" v-on:click="mJogo.tempo = '90'">Tempo Regulamentar</button>
+                        <button type="button" class="btn btn-sm" :class="mJogo.tempo == 'pt' ? 'btn-success text-dark font-weight-bold' : 'btn-outline-secondary text-white'" v-on:click="mJogo.tempo = 'pt'">1º Tempo</button>
+                        <button type="button" class="btn btn-sm" :class="mJogo.tempo == 'st' ? 'btn-success text-dark font-weight-bold' : 'btn-outline-secondary text-white'" v-on:click="mJogo.tempo = 'st'">2º Tempo</button>
+                    </div>
+
+                    <!-- Grupos de Mercados -->
+                    <div v-for="(grupo, id) in grupos" :key="id" class="mb-3">
+                        <div style="font-size:12px;font-weight:700;color:var(--secondary-color, #00e054);margin-bottom:8px;text-transform:uppercase;">
+                            ${grupo}
+                        </div>
+                        <div class="row no-gutters">
+                            <div class="col-6 col-md-4 p-1" v-for="c in cotacoes" :key="c.id" v-if="c.grupo == id && mJogo.jogo.cotacoes && mJogo.jogo.cotacoes[mJogo.tempo] && mJogo.jogo.cotacoes[mJogo.tempo][c.campo] > 1">
+                                <button type="button" class="lnv-odd w-100" :class="{ 'is-selected': mJogo.jogo.apostaEm == mJogo.tempo + c.campo }" v-on:click="apostar(mJogo.jogo, mJogo.tempo, c)" style="height:auto;padding:8px 6px;">
+                                    <div class="small text-white-50">${c.sigla || c.title}</div>
+                                    <div class="font-weight-bold text-white">${maskReal(mJogo.jogo.cotacoes[mJogo.tempo][c.campo])}</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ block('modalShare', 'website/page/apostar.twig') }}
+
+{% endblock %}
+
+{% block right %}
+    <!-- ========================================================
+         COLUNA DIREITA: CUPOM DE APOSTAS DESKTOP (1:1 TOPSPORTSBET)
+         ======================================================== -->
+    <aside class="lnv-right right-ticket" v-cloak>
+        <div id="cupom-site" class="lnv-card lnv-slip">
+            <div class="lnv-slip__tabs">
+                <button type="button" class="is-active">
+                    Cupom
+                    <span class="lnv-badge">${aposta ? aposta.jogos.length : 0}</span>
+                </button>
+            </div>
+
+            <!-- Estado Vazio -->
+            <div v-if="!aposta || aposta.jogos.length == 0" class="lnv-slip__empty">
+                <i class="fa fa-circle-info"></i>
+                <div>
+                    <b>Nenhuma seleção</b>
+                    <p>Escolha os jogos e toque nas cotações para montar sua aposta.</p>
+                </div>
+            </div>
+
+            <!-- Lista de Seleções -->
+            <div v-else class="lnv-picks p-3 pb-0">
+                <div v-for="(item, index) in aposta.jogos" :key="index" class="lnv-pick">
+                    <div class="lnv-pick__head">
+                        <span class="lnv-pick__team">${item.jogo.casa} x ${item.jogo.fora}</span>
+                        <button type="button" class="lnv-pick__del" v-on:click="rmAposta(index)" title="Remover seleção">&times;</button>
+                    </div>
+                    <div class="lnv-pick__body">
+                        <span class="lnv-pick__mkt">${item.cotacao.title || item.cotacao.sigla} (${item.tempo == '90' ? '90m' : (item.tempo == 'pt' ? '1ºT' : '2ºT')})</span>
+                        <strong class="lnv-pick__odd">${maskReal(item.jogo.cotacoes[item.tempo][item.cotacao.campo])}</strong>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-sm btn-outline-danger w-100 my-2" v-on:click="limpaAposta" style="border-radius:6px;font-size:11px;font-weight:700;">
+                    <i class="fa fa-trash mr-1"></i> Limpar Cupom
+                </button>
+            </div>
+
+            <!-- Rodapé / Form de Aposta (Sempre visível 1:1 Topsportsbet) -->
+            <div class="lnv-slip__foot">
+                <div class="lnv-quick">
+                    <span class="lnv-label">Valores mais apostados</span>
+                    <div class="lnv-quick__chips">
+                        <button type="button" :class="{ 'is-on': valorAposta == 2 }" v-on:click="valorAposta = 2.00">R$ 2</button>
+                        <button type="button" :class="{ 'is-on': valorAposta == 5 }" v-on:click="valorAposta = 5.00">R$ 5</button>
+                        <button type="button" :class="{ 'is-on': valorAposta == 10 }" v-on:click="valorAposta = 10.00">R$ 10</button>
+                        <button type="button" :class="{ 'is-on': valorAposta == 20 }" v-on:click="valorAposta = 20.00">R$ 20</button>
+                        <button type="button" :class="{ 'is-on': valorAposta == 50 }" v-on:click="valorAposta = 50.00">R$ 50</button>
+                    </div>
+                </div>
+
+                {% if not user %}
+                <label class="lnv-field">
+                    <span class="lnv-label">Apostador</span>
+                    <input type="text" v-model="cliente" placeholder="Nome do apostador (opcional)">
+                </label>
+                {% endif %}
+
+                <label class="lnv-field">
+                    <span class="lnv-label">Valor da aposta</span>
+                    <span class="lnv-money">
+                        <span>R$</span>
+                        <input type="number" v-model="valorAposta" :min="apostaMinima" :max="apostaMaxima" step="1.00">
+                    </span>
+                </label>
+
+                <div v-if="aposta && aposta.jogos && aposta.jogos.length > 0 && aposta.jogos.length < minJogos" class="alert alert-warning py-1 px-2 mb-2 text-center small font-weight-bold">
+                    Mínimo de jogos: ${minJogos}
+                </div>
+
+                <div v-if="aposta && aposta.jogos && aposta.jogos.length > 0">
+                    <div class="d-flex justify-content-between align-items-center mb-1 text-xs font-weight-bold text-white-50">
+                        <span>COTAÇÃO TOTAL:</span>
+                        <span class="text-warning font-weight-bold text-sm">${valorCotacao}</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3 text-xs font-weight-bold text-white-50">
+                        <span>RETORNO POSSÍVEL:</span>
+                        <strong class="text-success font-weight-bold text-sm">R$ ${premio}</strong>
+                    </div>
+                </div>
+
+                <div class="lnv-slip__actions">
+                    <button type="button" class="lnv-btn lnv-btn--send btnSendBet w-100" :disabled="!apostaValida" v-on:click="finalizarAposta">
+                        <i class="fa fa-check mr-1"></i> {{ user ? 'Confirmar aposta' : 'Enviar aposta' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bloco de Contato / Rodapé da coluna lateral (1:1 Topsportsbet) -->
+        <div class="lnv-card lnv-contact">
+            <div class="lnv-card__band">Sua banca de apostas</div>
+            <div class="lnv-contact__body">
+                <p>{{ "now"|date("Y") }} © {{ dados.getBanca()|default('TOPSPORTSBET') }}. Todos os direitos reservados.</p>
+                {% if dados.getTelefone() %}
+                    <p class="m-0"><i class="fa fa-phone mr-1 text-success"></i> {{ dados.getTelefone() }}</p>
+                {% else %}
+                    <p class="m-0"><i class="fa fa-phone mr-1 text-success"></i> 81982593552</p>
+                {% endif %}
+                {% if dados.getEmail() %}
+                    <p class="m-0 mt-1"><i class="fa fa-envelope mr-1 text-warning"></i> {{ dados.getEmail() }}</p>
+                {% else %}
+                    <p class="m-0 mt-1"><i class="fa fa-envelope mr-1 text-warning"></i> topsportsbet@gmail.com</p>
+                {% endif %}
+                <div class="d-flex gap-3 mt-2 text-white-50">
+                    <a href="javascript:;" class="text-white-50"><i class="fa fa-instagram fa-lg"></i></a>
+                    <a href="javascript:;" class="text-white-50 ml-2"><i class="fa fa-facebook-square fa-lg"></i></a>
+                </div>
+            </div>
+        </div>
+    </aside>
+{% endblock %}
+
+{% block script %}
+    <script>
+        if (typeof String.prototype.toReal !== 'function') {
+            String.prototype.toReal = function() {
+                var n = parseFloat(this.toString().replace(/[^0-9.-]/g, ''));
+                return isNaN(n) ? '0,00' : n.toFixed(2).replace('.', ',');
+            };
+        }
+        if (typeof Number.prototype.toReal !== 'function') {
+            Number.prototype.toReal = function() {
+                return this.toFixed(2).replace('.', ',');
+            };
+        }
+    </script>
+    {{ block('script', 'website/page/apostar.twig') }}
+    <script>
+        if (window.app) {
+            window.app.filterJogo = function(jogo) {
+                if (!this.jogoAberto(jogo)) return false;
+                if (this.findData && this.findData !== 'todos' && this.findData !== '*' && jogo.data != this.findData) {
+                    return false;
+                }
+                if (this.search) {
+                    var exp = new RegExp(this.search, 'i');
+                    if (jogo.casa.search(exp) === -1 && jogo.fora.search(exp) === -1) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+
+            window.app.setData = function(data) {
+                $('.lnv-left').removeClass('mobile-nav');
+                this.findCampeonato = '*';
+                this.findPais = '*';
+                this.findData = data ? data : 'todos';
+            };
+
+            window.app.$watch('datas', function(val) {
+                if (val && val.length > 0) {
+                    var hasHoje = val.some(function(d) { return d.data === '{{ hoje }}'; });
+                    if (!hasHoje && this.findData === '{{ hoje }}') {
+                        this.findData = val[0].data;
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}

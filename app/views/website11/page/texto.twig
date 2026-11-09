@@ -1,0 +1,39 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - PÁGINAS DE TEXTO (termos, regras, FAQ)
+   Visual: v4 (.v4-texto) + tipografia da marca (.bet24-texto).
+
+   LOGICA PRESERVADA DO TEMPLATE BASE (website/page/texto.twig):
+     - pagina.getTitle()|raw  e  pagina.getTexto()|raw
+     (controller do tema: website11/indexController::indexAction para
+      /termos-uso, /regras e /perguntas-frequentes)
+   ===================================================================== #}
+
+{% block main %}
+
+    <article class="v4-texto bet24-texto contas-texto">
+
+        {% if pagina %}
+
+            {% if pagina.getTitle() %}
+                <h1>{{ pagina.getTitle()|raw }}</h1>
+            {% endif %}
+
+            {{ pagina.getTexto()|raw }}
+
+        {% else %}
+
+            <div class="empty-state">
+                <p class="empty-title">Conteúdo indisponível</p>
+                <p class="empty-text">Esta página não está disponível no momento.</p>
+                <div class="empty-actions">
+                    <a class="empty-button" href="{{ url('apostar') }}">Ir para os jogos</a>
+                </div>
+            </div>
+
+        {% endif %}
+
+    </article>
+
+{% endblock %}

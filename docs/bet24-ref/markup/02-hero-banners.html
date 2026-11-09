@@ -1,0 +1,29 @@
+<!--
+  TEMA BET24 (site11) - REFERENCIA v4
+  Arquivo: 02 - Hero: carrossel de banners, destaques e stories
+  Origem: pages/home.html 539-544 e 555-564 + blocks/destaques.html (renderizado pelo /router do v4)
+  Obs.: O carrossel de banners e server-side; os "destaques" chegam por AJAX (data-v4-home-bloco="destaques") e por isso estao no arquivo separado destaques.html.
+
+  Recorte REAL do site antigo bet24hs.site/v4 (classes e estrutura preservadas).
+  Os links /v4/..., as imagens do CDN e os ids/onclick do backend v4 sao apenas
+  referencia: no tema novo troque por rotas Twig e dados do sistema atual.
+-->
+                <!-- Stories (celular) -->
+                <div data-v4-home-bloco="stories" data-v4-stories="celular" aria-busy="true">
+                    <section class="stories stories-phone v4-sk-stories" aria-hidden="true">
+                        <div class="stories-track">
+                            <span class="story-card v4-sk"></span><span class="story-card v4-sk"></span><span class="story-card v4-sk"></span><span class="story-card v4-sk"></span>                        </div>
+                    </section>
+                </div>
+
+<!-- ===== Carrossel de banners (home.html 555-564) ===== -->
+                    <section class="v4-banners" data-v4-carrossel>
+        <div class="v4-banners-trilho" data-v4-trilho>
+                            <div class="v4-banner"><img src="https://cdn.mindsports.online/DB_NAME_L/dedc3e0691d73ded384f35954c03a70b.png" alt="Banner 1"></div>
+                            <div class="v4-banner"><img src="https://cdn.mindsports.online/DB_NAME_L/8d4d51eee61b78165d898dfec64a5f1a.png" alt="Banner 2"></div>
+                            <div class="v4-banner"><img src="https://cdn.mindsports.online/DB_NAME_L/b09e5de6869ea1655510db575e8b49fd.png" alt="Banner 3"></div>
+                            <div class="v4-banner"><img src="https://cdn.mindsports.online/DB_NAME_L/11f00a257e078246663dc0f02780d179.jpeg" alt="Banner 4"></div>
+                    </div>
+                    <button type="button" class="carousel-btn carousel-prev" data-v4-anterior aria-label="Anterior">&lsaquo;</button>
+            <button type="button" class="carousel-btn carousel-next" data-v4-proximo aria-label="Próximo">&rsaquo;</button>
+            </section>

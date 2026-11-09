@@ -1,0 +1,17 @@
+{% extends layout %}
+
+{% block main %}
+
+    <div class="container py-3">
+
+    <div class="page-title">
+        <h1 class="title">
+            <i class="fa fa-bars"></i> {{ pagina.getTitle()|raw }}
+        </h1>
+    </div>
+
+        {{ pagina.getTexto()|raw }}
+
+    </div>
+
+{% endblock %}

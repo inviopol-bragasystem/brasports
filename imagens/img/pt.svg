@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16" fill="none">
+  <g clip-path="url(#ptFlag)">
+    <!-- fundo vermelho (Portugal) -->
+    <path fill="#FF0000" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Z"/>
+    <!-- faixa verde à esquerda (~2/5) -->
+    <path fill="#006600" d="M0 8a8 8 0 0 1 6.4-7.84v15.68A8 8 0 0 1 0 8Z"/>
+    <!-- esfera armilar + escudo simplificados -->
+    <circle cx="6.4" cy="8" r="2.55" fill="#FFCC00"/>
+    <circle cx="6.4" cy="8" r="1.85" fill="#003399"/>
+    <circle cx="6.4" cy="8" r="1.15" fill="#FFCC00"/>
+    <rect x="5.55" y="7.05" width="1.7" height="1.9" rx="0.15" fill="#FF0000"/>
+    <path fill="#FFFFFF" d="M5.75 7.35h1.3v0.28H5.75zm0 0.45h1.3v0.28H5.75zm0 0.45h1.3v0.28H5.75z"/>
+  </g>
+  <defs>
+    <clipPath id="ptFlag">
+      <path fill="#fff" d="M0 0h16v16H0z"/>
+    </clipPath>
+  </defs>
+</svg>

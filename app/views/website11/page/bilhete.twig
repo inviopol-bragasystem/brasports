@@ -1,0 +1,165 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - CONSULTAR BILHETE
+   Visual: v4 (.account-input/.account-submit em cartoes .bet24-card,
+   detalhes em .contas-bilhete, selo .bet24-badge).
+
+   LOGICA PRESERVADA DO TEMPLATE BASE (website/page/bilhete.twig):
+     - form de consulta .admpage-form (input name=codigo, maxlength=12)
+     - <div class="admpage-container"></div> recebe o block `bilhete`
+       via POST /bilhete/list
+     - formula de validacao .form-bilhete (status 2) -> POST
+       /bilhete/validar via adminPage(insertAction:'validar')
+     - page.reloadSearch() apos validar
+
+   NOVIDADE: o campo e preenchido sozinho quando a URL traz ?codigo=XXX
+   (formulario "Importar jogo" da home) e a busca roda automaticamente.
+   ===================================================================== #}
+
+{% set codigoBusca = _get.codigo|default(_post.codigo|default('')) %}
+
+{% block main %}
+
+    <div class="bet24-page contas-bilhete-page">
+
+        <div class="bet24-page-head">
+            <div>
+                <h1 class="bet24-page-title">Consultar bilhete</h1>
+                <p class="bet24-page-sub">
+                    Digite o código do bilhete para ver os detalhes e a situação da aposta.
+                </p>
+            </div>
+            <a class="bet24-voltar" href="{{ url('apostar') }}">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 5l-7 7 7 7"/>
+                </svg>
+                Voltar aos jogos
+            </a>
+        </div>
+
+        <div class="bet24-card contas-consulta-card">
+            <form class="admpage-form contas-consulta" onsubmit="return false;" autocomplete="off">
+                <label class="account-field contas-consulta-campo">
+                    <span class="account-label">Código do bilhete</span>
+                    <input type="text" maxlength="12" name="codigo" class="account-input"
+                           value="{{ codigoBusca|e('html_attr') }}" placeholder="Ex.: A1B2C3D4E5"
+                           autocapitalize="characters" autocomplete="off" spellcheck="false"
+                           aria-label="Código do bilhete"/>
+                </label>
+                <button type="submit" class="account-submit contas-consulta-btn">
+                    <i class="fas fa-search" aria-hidden="true"></i> Pesquisar
+                </button>
+            </form>
+
+            <p class="account-hint contas-consulta-dica">
+                O código tem até 12 caracteres e está impresso no bilhete e na mensagem de
+                confirmação da aposta.
+            </p>
+        </div>
+
+        <div class="admpage-container"></div>
+
+    </div>
+
+{% endblock %}
+
+{# =====================================================================
+   DETALHES DO BILHETE (renderizado via AJAX em POST /bilhete/list)
+   ===================================================================== #}
+{% block bilhete %}
+
+    {% set badges = {'info': 'is-ganha', 'danger': 'is-perdida', 'warning': 'is-pendente', 'default': 'is-aberta'} %}
+
+    <article class="bet24-card contas-bilhete">
+
+        <header class="contas-bilhete-topo">
+            <div class="contas-bilhete-ident">
+                <span class="contas-bilhete-rotulo">Código do bilhete</span>
+                <strong class="contas-bilhete-codigo">{{ aposta.getCodigoBilhete() }}</strong>
+            </div>
+            <span class="bet24-badge {{ badges[aposta.getStatusClass()]|default('is-aberta') }}">
+                {{ aposta.getStatusTitle() }}
+            </span>
+        </header>
+
+        <dl class="contas-bilhete-dados">
+            <div class="contas-dado">
+                <dt>Data da aposta</dt>
+                <dd>{{ aposta.getData(true) }}</dd>
+            </div>
+            <div class="contas-dado">
+                <dt>Cliente</dt>
+                <dd>{{ aposta.getApostadorNome() }}</dd>
+            </div>
+            <div class="contas-dado">
+                <dt>Usuário / cambista</dt>
+                <dd>{{ user ? user.getNome() : '-' }}</dd>
+            </div>
+            <div class="contas-dado">
+                <dt>Valor da aposta</dt>
+                <dd>R$ {{ aposta.getValor(true) }}</dd>
+            </div>
+            <div class="contas-dado">
+                <dt>Número de jogos</dt>
+                <dd>{{ aposta.getJogos() }}</dd>
+            </div>
+            <div class="contas-dado">
+                <dt>Possível retorno</dt>
+                <dd class="contas-dado-destaque">R$ {{ aposta.getRetornoValido(true) }}</dd>
+            </div>
+            <div class="contas-dado">
+                <dt>Qtd. de acertos</dt>
+                <dd>{{ aposta.get('acertos') }}</dd>
+            </div>
+        </dl>
+
+        {% if aposta.getStatus() == 2 %}
+
+            <div class="contas-bilhete-acoes">
+                <p class="account-hint">
+                    Este bilhete ainda não foi pago. Ao validar a aposta o valor é debitado
+                    do seu saldo.
+                </p>
+                <form onsubmit="javascript:return false;" class="form-bilhete">
+                    <input type="hidden" name="token" value="{{ aposta.getToken() }}">
+                    <button class="account-submit contas-btn-validar">
+                        <i class="fas fa-check" aria-hidden="true"></i> Validar aposta
+                    </button>
+                </form>
+            </div>
+
+            <script>
+                $('.form-bilhete')
+                    .adminPage({
+                        autoSearch: false,
+                        controller: 'bilhete',
+                        insertAction: 'validar',
+                        alertSuccess: true,
+                    })
+                    .on("success", function (event, e) {
+                        if (e.result == 1)
+                            page.reloadSearch();
+                    });
+            </script>
+
+        {% endif %}
+
+    </article>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        var page = $
+            .adminPage({
+                formSearch: '.admpage-form',
+                container: '.admpage-container',
+                autoSearch: {{ codigoBusca ? 'true' : 'false' }},
+                searchValues: {codigo: {{ codigoBusca|json_encode|raw }}}
+            });
+    </script>
+
+{% endblock %}

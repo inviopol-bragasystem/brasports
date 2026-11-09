@@ -1,0 +1,126 @@
+<!-- CABEÇALHO MOBILE (Visível apenas em telas menores que 992px) -->
+<header class="bonanza-mobile-header d-flex d-lg-none">
+    <!-- Barra 1: Título Vermelho Centralizado -->
+    <div class="top-brand-bar">
+        <a href="{{ url() }}" style="color: #ffffff; text-decoration: none;">
+            BONANZA <span>SPORT</span>
+        </a>
+    </div>
+
+    <!-- Barra 2: Ações / Botões (Menu Hambúrguer, App, Bandeira, Registrar, Entrar) -->
+    <div class="sub-actions-bar">
+        <button type="button" class="btn-toggle-sidebar mr-auto" onclick="$('html').toggleClass('show-menu');" style="background: transparent; border: none; color: #fff; font-size: 16px; padding: 4px 8px;">
+            <i class="fa fa-bars"></i>
+        </button>
+        {% if dados.getExibirApp() %}
+            <a href="{{ dados.getApp()|default(url('app')) }}" target="_blank" class="btn-app-icon" title="Instalar App Android">
+                <i class="fa fa-android"></i>
+            </a>
+        {% endif %}
+        <div class="flag-icon" title="Brasil">
+            <img src="https://flagcdn.com/w40/br.png" alt="BR"/>
+        </div>
+        {% if user %}
+            <div class="dropdown d-inline-block">
+                <button class="btn btn-entrar dropdown-toggle py-1 px-2" type="button" id="userMenuBtnMobile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size: 11px; background: #2e7d32; border-color: #2e7d32;">
+                    <i class="fa fa-user-circle mr-1"></i> {{ user.getNome()|slice(0, 10) }} <span class="badge badge-warning text-dark ml-1">R$ {{ user.getCredito(true) }}</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right shadow-lg border-0" aria-labelledby="userMenuBtnMobile" style="border-radius: 6px; min-width: 190px; font-size: 12px; z-index: 1050;">
+                    <div class="px-3 py-2 border-bottom bg-light">
+                        <div class="font-weight-bold text-dark text-truncate">{{ user.getNome() }}</div>
+                        <small class="text-success font-weight-bold">Saldo: R$ {{ user.getCredito(true) }}</small>
+                    </div>
+                    <a class="dropdown-item py-2" href="{{ url('financeiro/deposito') }}"><i class="fa fa-arrow-down mr-2 text-success"></i> Depositar</a>
+                    <a class="dropdown-item py-2" href="{{ url('financeiro/saque') }}"><i class="fa fa-arrow-up mr-2 text-danger"></i> Solicitar Saque</a>
+                    <a class="dropdown-item py-2" href="{{ url('financeiro/extrato') }}"><i class="fa fa-history mr-2 text-info"></i> Extrato</a>
+                    <a class="dropdown-item py-2" href="{{ url('apostas') }}"><i class="fa fa-ticket mr-2 text-warning"></i> Minhas Apostas</a>
+                    <a class="dropdown-item py-2" href="{{ url('perfil') }}"><i class="fa fa-user-circle mr-2 text-primary"></i> Meu Perfil</a>
+                    <div class="dropdown-divider my-1"></div>
+                    <a class="dropdown-item py-2 text-danger font-weight-bold" href="{{ url('logout') }}"><i class="fa fa-sign-out mr-2"></i> Sair</a>
+                </div>
+            </div>
+        {% else %}
+            {% if dados.getExibirRegistro() %}
+                <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="btn-registrar">
+                    Registrar-se
+                </a>
+            {% endif %}
+            {% if dados.getExibirLogin() %}
+                <a href="#modal-login" data-toggle="modal" class="btn-entrar">
+                    <i class="fa fa-sign-in"></i> Entrar
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Barra 3: Bilhete Rápido Mobile -->
+    {% if pageAposta %}
+    <div class="quick-ticket-bar" v-if="aposta" v-cloak>
+        <input type="text" class="input-val" v-model="valorAposta" placeholder="0,00"/>
+        <div class="retorno-text">
+            R$ ${premio}
+        </div>
+        <button type="button" class="btn-finalizar-quick" onclick="$('html, body').animate({scrollTop: $('.bonanza-right-col').offset().top - 60}, 400); $('.bilhete-card-bonanza').addClass('highlight-pulse');">
+            ( ${aposta.jogos.length} ) Finalizar
+        </button>
+    </div>
+    {% endif %}
+</header>
+
+<!-- CABEÇALHO DESKTOP ADMINLTE (Visível a partir de 992px) -->
+<header class="bonanza-main-header d-none d-lg-flex">
+    <!-- Bloco da Logo (230px, alinhado com a sidebar) -->
+    <a href="{{ url() }}" class="header-logo-box">
+        BONANZA <span>SPORT</span>
+    </a>
+
+    <!-- Navbar Direita -->
+    <div class="header-navbar">
+        <button type="button" class="btn-toggle-sidebar" onclick="$('body').toggleClass('sidebar-collapse');" title="Menu Lateral">
+            <i class="fa fa-bars"></i>
+        </button>
+
+        <div class="header-actions">
+            {% if dados.getExibirApp() %}
+                <a href="{{ dados.getApp()|default(url('app')) }}" target="_blank" class="btn-app-icon" title="Instalar App Android">
+                    <i class="fa fa-android"></i>
+                </a>
+            {% endif %}
+            <div class="flag-icon" title="Brasil">
+                <img src="https://flagcdn.com/w40/br.png" alt="BR"/>
+            </div>
+
+            {% if user %}
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-entrar dropdown-toggle" type="button" id="userMenuBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background: #2e7d32; border-color: #2e7d32;">
+                        <i class="fa fa-user-circle mr-1"></i> {{ user.getNome() }} | <span class="badge badge-warning text-dark ml-1">R$ {{ user.getCredito(true) }}</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right shadow-lg border-0" aria-labelledby="userMenuBtn" style="border-radius: 6px; min-width: 210px; padding: 6px 0; font-size: 13px;">
+                        <div class="px-3 py-2 border-bottom bg-light">
+                            <div class="font-weight-bold text-dark text-truncate">{{ user.getNome() }}</div>
+                            <small class="text-success font-weight-bold">Saldo Disponível: R$ {{ user.getCredito(true) }}</small>
+                        </div>
+                        <a class="dropdown-item py-2" href="{{ url('financeiro/deposito') }}"><i class="fa fa-arrow-down mr-2 text-success"></i> Depositar</a>
+                        <a class="dropdown-item py-2" href="{{ url('financeiro/saque') }}"><i class="fa fa-arrow-up mr-2 text-danger"></i> Solicitar Saque</a>
+                        <a class="dropdown-item py-2" href="{{ url('financeiro/extrato') }}"><i class="fa fa-history mr-2 text-info"></i> Extrato Financeiro</a>
+                        <a class="dropdown-item py-2" href="{{ url('apostas') }}"><i class="fa fa-ticket mr-2 text-warning"></i> Minhas Apostas</a>
+                        <a class="dropdown-item py-2" href="{{ url('perfil') }}"><i class="fa fa-user-circle mr-2 text-primary"></i> Editar Perfil</a>
+                        <div class="dropdown-divider my-1"></div>
+                        <a class="dropdown-item py-2 text-danger font-weight-bold" href="{{ url('logout') }}"><i class="fa fa-sign-out mr-2"></i> Sair</a>
+                    </div>
+                </div>
+            {% else %}
+                {% if dados.getExibirRegistro() %}
+                    <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="btn-registrar">
+                        Registrar-se
+                    </a>
+                {% endif %}
+                {% if dados.getExibirLogin() %}
+                    <a href="#modal-login" data-toggle="modal" class="btn-entrar">
+                        <i class="fa fa-sign-in"></i> Entrar
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</header>

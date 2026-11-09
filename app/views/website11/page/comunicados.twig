@@ -1,0 +1,72 @@
+{% extends layout %}
+
+{# =====================================================================
+   TEMA BET24 (site11) - COMUNICADOS
+   Visual: v4 (cartoes .bet24-card, estado vazio .empty-state).
+
+   LOGICA PRESERVADA DO TEMPLATE BASE (website/page/comunicados.twig):
+     - traz os comunicados pela funcao Twig `comunicados()` (a variavel
+       `comunicados` tambem e enviada pelo controller)
+     - getTitle(), getData(true) e getMensagem()|raw
+   ===================================================================== #}
+
+{% set listaComunicados = comunicados is defined ? comunicados : comunicados() %}
+
+{% block main %}
+
+    <div class="bet24-page contas-comunicados-page">
+
+        <div class="bet24-page-head">
+            <div>
+                <h1 class="bet24-page-title">Comunicados</h1>
+                <p class="bet24-page-sub">Avisos, novidades e informações importantes da plataforma.</p>
+            </div>
+            <a class="bet24-voltar" href="{{ url('apostar') }}">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 5l-7 7 7 7"/>
+                </svg>
+                Voltar aos jogos
+            </a>
+        </div>
+
+        {% if listaComunicados %}
+
+            <div class="contas-comunicados">
+                {% for v in listaComunicados %}
+                    <article class="bet24-card contas-comunicado">
+                        <header class="contas-comunicado-topo">
+                            <h2 class="contas-comunicado-titulo">
+                                <i class="fas fa-bullhorn" aria-hidden="true"></i> {{ v.getTitle() }}
+                            </h2>
+                            <time class="contas-comunicado-data">{{ v.getData(true) }}</time>
+                        </header>
+                        <div class="contas-comunicado-texto">{{ v.getMensagem()|raw }}</div>
+                    </article>
+                {% endfor %}
+            </div>
+
+        {% else %}
+
+            <div class="bet24-card">
+                <div class="empty-state">
+                    <span class="empty-icon" aria-hidden="true">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 5h16v11H8l-4 4z"/>
+                            <path d="M8 9h8M8 12h5"/>
+                        </svg>
+                    </span>
+                    <p class="empty-title">Nenhum comunicado no momento</p>
+                    <p class="empty-text">Quando houver novidades ou avisos, eles aparecem aqui.</p>
+                    <div class="empty-actions">
+                        <a class="empty-button" href="{{ url('apostar') }}">Ir para os jogos</a>
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+{% endblock %}

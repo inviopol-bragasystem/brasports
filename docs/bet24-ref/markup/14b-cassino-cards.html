@@ -1,0 +1,95 @@
+<!--
+  TEMA BET24 (site11) - REFERENCIA v4
+  Arquivo: 14b - Cards e secoes do cassino
+  Origem: templates JS em assets/js/v4-cassino.js (funcoes card(), secao(), seta(), menu lateral)
+          + markup real de pages/cassino.html.
+  Obs.: o cassino nao usa a coluna de bilhete; usa layout de 2 colunas
+        (.cas-layout: 250px | 1fr, gap 32px, max-width 1560px).
+-->
+
+<!-- =====================================================================
+     1) Card de jogo (.cas-card)
+     ===================================================================== -->
+<a class="cas-card" href="/v4/cassino/jogo/12345" data-v4-cas-jogo="12345" title="Fortune Tiger · PG Soft">
+    <span class="cas-card-pic">
+        <img class="cas-card-img" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"
+             src="https://cdn.example/provedor/fortune-tiger.jpg" data-v4-nome="Fortune Tiger">
+    </span>
+    <span class="cas-card-name">Fortune Tiger</span>
+</a>
+
+<!-- Variante sem imagem: mostra o nome centralizado -->
+<a class="cas-card" href="/v4/cassino/jogo/12346" data-v4-cas-jogo="12346" title="Jogo sem capa">
+    <span class="cas-card-pic">
+        <span class="cas-card-blank" aria-hidden="true">Jogo sem capa</span>
+    </span>
+    <span class="cas-card-name">Jogo sem capa</span>
+</a>
+
+<!-- =====================================================================
+     2) Secao com grade de cards (.cas-section)
+     ===================================================================== -->
+<section class="cas-section" aria-label="Populares">
+    <div class="cas-section-head">
+        <h2 class="cas-section-title">Populares</h2>
+        <a class="cas-count-link" href="/v4/cassino/categoria/7" data-v4-cas-nav="categoria" data-id="7" aria-label="Ver os 128 jogos de Populares">
+            <span class="cas-count">128
+                <svg width="7" height="12" viewBox="0 0 7 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1l5 5-5 5"></path></svg>
+            </span>
+        </a>
+    </div>
+    <div class="cas-grid cas-grid-rows cas-grid-rows-2">
+        <a class="cas-card" href="/v4/cassino/jogo/12345" data-v4-cas-jogo="12345">
+            <span class="cas-card-pic"><img class="cas-card-img" alt="" loading="lazy" src="capa.jpg" data-v4-nome="Fortune Tiger"></span>
+            <span class="cas-card-name">Fortune Tiger</span>
+        </a>
+        <a class="cas-card" href="/v4/cassino/jogo/12347" data-v4-cas-jogo="12347">
+            <span class="cas-card-pic"><img class="cas-card-img" alt="" loading="lazy" src="capa2.jpg" data-v4-nome="Fortune Ox"></span>
+            <span class="cas-card-name">Fortune Ox</span>
+        </a>
+        <!-- ... demais cards (o grid mostra 12 por secao: cas-grid-rows-2 esconde do 13o em diante) -->
+    </div>
+</section>
+
+<!-- =====================================================================
+     3) Menu lateral do cassino (.cas-side-link)
+     ===================================================================== -->
+<a class="cas-side-link" href="/v4/cassino/categoria/7" data-v4-cas-nav="categoria" data-id="7">
+    <span class="cas-side-icon">
+        <img src="https://cdn.example/cat/populares.png" alt="" loading="lazy">
+    </span>
+    <span class="cas-side-name">Populares</span>
+    <span class="cas-side-count">128</span>
+</a>
+
+<!-- Item ativo: ganha .cas-side-active.active -->
+<a class="cas-side-link cas-side-active active" href="/v4/cassino" data-v4-cas-nav="inicio">
+    <span class="cas-side-icon">
+        <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M6.5 10h2.6l-1.6 4M10.7 10h2.6l-1.6 4M14.9 10h2.6l-1.6 4"/></svg>
+    </span>
+    <span class="cas-side-name">Cassino</span>
+</a>
+
+<!-- Botao "ver mais categorias" (categorias extras ficam em .v4-cas-extra e so aparecem
+     quando a lista tem .v4-cas-aberta) -->
+<button type="button" class="cas-side-link cas-side-more" id="v4CasMais" aria-expanded="false">
+    <span class="cas-side-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </span>
+    <span class="cas-side-name">Ver mais</span>
+</button>
+
+<!-- =====================================================================
+     4) Medidas do cassino (css_v4_app.css / css_v4_v4.css)
+     =====================================================================
+     .cas-layout            grid 250px | 1fr, gap 32px, max-width 1560px
+     .cas-side              sticky top 76px, max-height calc(100dvh - 92px)
+     .cas-side-link         min-height 48px, radius 999px, 15px
+     .cas-side-head-link    min-height 48px, 16px/700
+     .cas-search            max-width 420px, height 42px, radius 999px
+     .cas-grid              6 colunas (gap 22px 17px)
+     .cas-grid-wide         5 colunas (gap 26px 16px)  -> <=1500px 5, <=1240px 4, <=900px 3
+     .cas-card-pic          aspect-ratio 16/9 (v4.css troca para 6/7 = capa em pe)
+     .cas-section-title     21px/700, letter-spacing -.6px, fonte Bricolage Grotesque
+     .cas-count             height 34px, radius 999px, fundo --surface-2
+-->

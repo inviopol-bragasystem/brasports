@@ -1,0 +1,156 @@
+{% extends layout %}
+
+{% block list %}
+
+    <div class="container-fluid px-0 pb-3">
+        {% if busca.getCount() %}
+            <div class="sb-card">
+                <div class="card-body p-0">
+                    <div class="table-responsive m-0">
+                        <table class="table sb-table m-0">
+                            <thead>
+                            <tr>
+                                <th width="70" class="text-center">#</th>
+                                <th width="120" class="text-center">Data</th>
+                                <th width="110" class="text-center">Tipo</th>
+                                <th>Cliente/CPF</th>
+                                <th width="140" class="text-center">Valor</th>
+                                <th width="160" class="text-center">Situação</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for v in busca.getRegistros() %}
+                                <tr class="sb-match-row">
+                                    <td class="text-center text-warning font-weight-bold">{{ v.getId() }}</td>
+                                    <td class="text-center text-white-50">{{ v.getData(true) }}</td>
+                                    <td class="text-center">
+                                        {% if v.getTipo() == 'pixup' or v.getTipo() == 'veopag' %}
+                                            <span class="badge badge-success px-2 py-1"><i class="fa fa-qrcode mr-1"></i> PIX</span>
+                                        {% else %}
+                                            <span class="badge badge-secondary px-2 py-1"><i class="fa fa-upload mr-1"></i> Manual</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="font-weight-bold text-white">{{ v.voUser().getNome }} ({{ v.voUser().getLogin() }})</div>
+                                        <small class="text-white-50">{{ v.voUser().getCpf() }}</small>
+                                    </td>
+                                    <td class="text-center font-weight-bold text-success">R$ {{ v.getValor(true) }}</td>
+                                    <td class="text-center">
+                                        {% if v.getStatus() == 2 %}
+                                            <span class="badge badge-success p-2"><i class="fa fa-check-circle"></i> {{ v.getStatusTitle() }}</span>
+                                        {% elseif v.getStatus() == 1 %}
+                                            <span class="badge badge-warning text-dark p-2"><i class="fa fa-clock-o"></i> {{ v.getStatusTitle() }}</span>
+                                        {% else %}
+                                            <span class="badge badge-danger p-2"><i class="fa fa-times-circle"></i> {{ v.getStatusTitle() }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-3 bg-dark border-top" style="border-color: var(--sb-border) !important;">{{ busca }}</div>
+                </div>
+            </div>
+        {% elseif message %}
+            <div class="alert alert-warning m-0">
+                <i class="fa fa-warning"></i> {{ message }}
+            </div>
+        {% else %}
+            <div class="alert alert-warning m-0">
+                <i class="fa fa-warning"></i> Nenhum registro encontrado
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block main %}
+
+    <!-- Modal Novo Depósito Manual -->
+    <form class="modal fade admpage-form" enctype="multipart/form-data">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bold"><i class="fa fa-arrow-down text-danger mr-2"></i> Solicitar Depósito com Comprovante</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="form-group mb-3">
+                        <label class="text-white-50 small font-weight-bold">VALOR DO DEPÓSITO (R$)</label>
+                        <input type="text" name="valor" class="form-control mask-valor form-control-lg bg-dark border-secondary text-warning font-weight-bold" required placeholder="0,00"/>
+                        {% if depositoMinimo > 0 %}
+                            <small class="text-white-50 mt-1 d-block">Valor mínimo: R$ {{ depositoMinimo|number_format(2, ',', '.') }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="form-group mb-0">
+                        <label class="text-white-50 small font-weight-bold">COMPROVANTE DE PAGAMENTO</label>
+                        {{ inputFile('<i class="fa fa-upload"></i> Comprovante', 'upfile', 'pdf,jpg,jpeg,png') }}
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between p-3">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger font-weight-bold px-4 py-2" style="width: auto;">
+                        <i class="fa fa-send"></i> Enviar Solicitação
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Modal PIX Automático PixUp -->
+    {% include 'website/inc/modal-deposito-pix.twig' %}
+
+    <div class="container-fluid px-lg-4 px-3 py-4">
+        <div class="sb-page-card">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom" style="border-color: var(--sb-border) !important; gap: 10px;">
+                <h3 class="sb-page-title mb-0 border-0 p-0"><i class="fa fa-arrow-down text-danger"></i> Meus Depósitos</h3>
+                <div class="d-flex flex-wrap" style="gap: 10px;">
+                    {% if modoDeposito == 'todos' or modoDeposito == 'pix' %}
+                        <button class="btn btn-success font-weight-bold px-3 py-2" style="font-size: 13px;" onclick="$('#modal-deposito-pix').modal('show'); resetPix();">
+                            <i class="fa fa-bolt mr-1"></i> Depósito via PIX {{ gatewayPix|capitalize }} (Instantâneo)
+                        </button>
+                    {% endif %}
+
+                    {% if modoDeposito == 'todos' or modoDeposito == 'manual' %}
+                        <button class="btn btn-danger font-weight-bold px-3 py-2" style="font-size: 13px;" data-toggle="modal" data-target=".admpage-form" onclick="$('.admpage-form').setValues({});">
+                            <i class="fa fa-upload mr-1"></i> Depósito com Comprovante
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <form class="admpage-form-search mb-4" onsubmit="javascript:return false;">
+                <div class="row align-items-end">
+                    <div class="form-group col-md-5 col-12 mb-3 mb-md-0">
+                        <label class="text-white-50 small font-weight-bold">DE:</label>
+                        <input type="date" name="dataInicial" class="form-control bg-dark border-secondary text-white"/>
+                    </div>
+                    <div class="form-group col-md-5 col-12 mb-3 mb-md-0">
+                        <label class="text-white-50 small font-weight-bold">ATÉ:</label>
+                        <input type="date" name="dataFinal" class="form-control bg-dark border-secondary text-white"/>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <button class="btn btn-danger btn-block font-weight-bold">
+                            <i class="fa fa-search"></i> Filtrar
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="admpage-container"></div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(".admpage-form")
+            .adminPage({
+                formSearch: '.admpage-form-search',
+                container: '.admpage-container',
+                autoSearch: true,
+            });
+    </script>
+{% endblock %}

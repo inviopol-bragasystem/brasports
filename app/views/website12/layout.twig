@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    {{ seo_header() }}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#d29d00"/>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="css/bootstrap4.css"/>
+    <link rel="stylesheet" href="css/loading.css"/>
+    <link rel="stylesheet" href="css/sweetalert2.min.css"/>
+    <link rel="stylesheet" href="css/goldesporte.css?v=2.1.0"/>
+
+    {% block head %}{% endblock %}
+
+    {{ dados.getHtmlHead()|raw }}
+    {% include 'website/inc/personalizacao-css.twig' %}
+</head>
+<body>
+
+{% set hoje = 'now'|date('Y-m-d') %}
+{% set amanha = '+1day'|date('Y-m-d') %}
+{% set anoAtual = 'now'|date('Y') %}
+
+{# Logo do tema #}
+{% set logoUrl = 'cdn/goldesporte/logo.png' %}
+{% if dados.imgCapa(true, 'logo').getSource() %}
+    {% set logoUrl = dados.imgCapa(true, 'logo').getSource(true) %}
+{% endif %}
+
+{% set redes = config('redes') %}
+{% set userLogged = user() %}
+
+<div id="website">
+
+    <!-- ========================================================
+         NAVBAR MOBILE FIXA (50px) - Referência Oficial GoldEsporte
+         ======================================================== -->
+    <header class="mobile-navbar mobile-only" v-pre>
+        <a class="mobile-brand" href="{{ url() }}">
+            {% if logoUrl %}
+                <img src="{{ logoUrl }}" alt="{{ dados.getBanca()|default('GoldEsporte') }}">
+            {% else %}
+                <b>{{ dados.getBanca()|default('GOLDESPORTEBET') }}</b>
+            {% endif %}
+        </a>
+
+        <div class="nav-actions">
+            {% if not userLogged %}
+                <a href="javascript:;" class="btn-entrar-mobile" onclick="$('#modal-login').modal('show');">
+                    Entrar
+                </a>
+            {% else %}
+                <a href="{{ url('perfil') }}" class="btn-entrar-mobile" style="background:#222;color:#d29d00 !important;">
+                    <i class="fa fa-user-circle"></i> R$ {{ userLogged.getCredito(true) }}
+                </a>
+            {% endif %}
+
+            <button type="button" class="btn-hamburger-mobile" onclick="$('.mobile-drawer-menu').slideToggle(200);" aria-label="Menu">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MENU GAVETA MOBILE (Dropdown quando clica no hamburger) -->
+    <div class="mobile-drawer-menu mobile-only" style="display: none;" v-pre>
+        <a href="{{ url('apostar') }}"><i class="fa fa-futbol-o"></i> Apostar</a>
+        <a href="{{ url('apostar') }}"><i class="fa fa-signal" style="color:#d29d00;"></i> Ao Vivo</a>
+        <a href="{{ url('bilhete') }}"><i class="fa fa-search"></i> Consultar Bilhete</a>
+        <a href="javascript:;" onclick="var cod = prompt('Digite o código do bilhete:'); if(cod) { location.href='{{ url('bilhete') }}?codigo='+encodeURIComponent(cod); }">
+            <i class="fa fa-ticket"></i> Bilhete Virtual
+        </a>
+        {% if dados.getExibirCassino() %}
+            <a href="{{ url('cassino') }}"><i class="fa fa-gamepad"></i> Cassino</a>
+        {% endif %}
+        {% if dados.getExibirCotacoes() %}
+            <a href="{{ url('cotacoes') }}"><i class="fa fa-line-chart"></i> Cotações</a>
+        {% endif %}
+        {% if dados.getExibirRegras() %}
+            <a href="{{ url('regras') }}"><i class="fa fa-book"></i> Regulamento</a>
+        {% endif %}
+        <a href="{{ url('termos-uso') }}"><i class="fa fa-file-text-o"></i> Termos de Uso</a>
+        {% if dados.getExibirApp() %}
+            <a href="{{ dados.getApp()|default(url('app')) }}" target="_blank"><i class="fa fa-android text-success"></i> Baixar Aplicativo</a>
+        {% endif %}
+
+        {% if not userLogged %}
+            <a href="javascript:;" onclick="$('#modal-login').modal('show'); $('.mobile-drawer-menu').hide();">
+                <i class="fa fa-sign-in"></i> Entrar na Conta
+            </a>
+            {% if dados.getExibirRegistro() %}
+                <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}">
+                    <i class="fa fa-user-plus" style="color:#d29d00;"></i> Criar Conta (Cadastre-se)
+                </a>
+            {% endif %}
+        {% else %}
+            <a href="{{ url('financeiro/deposito') }}"><i class="fa fa-plus-circle text-success"></i> Depositar</a>
+            <a href="{{ url('apostas') }}"><i class="fa fa-list"></i> Minhas Apostas</a>
+            <a href="{{ url('perfil') }}"><i class="fa fa-user-circle"></i> Meu Perfil</a>
+            <a href="{{ url('sair') }}"><i class="fa fa-sign-out text-danger"></i> Sair</a>
+        {% endif %}
+    </div>
+
+    <!-- ========================================================
+         SUB-HEADER FIXO MOBILE: QUICK BET BAR (46px)
+         ======================================================== -->
+    {% if pageAposta %}
+    <div id="subPrincipal" class="mobile-only" v-cloak>
+        <div class="quick-input-wrap">
+            <input id="valorApostadoMob" type="number" step="any" v-model="valorAposta" placeholder="R$ 0,00" />
+        </div>
+
+        <div class="container-premium">
+            <span class="label-premium">Possível retorno</span>
+            <span class="value-premium">R$ ${premio}</span>
+        </div>
+
+        <button id="btn-finalizar" type="button" onclick="$('#finalizarModal').modal('show');">
+            Finalizar <span class="badge-count">${aposta.jogos.length}</span>
+        </button>
+    </div>
+    {% endif %}
+
+    <!-- ========================================================
+         CABEÇALHO DESKTOP COM FUNDO ESPORTIVO E LOGO (1160px)
+         ======================================================== -->
+    <div class="gold-header-nav desktop-only" v-pre>
+        
+        <!-- BARRA SUPERIOR (#topBar) -->
+        <nav id="topBar">
+            <div class="left-col">
+                <span style="color:#d29d00;font-weight:700;"><i class="fa fa-shield"></i> {{ dados.getBanca()|default('GOLDESPORTEBET') }}</span>
+            </div>
+            <div class="right-col">
+                {% if dados.getExibirCassino() %}
+                    <a href="{{ url('cassino') }}" class="item-col">
+                        <i class="fa fa-gamepad"></i> Cassino
+                    </a>
+                {% endif %}
+                {% if dados.getExibirCotacoes() %}
+                    <a href="{{ url('cotacoes') }}" class="item-col">
+                        <i class="fa fa-line-chart"></i> Cotações
+                    </a>
+                {% endif %}
+                {% if dados.getExibirRegras() %}
+                    <a href="{{ url('regras') }}" class="item-col">
+                        <i class="fa fa-book"></i> Regras
+                    </a>
+                {% endif %}
+                <a href="{{ url('termos-uso') }}" class="item-col">
+                    <i class="fa fa-file-text-o"></i> Termos de Uso
+                </a>
+                {% if dados.getExibirApp() %}
+                    <a href="{{ dados.getApp()|default(url('app')) }}" target="_blank" class="item-col">
+                        <i class="fa fa-android text-success"></i> Baixar App
+                    </a>
+                {% endif %}
+                <div class="clear"></div>
+            </div>
+            <div class="clear"></div>
+        </nav>
+
+        <!-- ÁREA DO LOGO E FORMULÁRIO DE LOGIN -->
+        <div class="gold-header-content">
+            <a class="navbar-brand" href="{{ url() }}">
+                <img src="{{ logoUrl }}" alt="{{ dados.getBanca()|default('GoldEsporte') }}">
+            </a>
+
+            <div id="main-menu">
+                {% if not userLogged %}
+                    <form id="form-login-top" class="gold-top-login" method="post" action="{{ url('entrar/login/insert') }}">
+                        <div class="inner-addon left-addon">
+                            <i class="fa fa-user"></i>
+                            <input class="form-control" type="text" name="username" placeholder="Usuário" aria-label="Usuário" required />
+                        </div>
+
+                        <div class="inner-addon left-addon">
+                            <i class="fa fa-lock"></i>
+                            <input class="form-control" type="password" name="password" placeholder="Senha" aria-label="Senha" required />
+                        </div>
+
+                        <button class="botao" type="submit" name="login">
+                            Entrar <i class="fa fa-chevron-right"></i>
+                        </button>
+
+                        {% if dados.getExibirRegistro() %}
+                            <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="botaoP">
+                                <i class="fa fa-user-plus mr-1"></i> Cadastre-se
+                            </a>
+                        {% endif %}
+                    </form>
+                {% else %}
+                    <!-- Painel do Usuário Logado -->
+                    <div class="gold-top-user">
+                        <div>
+                            <span style="color:#aaa;font-size:11px;display:block;">Olá, {{ userLogged.getNome()|default(userLogged.getLogin()) }}</span>
+                            <span class="user-saldo">R$ {{ userLogged.getCredito(true) }}</span>
+                        </div>
+                        <div style="display:flex;gap:6px;">
+                            <a href="{{ url('financeiro/deposito') }}" class="btn btn-sm btn-success" style="font-weight:700;">
+                                <i class="fa fa-plus-circle"></i> Depositar
+                            </a>
+                            <a href="{{ url('apostas') }}" class="btn btn-sm btn-dark" style="border:1px solid #444;">
+                                <i class="fa fa-list"></i> Minhas Apostas
+                            </a>
+                            <a href="{{ url('perfil') }}" class="btn btn-sm btn-dark" style="border:1px solid #444;">
+                                <i class="fa fa-user-circle"></i> Perfil
+                            </a>
+                            <a href="{{ url('sair') }}" class="btn btn-sm btn-danger">
+                                <i class="fa fa-sign-out"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="clear"></div>
+        </div>
+
+    </div>
+
+    <!-- SUB-MENU DOURADO DESKTOP (1160px) -->
+    <div class="sub-menu desktop-only" v-pre>
+        <select onchange="if(this.value){location.href=this.value;}" class="left form-control">
+            <option value="{{ url('apostar') }}">Todos os Esportes</option>
+            <option value="{{ url('apostar') }}" selected>Futebol</option>
+            <option value="{{ url('apostar') }}">Basquete</option>
+            <option value="{{ url('apostar') }}">MMA / UFC</option>
+            <option value="{{ url('apostar') }}">Vôlei</option>
+            <option value="{{ url('apostar') }}">Tênis</option>
+            <option value="{{ url('apostar') }}">Futebol Americano</option>
+        </select>
+
+        <a class="left" href="{{ url('bilhete') }}">
+            <i class="fa fa-search"></i> Consultar Bilhete
+        </a>
+
+        <a class="left" href="{{ url('apostar') }}">
+            <span class="timeAnime"><i class="fa fa-signal"></i></span> Ao Vivo
+        </a>
+
+        <a class="left" href="javascript:;" onclick="var cod = prompt('Digite o código do bilhete para acompanhar:'); if(cod) { location.href='{{ url('bilhete') }}?codigo='+encodeURIComponent(cod); }">
+            <i class="fa fa-ticket"></i> Bilhete Virtual
+        </a>
+
+        {% if dados.getExibirCassino() %}
+            <a class="left" href="{{ url('cassino') }}">
+                <i class="fa fa-gamepad"></i> Cassino
+            </a>
+        {% endif %}
+        <div class="clear"></div>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main">
+        {% block main %}{% endblock %}
+    </main>
+
+    <!-- RODAPÉ CLÁSSICO DOURADO DESKTOP (1160px) -->
+    <footer class="gold-footer desktop-only" v-pre>
+        <div style="text-align: center; margin-bottom: 8px; font-size: 13px;">
+            &copy; {{ anoAtual }} <b>{{ dados.getBanca()|default('GOLDESPORTEBET') }}</b>. Todos os direitos reservados.
+        </div>
+        <div style="text-align: center; font-size: 11px; color: #ffffff; opacity: 0.9; line-height: 1.5; margin-bottom: 12px;">
+            Ao acessar, continuar a utilizar ou ao navegar neste site, você aceita que utilizemos certos cookies com o objetivo de melhorar sua experiência como usuário. Proibido para menores de 18 anos. Aposte com responsabilidade.
+        </div>
+        <div>
+            <div style="float: left;">
+                <a href="{{ url('regras') }}">Regras do Site</a> |
+                <a href="{{ url('termos-uso') }}">Termos de Uso</a> |
+                <a href="{{ url('termos-uso') }}">Política de Privacidade</a>
+            </div>
+            <div class="footer-social">
+                {% if redes.instagram %}<a href="{{ redes.instagram }}" target="_blank"><i class="fa fa-instagram"></i></a>{% endif %}
+                {% if redes.facebook %}<a href="{{ redes.facebook }}" target="_blank"><i class="fa fa-facebook-square"></i></a>{% endif %}
+                {% if redes.whatsapp %}<a href="https://api.whatsapp.com/send?phone={{ redes.whatsapp }}" target="_blank"><i class="fa fa-whatsapp"></i></a>{% endif %}
+            </div>
+            <div class="clear"></div>
+        </div>
+    </footer>
+
+    <!-- RODAPÉ MOBILE OFICIAL -->
+    <footer class="mobile-footer mobile-only" v-pre>
+        <div class="footer-links-grid">
+            <div>
+                <h5>Sobre nós</h5>
+                <a href="{{ url('regras') }}">Regulamento</a>
+                <a href="{{ url('termos-uso') }}">Termos de Uso</a>
+                <a href="{{ url('termos-uso') }}">Política de Privacidade</a>
+            </div>
+            <div>
+                <h5>Suporte</h5>
+                <a href="{{ url('bilhete') }}">Consultar Bilhete</a>
+                {% if redes.whatsapp %}
+                    <a href="https://api.whatsapp.com/send?phone={{ redes.whatsapp }}" target="_blank">Atendimento WhatsApp</a>
+                {% endif %}
+                {% if redes.instagram %}
+                    <a href="{{ redes.instagram }}" target="_blank">Instagram Oficial</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="margin-bottom: 12px; color: #999;">
+            Proibido para menores de 18 anos. Aposte com responsabilidade.<br>
+            Ao utilizar este site, você concorda com nossos cookies para melhor experiência.
+        </div>
+
+        <div style="color: #666; font-size: 11px;">
+            &copy; {{ anoAtual }} <b>{{ dados.getBanca()|default('GOLDESPORTEBET') }}</b>. Todos os direitos reservados.
+        </div>
+    </footer>
+
+</div>
+
+<!-- MODAL DE LOGIN (Fallback) -->
+<form id="modal-login" class="modal fade" method="post" action="{{ url('entrar/login/insert') }}">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="background:#111;color:#fff;border:1px solid #333;">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bold" style="color:#d29d00;"><i class="fa fa-lock mr-1"></i> Acessar Conta</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="form-group">
+                    <label class="text-white-50 small font-weight-bold">USUÁRIO OU E-MAIL</label>
+                    <input type="text" name="username" class="form-control" placeholder="Digite seu login" required/>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="text-white-50 small font-weight-bold">SENHA</label>
+                    <input type="password" name="password" class="form-control" placeholder="Digite sua senha" required minlength="4" maxlength="32"/>
+                </div>
+                <button type="submit" class="botao w-100">
+                    <i class="fa fa-sign-in"></i> Entrar
+                </button>
+                {% if dados.getExibirRegistro() %}
+                    <div class="text-center mt-3">
+                        <a href="{{ dados.getLinkCadastro()|default(url('cadastrar')) }}" class="btn btn-link btn-sm text-white-50">
+                            Não tem conta? <span style="color:#d29d00;font-weight:bold;">Cadastre-se</span>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
+{{ seo_footer() }}
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="node_modules/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.mask.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.form.js"></script>
+<script type="text/javascript" src="cdn/js/jquery.serializeObject.js"></script>
+<script type="text/javascript" src="cdn/js/fastclick.js"></script>
+<script type="text/javascript" src="cdn/js/modernizr.min.js"></script>
+<script type="text/javascript" src="cdn/js/mask.js"></script>
+<script type="text/javascript" src="cdn/js/string.js"></script>
+<script type="text/javascript" src="cdn/js/clipboard.min.js"></script>
+<script type="text/javascript" src="cdn/js/admin.js"></script>
+<script type="text/javascript" src="js/site.js?v=1.0.0"></script>
+
+<script>
+    $('#form-login-top, #modal-login')
+        .adminPage({
+            autoSearch: false,
+            controller: 'login',
+            module: 'entrar',
+        })
+        .on("success", function (event, e) {
+            if (e.result == 1) {
+                window.location.href = e.url;
+            }
+        });
+</script>
+
+{% block script %}{% endblock %}
+
+{{ dados.getHtmlFooter()|raw }}
+
+</body>
+</html>

@@ -1,0 +1,378 @@
+<style>
+    [v-cloak] {
+        display: none !important;
+    }
+
+    :root {
+        --site-logo-width: {{ dados.getLogoWidth()|default(160) }}px;
+        --site-logo-height: {{ dados.getLogoHeight()|default(45) }}px;
+        --site-slide-height: {{ dados.getSlideHeight()|default(320) }}px;
+        --site-slide-height-mobile: {{ dados.getSlideHeightMobile()|default(160) }}px;
+    }
+
+    /* Dimensões customizáveis de Logotipo em todos os temas */
+    .brand-logo img, 
+    .mobile-brand img, 
+    .brand-img, 
+    .logo img, 
+    .b365-logo-container img, 
+    .bca-logo-container img, 
+    .btn-logo-container img, 
+    .pri-logo-container img, 
+    .sb-logo-container img, 
+    .dm-logo-container img, 
+    .dp-logo-container img,
+    header img.brand-img,
+    .header img,
+    nav img.brand-img {
+        max-width: var(--site-logo-width) !important;
+        max-height: var(--site-logo-height) !important;
+        width: auto !important;
+        height: auto !important;
+        object-fit: contain !important;
+    }
+
+    /* Dimensões customizáveis de Slides e Banners */
+    .owl-slideshow .item,
+    .owl-slideshow img, 
+    .inc-slideshow img, 
+    .carousel-inner img,
+    .carousel-item img,
+    .slideshow img, 
+    .slider-banner img {
+        max-height: var(--site-slide-height) !important;
+        object-fit: cover !important;
+    }
+
+    /* ==========================================================================
+       CONFRONTOS HORIZONTAIS SEM QUEBRA DE LINHA (TEMAS 4 AO 10)
+       Ordem rigorosa: (escudo) Nome do time x (escudo) Nome do time
+       ========================================================================== */
+    /* Garantir que linhas, células e blocos de times nunca quebrem linha */
+    .b365-match-row td, .bca-match-row td, .btn-match-row td, 
+    .pri-match-row td, .sb-match-row td, .dm-match-row td, .dp-match-row td,
+    .b365-table tbody td:first-child, .bca-table tbody td:first-child,
+    .btn-table tbody td:first-child, .pri-table tbody td:first-child,
+    .sb-table tbody td:first-child, .dm-table tbody td:first-child,
+    .dp-table tbody td:first-child {
+        white-space: nowrap !important;
+    }
+
+    .b365-teams, .bca-teams, .btn-teams, 
+    .pri-teams, .sb-teams, .dm-teams, .dp-teams {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        display: block !important;
+    }
+
+    .b365-times-box, .bca-times-box, .btn-times-box, 
+    .pri-times-box, .sb-times-box, .dm-times-box, .dp-times-box, .leon-times-box {
+        display: inline-flex !important;
+        align-items: center !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+        gap: 6px !important;
+        max-width: 100% !important;
+        vertical-align: middle !important;
+    }
+
+    .b365-time-casa, .b365-time-fora,
+    .bca-time-casa, .bca-time-fora,
+    .btn-time-casa, .btn-time-fora,
+    .pri-time-casa, .pri-time-fora,
+    .sb-time-casa, .sb-time-fora,
+    .dm-time-casa, .dm-time-fora,
+    .dp-time-casa, .dp-time-fora,
+    .leon-time-casa, .leon-time-fora {
+        display: inline-flex !important;
+        align-items: center !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+        gap: 5px !important;
+        flex-shrink: 1 !important;
+        min-width: 0 !important;
+        max-width: 220px !important;
+    }
+
+    .b365-team-name, .bca-team-name, .btn-team-name, 
+    .pri-team-name, .sb-team-name, .dm-team-name, .dp-team-name, .leon-team-name {
+        display: inline-block !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        font-weight: 600 !important;
+        line-height: 1.25 !important;
+    }
+
+    .b365-versus, .bca-versus, .btn-versus, 
+    .pri-versus, .sb-versus, .dm-versus, .dp-versus, .leon-versus {
+        display: inline-block !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        padding: 0 4px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+    }
+
+    .b365-team-flag, .bca-team-flag, .btn-team-flag, 
+    .pri-team-flag, .sb-team-flag, .dm-team-flag, .dp-team-flag, .leon-team-crest {
+        display: inline-block !important;
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px !important;
+        max-width: 18px !important;
+        object-fit: contain !important;
+        flex-shrink: 0 !important;
+        vertical-align: middle !important;
+    }
+
+    /* Modal e Bilhete (Betslip) sem quebra de linha */
+    #modal-cotacoes .modal-body h4,
+    #modal-cotacoes .modal-header + div,
+    #modal-cotacoes .font-weight-bold {
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+    }
+
+    .b365-selection-teams, .bca-selection-teams, .btn-selection-teams,
+    .pri-selection-teams, .sb-selection-teams, .dm-selection-teams, .dp-selection-teams {
+        display: flex !important;
+        align-items: center !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+    }
+
+    .b365-selection-teams span, .bca-selection-teams span, .btn-selection-teams span,
+    .pri-selection-teams span, .sb-selection-teams span, .dm-selection-teams span, .dp-selection-teams span {
+        white-space: nowrap !important;
+    }
+
+    @media (max-width: 768px) {
+        .owl-slideshow .item,
+        .owl-slideshow img, 
+        .inc-slideshow img, 
+        .carousel-inner img,
+        .carousel-item img,
+        .slideshow img, 
+        .slider-banner img {
+            max-height: var(--site-slide-height-mobile) !important;
+        }
+
+        /* ==========================================================================
+           COMPACTAÇÃO MOBILE DE JOGOS E ODDS (TEMAS 4 AO 10)
+           ========================================================================== */
+        /* Seção e Cabeçalho do Campeonato */
+        .b365-league-section, .bca-league-section, .btn-league-section, 
+        .pri-league-section, .sb-league-section, .dm-league-section, .dp-league-section {
+            margin-bottom: 8px !important;
+            border-radius: 6px !important;
+        }
+
+        .b365-league-header, .bca-league-header, .btn-league-header, 
+        .pri-league-header, .sb-league-header, .dm-league-header, .dp-league-header {
+            padding: 6px 10px !important;
+        }
+
+        .b365-league-title, .bca-league-title, .btn-league-title, 
+        .pri-league-title, .sb-league-title, .dm-league-title, .dp-league-title {
+            font-size: 12px !important;
+            gap: 5px !important;
+        }
+
+        /* Tabela de Jogos */
+        .b365-table, .bca-table, .btn-table, 
+        .pri-table, .sb-table, .dm-table, .dp-table {
+            width: 100% !important;
+        }
+
+        .b365-table thead th, .bca-table thead th, .btn-table thead th, 
+        .pri-table thead th, .sb-table thead th, .dm-table thead th, .dp-table thead th {
+            padding: 4px 2px !important;
+            font-size: 9.5px !important;
+            letter-spacing: 0 !important;
+        }
+
+        /* Coluna da PARTIDA (override inline min-width: 220px) */
+        .b365-table thead th:first-child, .b365-table tbody td:first-child,
+        .bca-table thead th:first-child, .bca-table tbody td:first-child,
+        .btn-table thead th:first-child, .btn-table tbody td:first-child,
+        .pri-table thead th:first-child, .pri-table tbody td:first-child,
+        .sb-table thead th:first-child, .sb-table tbody td:first-child,
+        .dm-table thead th:first-child, .dm-table tbody td:first-child,
+        .dp-table thead th:first-child, .dp-table tbody td:first-child {
+            min-width: 0 !important;
+            width: auto !important;
+            padding-left: 6px !important;
+            white-space: nowrap !important;
+        }
+
+        /* Colunas de Cotações Principais */
+        .b365-table thead th:not(:first-child):not(:last-child),
+        .bca-table thead th:not(:first-child):not(:last-child),
+        .btn-table thead th:not(:first-child):not(:last-child),
+        .pri-table thead th:not(:first-child):not(:last-child),
+        .sb-table thead th:not(:first-child):not(:last-child),
+        .dm-table thead th:not(:first-child):not(:last-child),
+        .dp-table thead th:not(:first-child):not(:last-child) {
+            width: 44px !important;
+            min-width: 38px !important;
+            max-width: 46px !important;
+        }
+
+        /* Coluna do Botão MAIS */
+        .b365-table thead th:last-child,
+        .bca-table thead th:last-child,
+        .btn-table thead th:last-child,
+        .pri-table thead th:last-child,
+        .sb-table thead th:last-child,
+        .dm-table thead th:last-child,
+        .dp-table thead th:last-child {
+            width: 34px !important;
+            min-width: 30px !important;
+            max-width: 38px !important;
+        }
+
+        /* Linhas e Células */
+        .b365-match-row td, .bca-match-row td, .btn-match-row td, 
+        .pri-match-row td, .sb-match-row td, .dm-match-row td, .dp-match-row td {
+            padding: 3px 1px !important;
+            white-space: nowrap !important;
+        }
+
+        /* Bloco dos Times Mobile - 100% Horizontal sem quebra */
+        .b365-teams, .bca-teams, .btn-teams, 
+        .pri-teams, .sb-teams, .dm-teams, .dp-teams {
+            padding: 2px 4px !important;
+            overflow: hidden !important;
+            white-space: nowrap !important;
+        }
+
+        .b365-times-box, .bca-times-box, .btn-times-box, 
+        .pri-times-box, .sb-times-box, .dm-times-box, .dp-times-box, .leon-times-box {
+            display: inline-flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            white-space: nowrap !important;
+            align-items: center !important;
+            gap: 3px !important;
+            font-size: 11px !important;
+        }
+
+        .b365-time-casa, .b365-time-fora,
+        .bca-time-casa, .bca-time-fora,
+        .btn-time-casa, .btn-time-fora,
+        .pri-time-casa, .pri-time-fora,
+        .sb-time-casa, .sb-time-fora,
+        .dm-time-casa, .dm-time-fora,
+        .dp-time-casa, .dp-time-fora,
+        .leon-time-casa, .leon-time-fora {
+            display: inline-flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            white-space: nowrap !important;
+            align-items: center !important;
+            gap: 3px !important;
+            max-width: 105px !important;
+            flex-shrink: 1 !important;
+            min-width: 0 !important;
+        }
+
+        .b365-team-name, .bca-team-name, .btn-team-name, 
+        .pri-team-name, .sb-team-name, .dm-team-name, .dp-team-name, .leon-team-name {
+            font-size: 11px !important;
+            line-height: 1.2 !important;
+            font-weight: 600 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            max-width: 85px !important;
+            display: inline-block !important;
+        }
+
+        .b365-team-flag, .bca-team-flag, .btn-team-flag, 
+        .pri-team-flag, .sb-team-flag, .dm-team-flag, .dp-team-flag, .leon-team-crest {
+            width: 15px !important;
+            height: 15px !important;
+            min-width: 15px !important;
+            max-width: 15px !important;
+            display: inline-block !important;
+            flex-shrink: 0 !important;
+        }
+
+        .b365-versus, .bca-versus, .btn-versus, 
+        .pri-versus, .sb-versus, .dm-versus, .dp-versus, .leon-versus {
+            padding: 0 2px !important;
+            font-size: 10px !important;
+            white-space: nowrap !important;
+            display: inline-block !important;
+            flex-shrink: 0 !important;
+        }
+
+        .b365-match-time, .bca-match-time, .btn-match-time, 
+        .pri-match-time, .sb-match-time, .dm-match-time, .dp-match-time {
+            font-size: 9px !important;
+            margin-top: 1px !important;
+            gap: 3px !important;
+        }
+
+        /* Botões de Cotações */
+        .b365-odd-btn, .bca-odd-btn, .btn-odd-btn, 
+        .pri-odd-btn, .sb-odd-btn, .dm-odd-btn, .dp-odd-btn {
+            min-width: 36px !important;
+            width: 100% !important;
+            max-width: 44px !important;
+            padding: 3px 1px !important;
+            margin: 0 auto !important;
+            border-radius: 4px !important;
+        }
+
+        .b365-odd-label, .bca-odd-label, .btn-odd-label, 
+        .pri-odd-label, .sb-odd-label, .dm-odd-label, .dp-odd-label {
+            font-size: 8px !important;
+            margin-bottom: 1px !important;
+            line-height: 1 !important;
+        }
+
+        .b365-odd-val, .bca-odd-val, .btn-odd-val, 
+        .pri-odd-val, .sb-odd-val, .dm-odd-val, .dp-odd-val {
+            font-size: 11px !important;
+            line-height: 1.1 !important;
+            font-weight: 800 !important;
+        }
+
+        /* Botão +Outras Cotações */
+        .b365-more-odds-btn, .bca-more-odds-btn, .btn-more-odds-btn, 
+        .pri-more-odds-btn, .sb-more-odds-btn, .dm-more-odds-btn, .dp-more-odds-btn {
+            min-width: 28px !important;
+            width: 100% !important;
+            max-width: 34px !important;
+            padding: 4px 1px !important;
+            font-size: 10px !important;
+            border-radius: 4px !important;
+        }
+
+        /* Toolbar / Filtros */
+        .b365-toolbar, .bca-toolbar, .btn-toolbar-filter, 
+        .pri-toolbar, .sb-toolbar, .dm-toolbar, .dp-toolbar {
+            padding: 8px 10px !important;
+            margin-bottom: 10px !important;
+        }
+    }
+
+    {% if dados.getExibirEscudos() == 0 %}
+    /* Ocultar escudos dos times em todos os temas quando desativado no painel */
+    .b365-team-flag, 
+    .bca-team-flag, 
+    .btn-team-flag, 
+    .pri-team-flag, 
+    .sb-team-flag, 
+    .dm-team-flag, 
+    .dp-team-flag {
+        display: none !important;
+    }
+    {% endif %}
+</style>
